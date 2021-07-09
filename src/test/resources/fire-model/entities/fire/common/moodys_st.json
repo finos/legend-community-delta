@@ -1,0 +1,24 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "moodys_st",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Moody's short term credit ratings"
+    } ],
+    "values" : [ {
+      "value" : "p1"
+    }, {
+      "value" : "p2"
+    }, {
+      "value" : "p3"
+    }, {
+      "value" : "np"
+    } ]
+  }
+}

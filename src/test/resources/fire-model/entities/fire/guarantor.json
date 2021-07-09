@@ -1,0 +1,16 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "guarantor",
+    "package" : "fire",
+    "superTypes" : [ "fire::common::entity" ],
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Data schema to define a guarantor for a security."
+    } ]
+  }
+}

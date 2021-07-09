@@ -1,0 +1,387 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "derivative_cash_flow",
+    "package" : "fire",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier for the derivative within the financial institution."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The observation or effective date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "accrued_interest",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The accrued interest/premium due at the next payment date. Monetary type represented as a naturally positive integer number of cents/pence."
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "asset_class",
+      "type" : "fire::common::asset_class"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "asset_liability",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "A derivative cash flow exchange that results in a net positive value after the transaction is an asset on the firm's balance sheet. A derivative cash flow exchange that results in a net negative value after the transaction is a liability on the firm's balance sheet."
+      } ],
+      "type" : "fire::common::asset_liability"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "balance",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The contractual balance due on the payment date in the currency given. Monetary type represented as a naturally positive integer number of cents/pence."
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "csa_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier of the credit support annex for this derivative cash flow"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "currency_code",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "Actual currency of the security in accordance with ISO 4217 standards. It should be consistent with balance, accrued_interest, guarantee_amount and other monetary amounts"
+      } ],
+      "type" : "fire::common::currency_code"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "customer_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "Counterparty to the cash flow"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "derivative_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "Unique identifier to the derivative to which this cash flow relates"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "forward_rate",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "Rate used to set a variable cash flow on the reset_date"
+      } ],
+      "type" : "Decimal"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "leg",
+      "type" : "fire::derivative_cash_flow_base::leg"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "mna_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier of the Master Netting Agreement for this derivative cash flow."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "mtm_clean",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The mark-to-market value of the derivative cash flow excluding interest/premium/coupons. Monetary type represented as a naturally positive integer number of cents/pence."
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "mtm_dirty",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The mark-to-market value of the derivative cash flow including interest/premium/coupons. Monetary type represented as a naturally positive integer number of cents/pence."
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "notional_amount",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The notional value is the total value with regard to a derivative's underlying index, security or asset at its spot price in accordance with the specifications (i.e. leverage) of the derivative product. Monetary type represented as a naturally positive integer number of cents/pence"
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "on_balance_sheet",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "Is the financial product reported on the balance sheet of the financial institution?"
+      } ],
+      "type" : "Boolean"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "payment_date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The timestamp that the cash flow will occur or was paid. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "product_name",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The name of the product as given by the financial institution to be used for display and reference purposes."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "purpose",
+      "type" : "fire::derivative_cash_flow_base::purpose"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "regulatory_book",
+      "type" : "fire::common::regulatory_book"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "reporting_entity_name",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The name of the reporting legal entity for display purposes."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "reporting_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The internal ID for the legal entity under which the account is being reported."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "reset_date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "Date on which a variable cash flow amount is set. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "settlement_type",
+      "type" : "fire::derivative_cash_flow_base::settlement_type"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "source",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "trade_date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The date that the derivative cash flow terms were agreed. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "value_date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The timestamp that the cash flow was valued. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "version_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The version identifier of the data such as the firm's internal batch identifier."
+      } ],
+      "type" : "String"
+    } ],
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "A derivative cash flow where two parties exchange cash flows (or assets) derived from an underlying reference index, security or financial instrument."
+    } ]
+  }
+}

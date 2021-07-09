@@ -1,0 +1,26 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "margin_frequency",
+    "package" : "fire::agreement_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Indicates the periodic timescale at which variation margin is exchanged. Cleared derivatives which are daily settled can be flagged as daily_settled."
+    } ],
+    "values" : [ {
+      "value" : "daily"
+    }, {
+      "value" : "daily_settled"
+    }, {
+      "value" : "weekly"
+    }, {
+      "value" : "bi_weekly"
+    }, {
+      "value" : "monthly"
+    } ]
+  }
+}

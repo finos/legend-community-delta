@@ -1,0 +1,24 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "asset_liability",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Is the data an asset, a liability, or equity on the firm's balance sheet?"
+    } ],
+    "values" : [ {
+      "value" : "asset"
+    }, {
+      "value" : "liability"
+    }, {
+      "value" : "equity"
+    }, {
+      "value" : "pnl"
+    } ]
+  }
+}

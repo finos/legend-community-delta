@@ -1,0 +1,16 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "reporter",
+    "package" : "fire",
+    "superTypes" : [ "fire::common::entity" ],
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "A reporter represents a reporting entity."
+    } ]
+  }
+}

@@ -1,0 +1,229 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "adjustment",
+    "package" : "fire",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier for the adjustment within the financial institution."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The observation or value date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "col",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The column of the report that this adjustment relates to."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "comment",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The description or commentary around the adjustment."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "contribution_amount",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The contribution amount this adjustment should make to the specified report cell. A positive/negative number in minor units (cents/pence)."
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "contribution_text",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The text to use for the adjustment where the reported cell is not a monetary value."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "currency_code",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The currency of the contribution_amount in accordance with ISO 4217 standards."
+      } ],
+      "type" : "fire::common::currency_code"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "page",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The page of the report that this adjustment relates to."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "report_type",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The report that this adjustment relates to."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "reporting_entity_name",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The name of the reporting legal entity for display purposes."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "row",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The row of the report that this adjustment relates to."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "source",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "version_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The version identifier of the data such as the firm's internal batch identifier."
+      } ],
+      "type" : "String"
+    } ],
+    "qualifiedProperties" : [ {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "split",
+        "parameters" : [ {
+          "_type" : "func",
+          "function" : "toOne",
+          "parameters" : [ {
+            "_type" : "property",
+            "parameters" : [ {
+              "_type" : "var",
+              "name" : "this"
+            } ],
+            "property" : "source"
+          } ]
+        }, {
+          "_type" : "string",
+          "multiplicity" : {
+            "lowerBound" : 1,
+            "upperBound" : 1
+          },
+          "values" : [ "-" ]
+        } ]
+      } ],
+      "name" : "sources",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 0
+      },
+      "returnType" : "String"
+    } ],
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "An adjustment represents a modification to a report."
+    } ]
+  }
+}

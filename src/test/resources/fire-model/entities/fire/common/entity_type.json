@@ -1,0 +1,96 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "entity_type",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The designated financial or legal entity category this person or legal entity falls under"
+    } ],
+    "values" : [ {
+      "value" : "building_society"
+    }, {
+      "value" : "ccp"
+    }, {
+      "value" : "central_bank"
+    }, {
+      "value" : "central_govt"
+    }, {
+      "value" : "charity"
+    }, {
+      "value" : "ciu"
+    }, {
+      "value" : "community_charity"
+    }, {
+      "value" : "corporate"
+    }, {
+      "value" : "credit_institution"
+    }, {
+      "value" : "credit_union"
+    }, {
+      "value" : "deposit_broker"
+    }, {
+      "value" : "financial"
+    }, {
+      "value" : "financial_holding"
+    }, {
+      "value" : "individual"
+    }, {
+      "value" : "insurer"
+    }, {
+      "value" : "intl_org"
+    }, {
+      "value" : "investment_firm"
+    }, {
+      "value" : "local_authority"
+    }, {
+      "value" : "mdb"
+    }, {
+      "value" : "mmkt_fund"
+    }, {
+      "value" : "natural_person"
+    }, {
+      "value" : "other"
+    }, {
+      "value" : "other_financial"
+    }, {
+      "value" : "other_pse"
+    }, {
+      "value" : "partnership"
+    }, {
+      "value" : "pension_fund"
+    }, {
+      "value" : "pic"
+    }, {
+      "value" : "promotional_lender"
+    }, {
+      "value" : "pse"
+    }, {
+      "value" : "public_corporation"
+    }, {
+      "value" : "qccp"
+    }, {
+      "value" : "regional_govt"
+    }, {
+      "value" : "sme"
+    }, {
+      "value" : "social_security_fund"
+    }, {
+      "value" : "sovereign"
+    }, {
+      "value" : "sspe"
+    }, {
+      "value" : "state_owned_bank"
+    }, {
+      "value" : "statutory_board"
+    }, {
+      "value" : "supported_sme"
+    }, {
+      "value" : "unincorporated_biz"
+    } ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "type",
+    "package" : "fire::collateral_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The collateral type defines the form of the collateral provided."
+    } ],
+    "values" : [ {
+      "value" : "residential_property"
+    }, {
+      "value" : "commercial_property"
+    }, {
+      "value" : "guarantee"
+    }, {
+      "value" : "debenture"
+    }, {
+      "value" : "life_policy"
+    }, {
+      "value" : "cash"
+    }, {
+      "value" : "other"
+    }, {
+      "value" : "immovable_property"
+    } ]
+  }
+}

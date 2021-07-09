@@ -1,0 +1,22 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "stay_protocol",
+    "package" : "fire::agreement_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Indicates whether a stay protocol has been signed by one or both parties to the agreement"
+    } ],
+    "values" : [ {
+      "value" : "self_signed"
+    }, {
+      "value" : "customer"
+    }, {
+      "value" : "both"
+    } ]
+  }
+}

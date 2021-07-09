@@ -1,0 +1,70 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "asset_class",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The asset class to which the derivative belongs."
+    } ],
+    "values" : [ {
+      "value" : "co"
+    }, {
+      "value" : "energy"
+    }, {
+      "value" : "coal"
+    }, {
+      "value" : "electricity"
+    }, {
+      "value" : "gas"
+    }, {
+      "value" : "oil"
+    }, {
+      "value" : "metals"
+    }, {
+      "value" : "precious_metals"
+    }, {
+      "value" : "gold"
+    }, {
+      "value" : "palladium"
+    }, {
+      "value" : "platinum"
+    }, {
+      "value" : "silver"
+    }, {
+      "value" : "agri"
+    }, {
+      "value" : "coffee"
+    }, {
+      "value" : "corn"
+    }, {
+      "value" : "sugar"
+    }, {
+      "value" : "co_other"
+    }, {
+      "value" : "cr"
+    }, {
+      "value" : "cr_index"
+    }, {
+      "value" : "cr_single"
+    }, {
+      "value" : "eq"
+    }, {
+      "value" : "eq_index"
+    }, {
+      "value" : "eq_single"
+    }, {
+      "value" : "fx"
+    }, {
+      "value" : "ir"
+    }, {
+      "value" : "inflation"
+    }, {
+      "value" : "other"
+    } ]
+  }
+}

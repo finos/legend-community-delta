@@ -1,0 +1,28 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "arrears_arrangement",
+    "package" : "fire::loan_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The arrangement the lender has made with the borrower regarding the amount referenced in the arrears_balance."
+    } ],
+    "values" : [ {
+      "value" : "temporary"
+    }, {
+      "value" : "formal"
+    }, {
+      "value" : "possessed"
+    }, {
+      "value" : "none"
+    }, {
+      "value" : "modified_tnc"
+    }, {
+      "value" : "refinancing"
+    } ]
+  }
+}

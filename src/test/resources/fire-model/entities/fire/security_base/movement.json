@@ -1,0 +1,28 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "movement",
+    "package" : "fire::security_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The movement parameter describes how the security arrived to the firm."
+    } ],
+    "values" : [ {
+      "value" : "cash"
+    }, {
+      "value" : "asset"
+    }, {
+      "value" : "issuance"
+    }, {
+      "value" : "debt_issue"
+    }, {
+      "value" : "cb_omo"
+    }, {
+      "value" : "other"
+    } ]
+  }
+}

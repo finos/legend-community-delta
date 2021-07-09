@@ -1,0 +1,37 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "customer",
+    "package" : "fire::loan_base",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier for the customer/s within the financial institution"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "income_amount",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The reference income used for the customer(s) for this loan. Monetary type represented as an integer number of cents/pence."
+      } ],
+      "type" : "Integer"
+    } ]
+  }
+}

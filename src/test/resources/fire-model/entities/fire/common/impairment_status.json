@@ -1,0 +1,66 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "impairment_status",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The recognition stage for the impairment/expected credit loss of the product."
+    } ],
+    "values" : [ {
+      "value" : "performing"
+    }, {
+      "value" : "stage_1"
+    }, {
+      "value" : "normal"
+    }, {
+      "value" : "watch"
+    }, {
+      "value" : "stage_2"
+    }, {
+      "value" : "substandard"
+    }, {
+      "value" : "non_performing"
+    }, {
+      "value" : "stage_3"
+    }, {
+      "value" : "doubtful"
+    }, {
+      "value" : "loss"
+    }, {
+      "value" : "stage_1_normal"
+    }, {
+      "value" : "stage_1_watch"
+    }, {
+      "value" : "stage_1_substandard"
+    }, {
+      "value" : "stage_1_doubtful"
+    }, {
+      "value" : "stage_1_loss"
+    }, {
+      "value" : "stage_2_normal"
+    }, {
+      "value" : "stage_2_watch"
+    }, {
+      "value" : "stage_2_substandard"
+    }, {
+      "value" : "stage_2_doubtful"
+    }, {
+      "value" : "stage_2_loss"
+    }, {
+      "value" : "stage_3_normal"
+    }, {
+      "value" : "stage_3_watch"
+    }, {
+      "value" : "stage_3_substandard"
+    }, {
+      "value" : "stage_3_doubtful"
+    }, {
+      "value" : "stage_3_loss"
+    } ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "snp_lt",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "S&P long term credit ratings"
+    } ],
+    "values" : [ {
+      "value" : "aaa"
+    }, {
+      "value" : "aa_plus"
+    }, {
+      "value" : "aa"
+    }, {
+      "value" : "aa_minus"
+    }, {
+      "value" : "a_plus"
+    }, {
+      "value" : "a"
+    }, {
+      "value" : "a_minus"
+    }, {
+      "value" : "bbb_plus"
+    }, {
+      "value" : "bbb"
+    }, {
+      "value" : "bbb_minus"
+    }, {
+      "value" : "bb_plus"
+    }, {
+      "value" : "bb"
+    }, {
+      "value" : "bb_minus"
+    }, {
+      "value" : "b_plus"
+    }, {
+      "value" : "b"
+    }, {
+      "value" : "b_minus"
+    }, {
+      "value" : "ccc_plus"
+    }, {
+      "value" : "ccc"
+    }, {
+      "value" : "ccc_minus"
+    }, {
+      "value" : "cc"
+    }, {
+      "value" : "c"
+    }, {
+      "value" : "d"
+    } ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "repayment_type",
+    "package" : "fire::loan_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Repayment type of the loan refers to whether the customer will be repaying capital + interest, just interest or a combination of the two."
+    } ],
+    "values" : [ {
+      "value" : "repayment"
+    }, {
+      "value" : "interest_only"
+    }, {
+      "value" : "combined"
+    }, {
+      "value" : "other"
+    } ]
+  }
+}

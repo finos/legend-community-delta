@@ -1,0 +1,26 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "leg_type",
+    "package" : "fire::derivative_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Describe the payoff type of the derivative leg."
+    } ],
+    "values" : [ {
+      "value" : "fixed"
+    }, {
+      "value" : "floating"
+    }, {
+      "value" : "indexed"
+    }, {
+      "value" : "call"
+    }, {
+      "value" : "put"
+    } ]
+  }
+}

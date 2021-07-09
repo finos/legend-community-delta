@@ -1,0 +1,374 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "currency_code",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The currency of the contribution_amount in accordance with ISO 4217 standards."
+    } ],
+    "values" : [ {
+      "value" : "AED"
+    }, {
+      "value" : "AFN"
+    }, {
+      "value" : "ALL"
+    }, {
+      "value" : "AMD"
+    }, {
+      "value" : "ANG"
+    }, {
+      "value" : "AOA"
+    }, {
+      "value" : "ARS"
+    }, {
+      "value" : "AUD"
+    }, {
+      "value" : "AWG"
+    }, {
+      "value" : "AZN"
+    }, {
+      "value" : "BAM"
+    }, {
+      "value" : "BBD"
+    }, {
+      "value" : "BDT"
+    }, {
+      "value" : "BGN"
+    }, {
+      "value" : "BHD"
+    }, {
+      "value" : "BIF"
+    }, {
+      "value" : "BMD"
+    }, {
+      "value" : "BND"
+    }, {
+      "value" : "BOB"
+    }, {
+      "value" : "BOV"
+    }, {
+      "value" : "BRL"
+    }, {
+      "value" : "BSD"
+    }, {
+      "value" : "BTN"
+    }, {
+      "value" : "BWP"
+    }, {
+      "value" : "BYN"
+    }, {
+      "value" : "BZD"
+    }, {
+      "value" : "CAD"
+    }, {
+      "value" : "CDF"
+    }, {
+      "value" : "CHE"
+    }, {
+      "value" : "CHF"
+    }, {
+      "value" : "CHW"
+    }, {
+      "value" : "CLF"
+    }, {
+      "value" : "CLP"
+    }, {
+      "value" : "CNY"
+    }, {
+      "value" : "COP"
+    }, {
+      "value" : "COU"
+    }, {
+      "value" : "CRC"
+    }, {
+      "value" : "CUC"
+    }, {
+      "value" : "CUP"
+    }, {
+      "value" : "CVE"
+    }, {
+      "value" : "CZK"
+    }, {
+      "value" : "DJF"
+    }, {
+      "value" : "DKK"
+    }, {
+      "value" : "DOP"
+    }, {
+      "value" : "DZD"
+    }, {
+      "value" : "EGP"
+    }, {
+      "value" : "ERN"
+    }, {
+      "value" : "ETB"
+    }, {
+      "value" : "EUR"
+    }, {
+      "value" : "FJD"
+    }, {
+      "value" : "FKP"
+    }, {
+      "value" : "GBP"
+    }, {
+      "value" : "GEL"
+    }, {
+      "value" : "GHS"
+    }, {
+      "value" : "GIP"
+    }, {
+      "value" : "GMD"
+    }, {
+      "value" : "GNF"
+    }, {
+      "value" : "GTQ"
+    }, {
+      "value" : "GYD"
+    }, {
+      "value" : "HKD"
+    }, {
+      "value" : "HNL"
+    }, {
+      "value" : "HRK"
+    }, {
+      "value" : "HTG"
+    }, {
+      "value" : "HUF"
+    }, {
+      "value" : "IDR"
+    }, {
+      "value" : "ILS"
+    }, {
+      "value" : "INR"
+    }, {
+      "value" : "IQD"
+    }, {
+      "value" : "IRR"
+    }, {
+      "value" : "ISK"
+    }, {
+      "value" : "JMD"
+    }, {
+      "value" : "JOD"
+    }, {
+      "value" : "JPY"
+    }, {
+      "value" : "KES"
+    }, {
+      "value" : "KGS"
+    }, {
+      "value" : "KHR"
+    }, {
+      "value" : "KMF"
+    }, {
+      "value" : "KPW"
+    }, {
+      "value" : "KRW"
+    }, {
+      "value" : "KWD"
+    }, {
+      "value" : "KYD"
+    }, {
+      "value" : "KZT"
+    }, {
+      "value" : "LAK"
+    }, {
+      "value" : "LBP"
+    }, {
+      "value" : "LKR"
+    }, {
+      "value" : "LRD"
+    }, {
+      "value" : "LSL"
+    }, {
+      "value" : "LYD"
+    }, {
+      "value" : "MAD"
+    }, {
+      "value" : "MDL"
+    }, {
+      "value" : "MGA"
+    }, {
+      "value" : "MKD"
+    }, {
+      "value" : "MMK"
+    }, {
+      "value" : "MNT"
+    }, {
+      "value" : "MOP"
+    }, {
+      "value" : "MRU"
+    }, {
+      "value" : "MUR"
+    }, {
+      "value" : "MVR"
+    }, {
+      "value" : "MWK"
+    }, {
+      "value" : "MXN"
+    }, {
+      "value" : "MXV"
+    }, {
+      "value" : "MYR"
+    }, {
+      "value" : "MZN"
+    }, {
+      "value" : "NAD"
+    }, {
+      "value" : "NGN"
+    }, {
+      "value" : "NIO"
+    }, {
+      "value" : "NOK"
+    }, {
+      "value" : "NPR"
+    }, {
+      "value" : "NZD"
+    }, {
+      "value" : "OMR"
+    }, {
+      "value" : "PAB"
+    }, {
+      "value" : "PEN"
+    }, {
+      "value" : "PGK"
+    }, {
+      "value" : "PHP"
+    }, {
+      "value" : "PKR"
+    }, {
+      "value" : "PLN"
+    }, {
+      "value" : "PYG"
+    }, {
+      "value" : "QAR"
+    }, {
+      "value" : "RON"
+    }, {
+      "value" : "RSD"
+    }, {
+      "value" : "RUB"
+    }, {
+      "value" : "RWF"
+    }, {
+      "value" : "SAR"
+    }, {
+      "value" : "SBD"
+    }, {
+      "value" : "SCR"
+    }, {
+      "value" : "SDG"
+    }, {
+      "value" : "SEK"
+    }, {
+      "value" : "SGD"
+    }, {
+      "value" : "SHP"
+    }, {
+      "value" : "SLL"
+    }, {
+      "value" : "SOS"
+    }, {
+      "value" : "SRD"
+    }, {
+      "value" : "SSP"
+    }, {
+      "value" : "STN"
+    }, {
+      "value" : "SYP"
+    }, {
+      "value" : "SZL"
+    }, {
+      "value" : "THB"
+    }, {
+      "value" : "TJS"
+    }, {
+      "value" : "TMT"
+    }, {
+      "value" : "TND"
+    }, {
+      "value" : "TOP"
+    }, {
+      "value" : "TRY"
+    }, {
+      "value" : "TTD"
+    }, {
+      "value" : "TWD"
+    }, {
+      "value" : "TZS"
+    }, {
+      "value" : "UAH"
+    }, {
+      "value" : "UGX"
+    }, {
+      "value" : "USD"
+    }, {
+      "value" : "USN"
+    }, {
+      "value" : "USS"
+    }, {
+      "value" : "UYI"
+    }, {
+      "value" : "UYU"
+    }, {
+      "value" : "UYW"
+    }, {
+      "value" : "UZS"
+    }, {
+      "value" : "VES"
+    }, {
+      "value" : "VND"
+    }, {
+      "value" : "VUV"
+    }, {
+      "value" : "WST"
+    }, {
+      "value" : "XAF"
+    }, {
+      "value" : "XAG"
+    }, {
+      "value" : "XAU"
+    }, {
+      "value" : "XBA"
+    }, {
+      "value" : "XBB"
+    }, {
+      "value" : "XBC"
+    }, {
+      "value" : "XBD"
+    }, {
+      "value" : "XCD"
+    }, {
+      "value" : "XDR"
+    }, {
+      "value" : "XOF"
+    }, {
+      "value" : "XPD"
+    }, {
+      "value" : "XPF"
+    }, {
+      "value" : "XPT"
+    }, {
+      "value" : "XSU"
+    }, {
+      "value" : "XTS"
+    }, {
+      "value" : "XUA"
+    }, {
+      "value" : "XXX"
+    }, {
+      "value" : "YER"
+    }, {
+      "value" : "ZAR"
+    }, {
+      "value" : "ZMW"
+    }, {
+      "value" : "CNH"
+    } ]
+  }
+}

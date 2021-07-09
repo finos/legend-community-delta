@@ -1,0 +1,2059 @@
+Enum {meta::pure::profiles::doc.doc = 'The type of the encumbrance causing the encumbrance_amount.'} fire::account_base::encumbrance_type
+{
+  repo,
+  covered_bond,
+  derivative,
+  none,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The Government Deposit Scheme scheme under which the guarantee_amount is guaranteed.'} fire::account_base::guarantee_scheme
+{
+  be_pf,
+  bg_dif,
+  hr_di,
+  cy_dps,
+  cz_dif,
+  dk_gdfi,
+  ee_dgs,
+  fi_dgf,
+  fr_fdg,
+  gb_fscs,
+  de_edb,
+  de_edo,
+  de_edw,
+  gr_dgs,
+  hu_ndif,
+  ie_dgs,
+  it_fitd,
+  lv_dgf,
+  lt_vi,
+  lu_fgdl,
+  mt_dcs,
+  nl_dgs,
+  pl_bfg,
+  pt_fgd,
+  ro_fgdb,
+  sk_dpf,
+  si_dgs,
+  es_fgd,
+  se_ndo,
+  us_fdic
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The purpose for which the account was created or is being used.'} fire::account_base::purpose
+{
+  admin,
+  annual_bonus_accruals,
+  benefit_in_kind,
+  capital_gain_tax,
+  cash_management,
+  cf_hedge,
+  ci_service,
+  clearing,
+  collateral,
+  commitments,
+  computer_and_it_cost,
+  corporation_tax,
+  credit_card_fee,
+  critical_service,
+  current_account_fee,
+  custody,
+  employee_stock_option,
+  dealing_revenue,
+  dealing_rev_deriv,
+  dealing_rev_deriv_nse,
+  dealing_rev_fx,
+  dealing_rev_fx_nse,
+  dealing_rev_sec,
+  dealing_rev_sec_nse,
+  deposit,
+  derivative_fee,
+  dividend,
+  div_from_cis,
+  div_from_money_mkt,
+  donation,
+  employee,
+  escrow,
+  fees,
+  fine,
+  firm_operating_expenses,
+  firm_operations,
+  fx,
+  goodwill,
+  insurance_fee,
+  intra_group_fee,
+  investment_banking_fee,
+  inv_in_subsidiary,
+  investment_property,
+  interest,
+  int_on_bond_and_frn,
+  int_on_bridging_loan,
+  int_on_credit_card,
+  int_on_ecgd_lending,
+  int_on_deposit,
+  int_on_derivative,
+  int_on_deriv_hedge,
+  int_on_loan_and_adv,
+  int_on_money_mkt,
+  int_on_mortgage,
+  int_on_sft,
+  ips,
+  loan_and_advance_fee,
+  ni_contribution,
+  manufactured_dividend,
+  mortgage_fee,
+  non_life_ins_premium,
+  occupancy_cost,
+  operational,
+  operational_excess,
+  operational_escrow,
+  other,
+  other_expenditure,
+  other_fs_fee,
+  other_non_fs_fee,
+  other_social_contrib,
+  other_staff_rem,
+  other_staff_cost,
+  overdraft_fee,
+  own_property,
+  pension,
+  ppe,
+  prime_brokerage,
+  property,
+  recovery,
+  redundancy_pymt,
+  reference,
+  reg_loss,
+  regular_wages,
+  release,
+  rent,
+  restructuring,
+  retained_earnings,
+  revaluation,
+  revenue_reserve,
+  share_plan,
+  staff,
+  system,
+  tax,
+  unsecured_loan_fee,
+  write_off
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Describes the type of interest rate applied to the account.'} fire::account_base::rate_type
+{
+  fixed,
+  variable,
+  tracker,
+  combined,
+  preferential
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Describes if the Account is active or been cancelled.'} fire::account_base::status
+{
+  active,
+  cancelled,
+  cancelled_payout_agreed,
+  transactional,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'This is the type of the account with regards to common regulatory classifications.'} fire::account_base::type
+{
+  bonds,
+  call,
+  cd,
+  credit_card,
+  current,
+  depreciation,
+  internet_only,
+  ira,
+  isa,
+  money_market,
+  non_product,
+  deferred,
+  expense,
+  income,
+  intangible,
+  prepaid_card,
+  provision,
+  reserve,
+  suspense,
+  tangible,
+  non_deferred,
+  retail_bonds,
+  savings,
+  time_deposit,
+  vostro,
+  other,
+  amortisation
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Funding type calculated according to BIPRU 12.5/12.6'} fire::account_base::uk_funding_type
+{
+  a,
+  b
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of credit support document'} fire::agreement_base::credit_support_type
+{
+  csa_isda_1994,
+  csa_isda_1995,
+  csd_isda_1995,
+  scsa_isda_2013
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Indicates the periodic timescale at which variation margin is exchanged. Cleared derivatives which are daily settled can be flagged as daily_settled.'} fire::agreement_base::margin_frequency
+{
+  daily,
+  daily_settled,
+  weekly,
+  bi_weekly,
+  monthly
+}
+
+Enum {meta::pure::profiles::doc.doc = 'populated only if any netting restriction applies, in relation to the nature of the agreement or the enforceability of netting in the jurisdiction of the counterparty, preventing the recognition of the agreement as risk-reducing, pursuant to CRR Articles 295 to 298'} fire::agreement_base::netting_restriction
+{
+  national_supervision,
+  restrictive_covenant
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Indicates whether a stay protocol has been signed by one or both parties to the agreement'} fire::agreement_base::stay_protocol
+{
+  self_signed,
+  customer,
+  both
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of the master agreement.'} fire::agreement_base::type
+{
+  isda,
+  isda_2002,
+  isda_1992,
+  isda_1987,
+  isda_1986,
+  isda_1985,
+  other_isda,
+  gmra,
+  icma_2011,
+  icma_2000,
+  icma_1995,
+  icma_1992,
+  other_gmra,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of the encumbrance causing the encumbrance_amount.'} fire::collateral_base::encumbrance_type
+{
+  repo,
+  covered_bond,
+  derivative,
+  real_estate,
+  none,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The collateral type defines the form of the collateral provided.'} fire::collateral_base::type
+{
+  residential_property,
+  commercial_property,
+  guarantee,
+  debenture,
+  life_policy,
+  cash,
+  other,
+  immovable_property
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The accounting treatment in accordance with IAS/IFRS9 accounting principles.'} fire::common::accounting_treatment
+{
+  cb_or_demand,
+  held_for_trading,
+  fv_thru_pnl,
+  fv_mandatorily,
+  fv_oci,
+  amortised_cost,
+  held_for_hedge,
+  available_for_sale,
+  loans_and_recs,
+  held_to_maturity
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The asset class to which the derivative belongs.'} fire::common::asset_class
+{
+  co,
+  energy,
+  coal,
+  electricity,
+  gas,
+  oil,
+  metals,
+  precious_metals,
+  gold,
+  palladium,
+  platinum,
+  silver,
+  agri,
+  coffee,
+  corn,
+  sugar,
+  co_other,
+  cr,
+  cr_index,
+  cr_single,
+  eq,
+  eq_index,
+  eq_single,
+  fx,
+  ir,
+  inflation,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Is the data an asset, a liability, or equity on the firm\'s balance sheet?'} fire::common::asset_liability
+{
+  asset,
+  liability,
+  equity,
+  pnl
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The base rate represents the basis of the rate on the balance at the given date as agreed in the terms of the account.'} fire::common::base_rate
+{
+  ZERO,
+  UKBRBASE,
+  FDTR
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Two-letter country code as defined according to ISO 3166-1 plus ISO allowed, user-assignable codes (AA, QM to QZ, XA to XZ, and ZZ).'} fire::common::country_code
+{
+  AF,
+  AX,
+  AL,
+  DZ,
+  AS,
+  AD,
+  AO,
+  AI,
+  AQ,
+  AG,
+  AR,
+  AM,
+  AW,
+  AU,
+  AT,
+  AZ,
+  BS,
+  BH,
+  BD,
+  BB,
+  BY,
+  BE,
+  BZ,
+  BJ,
+  BM,
+  BT,
+  BO,
+  BQ,
+  BA,
+  BW,
+  BV,
+  BR,
+  IO,
+  BN,
+  BG,
+  BF,
+  BI,
+  CV,
+  KH,
+  CM,
+  CA,
+  KY,
+  CF,
+  TD,
+  CL,
+  CN,
+  CX,
+  CC,
+  CO,
+  KM,
+  CG,
+  CD,
+  CK,
+  CR,
+  CI,
+  HR,
+  CU,
+  CW,
+  CY,
+  CZ,
+  DK,
+  DJ,
+  DM,
+  DO,
+  EC,
+  EG,
+  SV,
+  GQ,
+  ER,
+  EE,
+  ET,
+  FK,
+  FO,
+  FJ,
+  FI,
+  FR,
+  GF,
+  PF,
+  TF,
+  GA,
+  GM,
+  GE,
+  DE,
+  GH,
+  GI,
+  GR,
+  GL,
+  GD,
+  GP,
+  GU,
+  GT,
+  GG,
+  GN,
+  GW,
+  GY,
+  HT,
+  HM,
+  VA,
+  HN,
+  HK,
+  HU,
+  IS,
+  IN,
+  ID,
+  IR,
+  IQ,
+  IE,
+  IM,
+  IL,
+  IT,
+  JM,
+  JP,
+  JE,
+  JO,
+  KZ,
+  KE,
+  KI,
+  KP,
+  KR,
+  KW,
+  KG,
+  LA,
+  LV,
+  LB,
+  LS,
+  LR,
+  LY,
+  LI,
+  LT,
+  LU,
+  MO,
+  MK,
+  MG,
+  MW,
+  MY,
+  MV,
+  ML,
+  MT,
+  MH,
+  MQ,
+  MR,
+  MU,
+  YT,
+  MX,
+  FM,
+  MD,
+  MC,
+  MN,
+  ME,
+  MS,
+  MA,
+  MZ,
+  MM,
+  NA,
+  NR,
+  NP,
+  NL,
+  NC,
+  NZ,
+  NI,
+  NE,
+  NG,
+  NU,
+  NF,
+  MP,
+  NO,
+  OM,
+  PK,
+  PW,
+  PS,
+  PA,
+  PG,
+  PY,
+  PE,
+  PH,
+  PN,
+  PL,
+  PT,
+  PR,
+  QA,
+  RE,
+  RO,
+  RU,
+  RW,
+  BL,
+  SH,
+  KN,
+  LC,
+  MF,
+  PM,
+  VC,
+  WS,
+  SM,
+  ST,
+  SA,
+  SN,
+  RS,
+  SC,
+  SL,
+  SG,
+  SX,
+  SK,
+  SI,
+  SB,
+  SO,
+  ZA,
+  GS,
+  SS,
+  ES,
+  LK,
+  SD,
+  SR,
+  SJ,
+  SZ,
+  SE,
+  CH,
+  SY,
+  TW,
+  TJ,
+  TZ,
+  TH,
+  TL,
+  TG,
+  TK,
+  TO,
+  TT,
+  TN,
+  TR,
+  TM,
+  TC,
+  TV,
+  UG,
+  UA,
+  AE,
+  GB,
+  US,
+  UM,
+  UY,
+  UZ,
+  VU,
+  VE,
+  VN,
+  VG,
+  VI,
+  WF,
+  EH,
+  YE,
+  ZM,
+  ZW,
+  AA,
+  QM,
+  QN,
+  QO,
+  QP,
+  QQ,
+  QR,
+  QS,
+  QT,
+  QU,
+  QV,
+  QW,
+  QX,
+  QY,
+  QZ,
+  XA,
+  XB,
+  XC,
+  XD,
+  XE,
+  XF,
+  XG,
+  XH,
+  XI,
+  XJ,
+  XK,
+  XL,
+  XM,
+  XN,
+  XO,
+  XP,
+  XQ,
+  XR,
+  XS,
+  XT,
+  XU,
+  XV,
+  XW,
+  XX,
+  XY,
+  XZ,
+  ZZ
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The currency of the contribution_amount in accordance with ISO 4217 standards.'} fire::common::currency_code
+{
+  AED,
+  AFN,
+  ALL,
+  AMD,
+  ANG,
+  AOA,
+  ARS,
+  AUD,
+  AWG,
+  AZN,
+  BAM,
+  BBD,
+  BDT,
+  BGN,
+  BHD,
+  BIF,
+  BMD,
+  BND,
+  BOB,
+  BOV,
+  BRL,
+  BSD,
+  BTN,
+  BWP,
+  BYN,
+  BZD,
+  CAD,
+  CDF,
+  CHE,
+  CHF,
+  CHW,
+  CLF,
+  CLP,
+  CNY,
+  COP,
+  COU,
+  CRC,
+  CUC,
+  CUP,
+  CVE,
+  CZK,
+  DJF,
+  DKK,
+  DOP,
+  DZD,
+  EGP,
+  ERN,
+  ETB,
+  EUR,
+  FJD,
+  FKP,
+  GBP,
+  GEL,
+  GHS,
+  GIP,
+  GMD,
+  GNF,
+  GTQ,
+  GYD,
+  HKD,
+  HNL,
+  HRK,
+  HTG,
+  HUF,
+  IDR,
+  ILS,
+  INR,
+  IQD,
+  IRR,
+  ISK,
+  JMD,
+  JOD,
+  JPY,
+  KES,
+  KGS,
+  KHR,
+  KMF,
+  KPW,
+  KRW,
+  KWD,
+  KYD,
+  KZT,
+  LAK,
+  LBP,
+  LKR,
+  LRD,
+  LSL,
+  LYD,
+  MAD,
+  MDL,
+  MGA,
+  MKD,
+  MMK,
+  MNT,
+  MOP,
+  MRU,
+  MUR,
+  MVR,
+  MWK,
+  MXN,
+  MXV,
+  MYR,
+  MZN,
+  NAD,
+  NGN,
+  NIO,
+  NOK,
+  NPR,
+  NZD,
+  OMR,
+  PAB,
+  PEN,
+  PGK,
+  PHP,
+  PKR,
+  PLN,
+  PYG,
+  QAR,
+  RON,
+  RSD,
+  RUB,
+  RWF,
+  SAR,
+  SBD,
+  SCR,
+  SDG,
+  SEK,
+  SGD,
+  SHP,
+  SLL,
+  SOS,
+  SRD,
+  SSP,
+  STN,
+  SYP,
+  SZL,
+  THB,
+  TJS,
+  TMT,
+  TND,
+  TOP,
+  TRY,
+  TTD,
+  TWD,
+  TZS,
+  UAH,
+  UGX,
+  USD,
+  USN,
+  USS,
+  UYI,
+  UYU,
+  UYW,
+  UZS,
+  VES,
+  VND,
+  VUV,
+  WST,
+  XAF,
+  XAG,
+  XAU,
+  XBA,
+  XBB,
+  XBC,
+  XBD,
+  XCD,
+  XDR,
+  XOF,
+  XPD,
+  XPF,
+  XPT,
+  XSU,
+  XTS,
+  XUA,
+  XXX,
+  YER,
+  ZAR,
+  ZMW,
+  CNH
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The designated financial or legal entity category this person or legal entity falls under'} fire::common::entity_relationship
+{
+  jv,
+  branch,
+  subsidiary,
+  parent,
+  head_office,
+  parent_subsidiary,
+  parent_branch
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The designated financial or legal entity category this person or legal entity falls under'} fire::common::entity_type
+{
+  building_society,
+  ccp,
+  central_bank,
+  central_govt,
+  charity,
+  ciu,
+  community_charity,
+  corporate,
+  credit_institution,
+  credit_union,
+  deposit_broker,
+  financial,
+  financial_holding,
+  individual,
+  insurer,
+  intl_org,
+  investment_firm,
+  local_authority,
+  mdb,
+  mmkt_fund,
+  natural_person,
+  other,
+  other_financial,
+  other_pse,
+  partnership,
+  pension_fund,
+  pic,
+  promotional_lender,
+  pse,
+  public_corporation,
+  qccp,
+  regional_govt,
+  sme,
+  social_security_fund,
+  sovereign,
+  sspe,
+  state_owned_bank,
+  statutory_board,
+  supported_sme,
+  unincorporated_biz
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Fitch long term credit ratings'} fire::common::fitch_lt
+{
+  aaa,
+  aa_plus,
+  aa,
+  aa_minus,
+  a_plus,
+  a,
+  a_minus,
+  bbb_plus,
+  bbb,
+  bbb_minus,
+  bb_plus,
+  bb,
+  bb_minus,
+  b_plus,
+  b,
+  b_minus,
+  ccc_plus,
+  ccc,
+  ccc_minus,
+  cc,
+  c,
+  rd,
+  d
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Fitch short term credit ratings'} fire::common::fitch_st
+{
+  f1_plus,
+  f1,
+  f2,
+  f3,
+  b,
+  c,
+  rd,
+  d
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The recognition stage for the impairment/expected credit loss of the product.'} fire::common::impairment_status
+{
+  performing,
+  stage_1,
+  normal,
+  watch,
+  stage_2,
+  substandard,
+  non_performing,
+  stage_3,
+  doubtful,
+  loss,
+  stage_1_normal,
+  stage_1_watch,
+  stage_1_substandard,
+  stage_1_doubtful,
+  stage_1_loss,
+  stage_2_normal,
+  stage_2_watch,
+  stage_2_substandard,
+  stage_2_doubtful,
+  stage_2_loss,
+  stage_3_normal,
+  stage_3_watch,
+  stage_3_substandard,
+  stage_3_doubtful,
+  stage_3_loss
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Repayment frequency of the interest.'} fire::common::interest_repayment_frequency
+{
+  daily,
+  weekly,
+  bi_weekly,
+  monthly,
+  bi_monthly,
+  quarterly,
+  semi_annually,
+  annually,
+  at_maturity
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Moody\'s long term credit ratings'} fire::common::moodys_lt
+{
+  aaa,
+  aa1,
+  aa2,
+  aa3,
+  a1,
+  a2,
+  a3,
+  baa1,
+  baa2,
+  baa3,
+  ba1,
+  ba2,
+  ba3,
+  b1,
+  b2,
+  b3,
+  caa1,
+  caa2,
+  caa3,
+  ca,
+  c
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Moody\'s short term credit ratings'} fire::common::moodys_st
+{
+  p1,
+  p2,
+  p3,
+  np
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of portfolio in which the instrument is held.'} fire::common::regulatory_book
+{
+  trading_book,
+  banking_book
+}
+
+Enum {meta::pure::profiles::doc.doc = 'S&P long term credit ratings'} fire::common::snp_lt
+{
+  aaa,
+  aa_plus,
+  aa,
+  aa_minus,
+  a_plus,
+  a,
+  a_minus,
+  bbb_plus,
+  bbb,
+  bbb_minus,
+  bb_plus,
+  bb,
+  bb_minus,
+  b_plus,
+  b,
+  b_minus,
+  ccc_plus,
+  ccc,
+  ccc_minus,
+  cc,
+  c,
+  d
+}
+
+Enum {meta::pure::profiles::doc.doc = 'S&P short term credit ratings'} fire::common::snp_st
+{
+  a1,
+  a2,
+  a3,
+  b,
+  c,
+  d
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The reference item for the value. (x-axis)'} fire::curve_base::reference
+{
+  'o_n',
+'1d',
+'1m',
+'2m',
+'3m',
+'4m',
+'5m',
+'6m',
+'9m',
+'12m',
+'24m',
+'36m',
+'60m',
+'2d',
+'3d',
+'4d',
+'5d',
+'6d',
+'7d',
+'8d',
+'9d',
+'10d',
+'11d',
+'12d',
+'13d',
+'14d',
+'15d',
+'16d',
+'17d',
+'18d',
+'19d',
+'20d',
+'21d',
+'22d',
+'23d',
+'24d',
+'25d',
+'26d',
+'27d',
+'28d',
+'29d',
+'30d',
+'31d',
+'32d',
+'33d',
+'34d',
+'35d',
+'36d',
+'37d',
+'38d',
+'39d',
+'40d',
+'41d',
+'42d',
+'43d',
+'44d',
+'45d',
+'46d',
+'47d',
+'48d',
+'49d',
+'50d',
+'51d',
+'52d',
+'53d',
+'54d',
+'55d',
+'56d',
+'57d',
+'58d',
+'59d',
+'60d',
+'61d',
+'62d',
+'63d',
+'64d',
+'65d',
+'66d',
+'67d',
+'68d',
+'69d',
+'70d',
+'71d',
+'72d',
+'73d',
+'74d',
+'75d',
+'76d',
+'77d',
+'78d',
+'79d',
+'80d',
+'81d',
+'82d',
+'83d',
+'84d',
+'85d',
+'86d',
+'87d',
+'88d',
+'89d',
+'90d',
+'91d',
+'92d',
+'open_maturity',
+'initial_stock'
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The curve type.'} fire::curve_base::type
+{
+  rate,
+  volatility,
+  behavioral
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Status of the clearing threshold as defined in EMIR'} fire::customer_base::clearing_threshold
+{
+  above,
+  below
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The status of the relationship with the customer from the firm\'s point of view.'} fire::customer_base::status
+{
+  established
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Describe the payoff type of the derivative leg.'} fire::derivative_base::leg_type
+{
+  fixed,
+  floating,
+  indexed,
+  call,
+  put
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Specifies the market position, i.e. long or short, of the derivative leg'} fire::derivative_base::position
+{
+  long,
+  short
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The purpose for which the derivative is being held.'} fire::derivative_base::purpose
+{
+  reference,
+  cva_hedge,
+  back_to_back
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of settlement for the contract.'} fire::derivative_base::settlement_type
+{
+  cash,
+  physical
+}
+
+Enum {meta::pure::profiles::doc.doc = 'This is the type of the derivative with regards to common regulatory classifications.'} fire::derivative_base::type
+{
+  vanilla_swap,
+  mtm_swap,
+  option,
+  swaption,
+  future,
+  forward,
+  xccy,
+  cds,
+  ois,
+  spot,
+  ndf,
+  nds,
+  fra,
+  cap_floor,
+  ccds,
+  variance_swap
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The designated maturity of the underlying interest rate index used in the underlying_index property for interest rate derivatives'} fire::derivative_base::underlying_index_tenor
+{
+  '1d',
+  '7d',
+  '28d',
+  '91d',
+  '182d',
+  '1m',
+  '2m',
+  '3m',
+  '4m',
+  '5m',
+  '6m',
+  '7m',
+  '8m',
+  '9m',
+  '12m'
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of the payment leg.'} fire::derivative_cash_flow_base::leg
+{
+  pay,
+  receive
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The purpose for which the derivative cash flow is calculated'} fire::derivative_cash_flow_base::purpose
+{
+  reference,
+  principal,
+  interest
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of settlement for the contract.'} fire::derivative_cash_flow_base::settlement_type
+{
+  cash,
+  physical
+}
+
+Enum {meta::pure::profiles::doc.doc = 'How the loan was administered by the lender.'} fire::loan_base::administration
+{
+  principal,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The arrangement the lender has made with the borrower regarding the amount referenced in the arrears_balance.'} fire::loan_base::arrears_arrangement
+{
+  temporary,
+  formal,
+  possessed,
+  none,
+  modified_tnc,
+  refinancing
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of the encumbrance causing the encumbrance_amount.'} fire::loan_base::encumbrance_type
+{
+  abs,
+  cb_funding,
+  covered_bond
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The loss event resulting in the impairment of the loan.'} fire::loan_base::impairment_type
+{
+  collective,
+  individual,
+  write_off
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The movement parameter describes how the loan arrived to the firm.'} fire::loan_base::movement
+{
+  acquired,
+  sold,
+  securitised,
+  syndicated,
+  syndicated_lead,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of financial institution that acted as the originator of the loan product'} fire::loan_base::originator_type
+{
+  mortgage_lender,
+  spv,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The provision type parameter details the provisions the issuing firm has allocated to cover potential losses from issuing a loan.'} fire::loan_base::provision_type
+{
+  none,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The underlying reason the borrower has requested the loan.'} fire::loan_base::purpose
+{
+  house_purchase,
+  first_time_buyer,
+  buy_to_let,
+  consumer_buy_to_let,
+  buy_to_let_house_purchase,
+  buy_to_let_remortgage,
+  buy_to_let_further_advance,
+  buy_to_let_other,
+  remortgage,
+  remortgage_other,
+  lifetime_mortgage,
+  bridging_loan,
+  further_advance,
+  promotional,
+  other,
+  ips,
+  speculative_property,
+  operational,
+  agriculture,
+  construction,
+  project_finance
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Describes the type of interest rate applied to the loan.'} fire::loan_base::rate_type
+{
+  fixed,
+  variable,
+  tracker,
+  combined
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Repayment type of the loan refers to whether the customer will be repaying capital + interest, just interest or a combination of the two.'} fire::loan_base::repayment_type
+{
+  repayment,
+  interest_only,
+  combined,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Describes if the loan is active or been cancelled.'} fire::loan_base::status
+{
+  actual,
+  committed,
+  committed,
+  defaulted
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The form of the loan product administered by the financial institution, with regards to common regulatory classifications.'} fire::loan_base::type
+{
+  auto,
+  commercial_property,
+  commercial,
+  credit_card,
+  credit_facility,
+  financial_lease,
+  liquidity_facility,
+  mortgage,
+  personal,
+  trade_finance,
+  multiccy_facility,
+  nostro,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The type of impact on the balance of the loan.'} fire::loan_transaction_base::type
+{
+  advance,
+  further_advance,
+  interest,
+  interest_repayment,
+  capitalisation,
+  capital_repayment,
+  sale,
+  write_off,
+  due,
+  received,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The capital tiers based on own funds requirements.'} fire::security_base::capital_tier
+{
+  tier_1,
+  ce_tier_1,
+  add_tier_1,
+  tier_2,
+  cet1_grandfathered,
+  at1_grandfathered,
+  t2_grandfathered,
+  anc_tier_2,
+  bas_tier_2,
+  tier_3,
+  anc_tier_3,
+  bas_tier_3
+}
+
+Enum {meta::pure::profiles::doc.doc = 'What is the HQLA classification of this security?'} fire::security_base::hqla_class
+{
+  i,
+  i_non_op,
+  iia,
+  iia_non_op,
+  iib,
+  iib_non_op,
+  ineligible,
+  exclude
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The movement parameter describes how the security arrived to the firm.'} fire::security_base::movement
+{
+  cash,
+  asset,
+  issuance,
+  debt_issue,
+  cb_omo,
+  other
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The purpose for which the security is being held.'} fire::security_base::purpose
+{
+  aircraft_finance,
+  back_to_back,
+  collateral,
+  custody,
+  derivative_collateral,
+  independent_collateral_amount,
+  insurance,
+  investment,
+  non_controlling,
+  other,
+  reference,
+  share_capital,
+  trade_finance,
+  default_fund
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The seniority of the security in the event of sale or bankruptcy of the issuer.'} fire::security_base::seniority
+{
+  senior_secured,
+  senior_unsecured,
+  subordinated_secured,
+  subordinated_unsecured
+}
+
+Enum {meta::pure::profiles::doc.doc = 'The sft_type parameter defines the transaction mechanism conducted for the SFT for this security product.'} fire::security_base::sft_type
+{
+  repo,
+  rev_repo,
+  sell_buy_back,
+  buy_sell_back,
+  bond_loan,
+  bond_borrow,
+  stock_loan,
+  stock_borrow,
+  margin_loan
+}
+
+Enum {meta::pure::profiles::doc.doc = 'Provides additional information regarding the status of the security.'} fire::security_base::status
+{
+  paid_up,
+  called_up,
+  bankruptcy_remote,
+  non_operational
+}
+
+Enum {meta::pure::profiles::doc.doc = 'This is the type of the security with regards to common regulatory classifications.'} fire::security_base::type
+{
+  abs,
+  abs_auto,
+  abs_consumer,
+  abs_other,
+  abs_sme,
+  acceptance,
+  bill_of_exchange,
+  bond,
+  cash,
+  cash_ratio_deposit,
+  cb_facility,
+  cb_reserve,
+  cd,
+  cmbs,
+  commercial_paper,
+  convertible_bond,
+  covered_bond,
+  debt,
+  emtn,
+  equity,
+  financial_guarantee,
+  financial_sloc,
+  frn,
+  guarantee,
+  index_linked,
+  index,
+  letter_of_credit,
+  mbs,
+  mtn,
+  other,
+  performance_bond,
+  performance_guarantee,
+  performance_sloc,
+  pref_share,
+  rmbs,
+  rmbs_trans,
+  share,
+  share_agg,
+  spv_mortgages,
+  spv_other,
+  struct_note,
+  treasury,
+  urp,
+  warranty
+}
+
+Class {meta::pure::profiles::doc.doc = 'An Account represents a financial account that describes the funds that a customer has entrusted to a financial institution in the form of deposits or credit balances.'} fire::account
+[
+  '[encumbrance_amount] should be positive': $this.encumbrance_amount >= 0,
+  '[fvh_level] should be lower than 3': $this.fvh_level <= 3,
+  '[guarantee_amount] should be positive': $this.guarantee_amount >= 0,
+  '[impairment_amount] should be positive': $this.impairment_amount >= 0,
+  '[insolvency_rank] should be at least 1': $this.insolvency_rank >= 1,
+  '[count] should be at least 1': $this.count >= 1,
+  '[fvh_level] should be greater than 1': $this.fvh_level >= 1
+]
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the account within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or value date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'Accumulated change in fair value before taxes.'} acc_fv_change_before_taxes: Integer[0..1];
+  accounting_treatment: fire::common::accounting_treatment[0..1];
+  {meta::pure::profiles::doc.doc = 'The accrued interest since the last payment date and due at the next payment date. Monetary type represented as a naturally positive integer number of cents/pence.'} accrued_interest: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The balance of the capital amount that is considered to be in arrears (for overdrafts/credit cards). Monetary type represented as a naturally positive integer number of cents/pence.'} arrears_balance: Integer[0..1];
+  asset_liability: fire::common::asset_liability[0..1];
+  {meta::pure::profiles::doc.doc = 'The contractual balance on the date and in the currency given. Monetary type represented as a naturally positive integer number of cents/pence.'} balance: Integer[0..1];
+  base_rate: fire::common::base_rate[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the behavioral curve used by the financial institution.'} behavioral_curve_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Dates where this contract can be broken (by either party). Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} break_dates: DateTime[1..*];
+  {meta::pure::profiles::doc.doc = 'Dates where this contract can be called (by the customer). Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} call_dates: DateTime[1..*];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code for account location/jurisdiction. In accordance with ISO 3166-1.'} country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The organizational unit or sub-unit to which costs/profits are booked.'} cost_center_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Actual currency of the Account in accordance with ISO 4217 standards. It should be consistent with balance, accrued_interest, guarantee_amount and other monetary amounts.'} currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the customer that owns the account.'} customer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The end or maturity date of the account. Format should be YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} end_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of the account that is encumbered by potential future commitments or legal liabilities. Monetary type represented as a naturally positive integer number of cents/pence.'} encumbrance_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The type of the encumbrance causing the encumbrance_amount.'} encumbrance_type: fire::account_base::encumbrance_type[0..1];
+  {meta::pure::profiles::doc.doc = 'Fair value hierarchy category according to IFRS 13.93 (b)'} fvh_level: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The first payment date for interest payments.'} first_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of the account that is guaranteed under a Government Deposit Guarantee Scheme. Monetary type represented as a naturally positive integer number of cents/pence.'} guarantee_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The Government Deposit Scheme scheme under which the guarantee_amount is guaranteed.'} guarantee_scheme: fire::account_base::guarantee_scheme[0..1];
+  {meta::pure::profiles::doc.doc = 'The impairment amount is the allowance set aside by the firm that accounts for the event that the asset becomes impaired in the future.'} impairment_amount: Integer[0..1];
+  impairment_status: fire::common::impairment_status[0..1];
+  {meta::pure::profiles::doc.doc = 'The insolvency ranking as per the national legal framework of the reporting institution.'} insolvency_rank: Integer[0..1];
+  interest_repayment_frequency: fire::common::interest_repayment_frequency[0..1];
+  {meta::pure::profiles::doc.doc = 'The final payment date for interest payments, often coincides with end_date.'} last_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ledger code or line item name.'} ledger_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The minimum balance the customer can go overdrawn in their account.'} limit_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which interest will be paid or accrued_interest balance returned to zero.'} next_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which customer is allowed to withdraw money from this account.'} next_withdrawal_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Is the account or deposit reported on the balance sheet of the financial institution?'} on_balance_sheet: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The most recent previous date at which interest was paid or accrued_interest balance returned to zero.'} prev_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the product as given by the financial institution to be used for display and reference purposes.'} product_name: String[0..1];
+  purpose: fire::account_base::purpose[0..1];
+  {meta::pure::profiles::doc.doc = 'The full interest rate applied to the account balance in percentage terms. Note that this therefore includes the base_rate (ie. not the spread).'} rate: Decimal[0..1];
+  rate_type: fire::account_base::rate_type[0..1];
+  regulatory_book: fire::common::regulatory_book[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the reporting legal entity for display purposes.'} reporting_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ID for the legal entity under which the account is being reported.'} reporting_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code describing where the risk for the account resides. In accordance with ISO 3166-1'} risk_country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product commences. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} start_date: DateTime[0..1];
+  status: fire::account_base::status[0..1];
+  type: fire::account_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product terms are agreed. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} trade_date: DateTime[0..1];
+  uk_funding_type: fire::account_base::uk_funding_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'This is the penalty incurred by the customer for an early withdrawal on this account. An early withdrawal is defined as a withdrawal prior to the next_withdrawal_date. Monetary type represented as a naturally positive integer number of cents/pence.'} withdrawal_penalty: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Describes the number of accounts aggregated into a single row.'} count: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Indicates the minimum balance, in Euros, of each account within the aggregate. Monetary type represented as a naturally positive integer number of cents/pence.'} minimum_balance_eur: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The date on which the interest rate of the account will be re-calculated. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} next_repricing_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The standardised approach risk weight represented as a decimal/float such that 1.5% is 0.015.'} risk_weight_std: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The credit conversion factor that indicates the proportion of the undrawn amount that would be drawn down on default.'} ccf: Decimal[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'An adjustment represents a modification to a report.'} fire::adjustment
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the adjustment within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or value date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The column of the report that this adjustment relates to.'} col: String[1];
+  {meta::pure::profiles::doc.doc = 'The description or commentary around the adjustment.'} comment: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The contribution amount this adjustment should make to the specified report cell. A positive/negative number in minor units (cents/pence).'} contribution_amount: Integer[1];
+  {meta::pure::profiles::doc.doc = 'The text to use for the adjustment where the reported cell is not a monetary value.'} contribution_text: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The currency of the contribution_amount in accordance with ISO 4217 standards.'} currency_code: fire::common::currency_code[1];
+  {meta::pure::profiles::doc.doc = 'The page of the report that this adjustment relates to.'} page: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The report that this adjustment relates to.'} report_type: String[1];
+  {meta::pure::profiles::doc.doc = 'The name of the reporting legal entity for display purposes.'} reporting_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The row of the report that this adjustment relates to.'} row: String[1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  sources() {$this.source->toOne()->split('-')}: String[*];
+}
+
+Class {meta::pure::profiles::doc.doc = 'An agreement represents the standard terms agreed between two parties.'} fire::agreement
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the agreement within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or value date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'urrency in accordance with ISO 4217. It should be consistent with minimum transfer amount and threshold.'} base_currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The country code for the governing law of the agreement. Two-letter country code as defined according to ISO 3166-1.'} country_code: fire::common::country_code[0..1];
+  credit_support_type: fire::agreement_base::credit_support_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the counterparty to this agreement.'} customer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the guarantor of the transactions covered by this agreement.'} guarantor_id: String[0..1];
+  margin_frequency: fire::agreement_base::margin_frequency[0..1];
+  {meta::pure::profiles::doc.doc = 'Margin period of risk estimated for the transactions covered by the [CSA] agreement'} margin_period_of_risk: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Smallest amount of collateral that can be transferred. Monetary type represented as a naturally positive integer number of cents/pence.'} minimum_transfer_amount: Integer[0..1];
+  netting_restriction: fire::agreement_base::netting_restriction[0..1];
+  {meta::pure::profiles::doc.doc = 'Indicates the number of disputes threshold to be used in the margin period of risk'} number_of_disputes: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The source where this data originated.'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the agreement commences. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} start_date: DateTime[0..1];
+  stay_protocol: fire::agreement_base::stay_protocol[0..1];
+  {meta::pure::profiles::doc.doc = 'Amount below which collateral is not required. Monetary type represented as a naturally positive integer number of cents/pence.'} threshold: Integer[0..1];
+  type: fire::agreement_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'Data schema to define collateral (currently can reference loans or accounts).'} fire::collateral
+[
+  '[charge] should be positive': $this.charge >= 0,
+  '[encumbrance_amount] should be positive': $this.encumbrance_amount >= 0
+]
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the collateral within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or value date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The unique identifiers for the loans within the financial institution.'} loan_ids: String[1..*];
+  {meta::pure::profiles::doc.doc = 'The unique identifier/s for the account/s within the financial institution.'} account_ids: String[1..*];
+  {meta::pure::profiles::doc.doc = 'Lender charge on collateral, 1 indicates first charge, 2 second and so on. 0 indicates a combination of charge levels.'} charge: Integer[0..1];
+  currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of the collateral that is encumbered by potential future commitments or legal liabilities. Monetary type represented as a naturally positive integer number of cents/pence.'} encumbrance_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The type of the encumbrance causing the encumbrance_amount.'} encumbrance_type: fire::collateral_base::encumbrance_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The end date for recognition of the collateral'} end_date: Date[0..1];
+  regulatory_book: fire::common::regulatory_book[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The start date for recognition of the collateral'} start_date: Date[0..1];
+  {meta::pure::profiles::doc.doc = 'The collateral type defines the form of the collateral provided (should not be null)'} type: fire::collateral_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The valuation as used by the bank for the collateral on the value_date. Monetary type represented as a naturally positive integer number of cents/pence.'} value: Integer[1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the collateral was valued'} value_date: Date[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier'} version_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The volatility adjustment appropriate to the collateral.'} vol_adj: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The volatility adjustment appropriate to currency mismatch.'} vol_adj_fx: Decimal[0..1];
+  sources() {$this.source->toOne()->split('-')}: String[*];
+  delta_days() {$this.start_date->toOne()->dateDiff($this.end_date->toOne(), DurationUnit.DAYS)}: Integer[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'Data schema to define a person or legal entity.'} fire::common::entity
+[
+  '[count] should be at least 1': $this.count >= 1,
+  '[cqs_standardised] should be lower than 6': $this.cqs_standardised <= 6,
+  '[cqs_irb] should be lower than 12': $this.cqs_irb <= 12,
+  '[lei_code] should have 20 characters': $this.lei_code->toOne()->length() == 20,
+  '[sic_code] should be lower than 99999': $this.sic_code <= 99999,
+  '[ssic_code] should be lower than 99999': $this.ssic_code <= 99999,
+  '[cqs_standardised] should be greater than 1': $this.cqs_standardised >= 1,
+  '[cqs_irb] should be greater than 1': $this.cqs_irb >= 1,
+  '[sic_code] should be greater than 0': $this.sic_code >= 0,
+  '[ssic_code] should be greater than 0': $this.ssic_code >= 0
+]
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the person or legal entity within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'City, town or village.'} address_city: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Bank of England industry code.'} boe_industry_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Bank of England sector code.'} boe_sector_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Describes the number of entities represented by this record. eg. joint customers should have a count > 1.'} count: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The person or entity country of residence. Two-letter country code as defined according to ISO 3166-1.'} country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'Flag to determine if the entity credit quality is impaired.'} credit_impaired: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The credit quality step for standardised approach.'} cqs_standardised: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The credit quality step for internal ratings based approach.'} cqs_irb: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Fitch long term credit ratings'} fitch_lt: fire::common::fitch_lt[0..1];
+  {meta::pure::profiles::doc.doc = 'Fitch short term credit ratings'} fitch_st: fire::common::fitch_st[0..1];
+  {meta::pure::profiles::doc.doc = 'Flag to indicate that this should be considered an intra-group entity.'} intra_group: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The LEI code for the legal entity (for corporates).'} lei_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The official legal name of the entity.'} legal_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Moody\'s long term credit ratings'} moodys_lt: fire::common::moodys_lt[0..1];
+  {meta::pure::profiles::doc.doc = 'Moody\'s short term credit ratings'} moodys_st: fire::common::moodys_st[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the person or legal entity to be used for display and reference purposes.'} name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the ultimate parent of the person or legal entity.'} parent_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Relationship to parent.'} relationship: fire::common::entity_relationship[0..1];
+  {meta::pure::profiles::doc.doc = 'Relationship to reporting entity. See: relationship.'} reporting_relationship: fire::common::entity_relationship[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the group representing a single risk entity where no relationship of control exists'} risk_group_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The secondary identifier for the secondary group representing a single risk entity where no relationship of control exists'} risk_group_id_2: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code describing where the risk for the security resides. In accordance with ISO 3166-1'} risk_country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The UK SIC 2007 standard industry and sector classification.'} sic_code: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The Singaporean standard industry and sector classification.'} ssic_code: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'S&P long term credit ratings'} snp_lt: fire::common::snp_lt[0..1];
+  {meta::pure::profiles::doc.doc = 'S&P short term credit ratings'} snp_st: fire::common::snp_st[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The designated financial or legal entity category this person or legal entity falls under'} type: fire::common::entity_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Unique identifier established by the national reporting system'} national_reporting_code: String[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'A Curve represents a series of points on a plot. Typically, interest rates, volatility or forward prices.'} fire::curve
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the curve.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The currency reference code in accordance with ISO 4217 standards.'} currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal name of the curve.'} name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The list of values for this curve.'} values: fire::curve_base::value[1..*];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  type: fire::curve_base::type[0..1];
+  sources() {$this.source->toOne()->split('-')}: String[*];
+}
+
+Class fire::curve_base::value
+{
+  {meta::pure::profiles::doc.doc = 'The reference item for the value. (x-axis)'} reference: fire::curve_base::reference[1];
+  {meta::pure::profiles::doc.doc = 'The reference value for this rate. (y-axis)'} value: Decimal[1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'Data schema to define a customer or legal entity related to a financial product or transaction.'} fire::customer extends fire::common::entity
+[
+  '[annual_debit_turnover] should be positive': $this.annual_debit_turnover >= 0,
+  '[product_count] should be positive': $this.product_count >= 0
+]
+{
+  {meta::pure::profiles::doc.doc = 'The annual debit turnover in the business account of the entity. Monetary type represented as a naturally positive integer number of cents/pence.'} annual_debit_turnover: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Currency in accordance with ISO 4217. It should be consistent with annual_debit_turnover and incurred_cva.'} currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'Status of the clearing threshold as defined in EMIR'} clearing_threshold: fire::customer_base::clearing_threshold[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of credit valuation adjustements being recognised by the institution as an incurred write-down, calculated without taking into account any offsetting debit value adjustment attributed to the firm\'s own credit risk, that has been already excluded from own funds.'} incurred_cva: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The number of active products/trades this customer has with the firm.'} product_count: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The date that the customer first became a customer. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} start_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The status of the relationship with the customer from the firm\'s point of view.'} status: fire::customer_base::status[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'A derivative is a contract which derives its value from an underlying reference index, security or asset.'} fire::derivative
+[
+  '[fvh_level] should be lower than 3': $this.fvh_level <= 3,
+  '[impairment_amount] should be positive': $this.impairment_amount >= 0,
+  '[insolvency_rank] should be at least 1': $this.insolvency_rank > 1,
+  '[fvh_level] should be greater than 1': $this.fvh_level >= 1
+]
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the derivative within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or effective date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution for the deal to which this derivative belongs.'} deal_id: String[0..1];
+  accounting_treatment: fire::common::accounting_treatment[0..1];
+  {meta::pure::profiles::doc.doc = 'The accrued interest since the last payment date and due at the next payment date. Monetary type represented as a naturally positive integer number of cents/pence.'} accrued_interest: String[0..1];
+  asset_class: fire::common::asset_class[0..1];
+  asset_liability: fire::common::asset_liability[0..1];
+  {meta::pure::profiles::doc.doc = 'Outstanding amount including accrued interest. Monetary type represented as a naturally positive integer number of cents/pence.'} balance: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The base rate represents the basis of the rate on the balance at the given date as agreed in the terms of the financial product.'} base_rate: fire::common::base_rate[0..1];
+  {meta::pure::profiles::doc.doc = 'Dates where this contract can be broken (by either party). Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} break_dates: DateTime[1..*];
+  {meta::pure::profiles::doc.doc = 'Dates where this contract can be called (by the customer). Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} call_dates: DateTime[1..*];
+  {meta::pure::profiles::doc.doc = 'The organizational unit or sub-unit to which costs/profits are booked.'} cost_center_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier of the credit support annex for this derivative'} csa_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Actual currency of the underlying reference index, security or asset for the derivative in accordance with ISO 4217 standards. It should be consistent with balance, accrued_interest, guarantee_amount and other monetary amounts.'} currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the customer for this product.'} customer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Price sensitivity to the underlying.'} delta: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} end_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Fair value hierarchy category according to IFRS 13.93 (b)'} fvh_level: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The first payment date for interest payments.'} first_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Second-order price sensitivity to the underlying or rate of change of the delta.'} gamma: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The impairment amount for a security is the allowance set aside by the firm for losses.'} impairment_amount: Integer[0..1];
+  impairment_status: fire::common::impairment_status[0..1];
+  {meta::pure::profiles::doc.doc = 'Options: implied volatility used to compute mtm and greeks.'} implied_vol: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Upfront margin posted/received for the trade. Monetary type as integer number of cents'} initial_margin: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The insolvency ranking as per the national legal framework of the reporting institution.'} insolvency_rank: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The last date on which an option can be exercised. For European options, it is the option exercise date'} last_exercise_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The final payment date for interest payments, often coincides with end_date.'} last_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ledger code or line item name.'} ledger_code: String[0..1];
+  leg_type: fire::derivative_base::leg_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier of the Master Netting Agreement for this derivative'} mna_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The mark-to-market value of the derivative excluding interest. Monetary type represented as a naturally positive integer number of cents/pence.'} mtm_clean: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The mark-to-market value of the derivative including interest. Monetary type represented as a naturally positive integer number of cents/pence.'} mtm_dirty: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which the option can be exercised.'} next_exercise_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount that will need to be paid at the next_payment_date. Monetary type represented as a naturally positive integer number of cents/pence.'} next_payment_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which interest will be paid or accrued_interest balance returned to zero.'} next_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount that is expected to be received at the next_receive_date. Monetary type represented as a naturally positive integer number of cents/pence.'} next_receive_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which interest will be received or accrued_interest balance returned to zero.'} next_receive_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The date on which the periodic payment term and conditions of a contract agreement are reset/re-established.'} next_reset_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The notional value is the total value with regard to a derivative\'s underlying index, security or asset at its spot price in accordance with the specifications (i.e. leverage) of the derivative product. Monetary type represented as a naturally positive integer number of cents/pence.'} notional_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Is the derivative reported on the balance sheet of the financial institution?'} on_balance_sheet: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The most recent previous date at which interest was paid or accrued_interest balance returned to zero.'} prev_payment_date: DateTime[0..1];
+  position: fire::derivative_base::position[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the product as given by the financial institution to be used for display and reference purposes.'} product_name: String[0..1];
+  purpose: fire::derivative_base::purpose[0..1];
+  {meta::pure::profiles::doc.doc = 'he full interest rate applied to the derivative notional in percentage terms. Note that this therefore includes the base_rate (ie. not the spread).'} rate: Decimal[0..1];
+  regulatory_book: fire::common::regulatory_book[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the reporting legal entity for display purposes.'} reporting_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ID for the legal entity under which the account is being reported.'} reporting_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Price sensitivity to interest rates.'} rho: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code for derivative location/jurisdiction. In accordance with ISO 3166-1.'} country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code describing where the risk for the derivative product resides. In accordance with ISO 3166-1'} risk_country_code: fire::common::country_code[0..1];
+  settlement_type: fire::derivative_base::settlement_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Contract effective or commencement date; security issue date. Format YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} start_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Price sensitivity with respect to time.'} theta: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'This is the type of the derivative with regards to common regulatory classifications.'} type: fire::derivative_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product terms are agreed. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} trade_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Currency of the underlying which should be in line with ISO 4217 standards.'} underlying_currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the underlying reference derivative for this derivative.'} underlying_derivative_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of a derivative contract underlying which can be used for all derivative asset classes (e.g. interest rate index, credit index, equity index'} underlying_index: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The designated maturity of the underlying interest rate index used in the underlying_index property for interest rate derivatives'} underlying_index_tenor: fire::derivative_base::underlying_index_tenor[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the underlying reference issuer for this derivative.'} underlying_issuer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the underlying reference security for this derivative.'} underlying_security_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Decimal of underlying units related to the underlying_price'} underlying_quantity: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Current price/value of the underlying.'} underlying_price: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Strike price of the option, which is compared to the underlying price on the option exercise date.'} underlying_strike: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Strike price of the option, which is compared to the underlying price on the option exercise date.'} strike: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the derivative was valued. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} value_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Price sensitivity to volatility.'} vega: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The market identifier code as defined by the International Standards Organisation.'} mic_code: String[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'A derivative cash flow where two parties exchange cash flows (or assets) derived from an underlying reference index, security or financial instrument.'} fire::derivative_cash_flow
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the derivative within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or effective date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The accrued interest/premium due at the next payment date. Monetary type represented as a naturally positive integer number of cents/pence.'} accrued_interest: Integer[0..1];
+  asset_class: fire::common::asset_class[0..1];
+  {meta::pure::profiles::doc.doc = 'A derivative cash flow exchange that results in a net positive value after the transaction is an asset on the firm\'s balance sheet. A derivative cash flow exchange that results in a net negative value after the transaction is a liability on the firm\'s balance sheet.'} asset_liability: fire::common::asset_liability[0..1];
+  {meta::pure::profiles::doc.doc = 'The contractual balance due on the payment date in the currency given. Monetary type represented as a naturally positive integer number of cents/pence.'} balance: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier of the credit support annex for this derivative cash flow'} csa_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Actual currency of the security in accordance with ISO 4217 standards. It should be consistent with balance, accrued_interest, guarantee_amount and other monetary amounts'} currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'Counterparty to the cash flow'} customer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Unique identifier to the derivative to which this cash flow relates'} derivative_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Rate used to set a variable cash flow on the reset_date'} forward_rate: Decimal[0..1];
+  leg: fire::derivative_cash_flow_base::leg[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier of the Master Netting Agreement for this derivative cash flow.'} mna_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The mark-to-market value of the derivative cash flow excluding interest/premium/coupons. Monetary type represented as a naturally positive integer number of cents/pence.'} mtm_clean: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The mark-to-market value of the derivative cash flow including interest/premium/coupons. Monetary type represented as a naturally positive integer number of cents/pence.'} mtm_dirty: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The notional value is the total value with regard to a derivative\'s underlying index, security or asset at its spot price in accordance with the specifications (i.e. leverage) of the derivative product. Monetary type represented as a naturally positive integer number of cents/pence'} notional_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Is the financial product reported on the balance sheet of the financial institution?'} on_balance_sheet: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the cash flow will occur or was paid. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the product as given by the financial institution to be used for display and reference purposes.'} product_name: String[0..1];
+  purpose: fire::derivative_cash_flow_base::purpose[0..1];
+  regulatory_book: fire::common::regulatory_book[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the reporting legal entity for display purposes.'} reporting_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ID for the legal entity under which the account is being reported.'} reporting_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Date on which a variable cash flow amount is set. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} reset_date: DateTime[0..1];
+  settlement_type: fire::derivative_cash_flow_base::settlement_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The date that the derivative cash flow terms were agreed. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} trade_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the cash flow was valued. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} value_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'An Exchange Rate represents the conversion rate between two currencies.'} fire::exchange_rate
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the exchange rate within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or value date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The base currency in accordance with ISO 4217 standards.'} base_currency_code: fire::common::currency_code[1];
+  {meta::pure::profiles::doc.doc = 'The amount of the quote currency received in exchange for 1 unit of the base currency.'} quote: Decimal[1];
+  {meta::pure::profiles::doc.doc = 'The quoted currency in accordance with ISO 4217 standards.'} quote_currency_code: fire::common::currency_code[1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'Data schema to define a guarantor for a security.'} fire::guarantor extends fire::common::entity
+{
+}
+
+Class {meta::pure::profiles::doc.doc = 'Data schema to define an issuer for a security.'} fire::issuer extends fire::common::entity
+{
+}
+
+Class {meta::pure::profiles::doc.doc = 'Data schema defining the characteristics of a loan product.'} fire::loan
+[
+  '[cum_recoveries] should be positive': $this.cum_recoveries >= 0,
+  '[encumbrance_amount] should be positive': $this.encumbrance_amount >= 0,
+  '[fvh_level] should be lower than 3': $this.fvh_level <= 3,
+  '[guarantee_amount] should be positive': $this.guarantee_amount >= 0,
+  '[impairment_amount] should be positive': $this.impairment_amount >= 0,
+  '[limit_amount] should be positive': $this.limit_amount >= 0,
+  '[lnrf_amount] should be positive': $this.lnrf_amount >= 0,
+  '[provision_amount] should be positive': $this.provision_amount >= 0,
+  '[ref_income_amount] should be positive': $this.ref_income_amount >= 0,
+  '[count] should be at least 1': $this.count >= 1,
+  '[fvh_level] should be greater than 1': $this.fvh_level >= 1
+]
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the loan within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'Accumulated change in fair value before taxes.'} acc_fv_change_before_taxes: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Accumulated changes in fair value due to credit risk.'} acc_fv_change_credit_risk: Integer[0..1];
+  accounting_treatment: fire::common::accounting_treatment[0..1];
+  {meta::pure::profiles::doc.doc = 'The accrued interest due at the next payment date. Monetary type represented as a naturally positive integer number of cents/pence.'} accrued_interest_balance: Integer[0..1];
+  administration: fire::loan_base::administration[0..1];
+  arrears_arrangement: fire::loan_base::arrears_arrangement[0..1];
+  {meta::pure::profiles::doc.doc = 'The balance of the loan or capital amount that is considered to be in arrears. Monetary type represented as a naturally positive integer number of cents/pence.'} arrears_balance: String[0..1];
+  asset_liability: fire::common::asset_liability[0..1];
+  {meta::pure::profiles::doc.doc = 'The balance of the loan or capital still to be repaid. Monetary type represented as a naturally positive integer number of cents/pence.'} balance: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The base rate represents the basis of the repayment rate on the borrowed funds at the given date as agreed in the terms of the loan.'} base_rate: fire::common::base_rate[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the behavioral curve used by the financial institution.'} behavioral_curve_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The organizational unit or sub-unit to which costs/profits are booked.'} cost_center_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code for product location/jurisdiction. In accordance with ISO 3166-1.'} country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The total amount recovered since the date of default of the instrument.'} cum_recoveries: Integer[0..1];
+  currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the customer.'} customer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The list of customers for this loan'} customers: fire::loan_base::customer[1..*];
+  {meta::pure::profiles::doc.doc = 'The amount of the loan that is encumbered by potential future commitments or legal liabilities. Monetary type represented as a naturally positive integer number of cents/pence.'} encumbrance_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Date encumbrance amount goes to zero. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} encumbrance_end_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The type of the encumbrance causing the encumbrance_amount.'} encumbrance_type: fire::loan_base::encumbrance_type[0..1];
+  {meta::pure::profiles::doc.doc = 'YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} end_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The currency of the credit facility if not the same as loan currency_code.'} facility_currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'Fair value hierarchy category according to IFRS 13.93 (b)'} fvh_level: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The first payment date for interest payments.'} first_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of the loan that is guaranteed by the guarantor. Monetary type represented as a naturally positive integer number of cents/pence'} guarantee_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the guarantor of the loan.'} guarantor_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The impairment amount for a loan is the allowance for loan impairments set aside by the firm that accounts for the event that the loan becomes impaired in the future'} impairment_amount: Integer[0..1];
+  impairment_status: fire::common::impairment_status[0..1];
+  impairment_type: fire::loan_base::impairment_type[0..1];
+  {meta::pure::profiles::doc.doc = 'Repayment frequency of the loan interest, if different from principal.'} interest_repayment_frequency: fire::common::interest_repayment_frequency[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the issuer of the loan.'} issuer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The final payment date for interest payments, often coincides with end_date.'} last_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ledger code or line item name.'} ledger_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The total credit limit on the loan. Monetary type represented as a naturally positive integer number of cents/pence.'} limit_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The total amount of non-recourse funding linked to the loan. Monetary type represented as a naturally positive integer number of cents/pence.'} lnrf_amount: Integer[0..1];
+  movement: fire::loan_base::movement[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which interest will be paid or accrued_interest balance returned to zero.'} next_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The original notional amount of the loan. Monetary type represented as a naturally positive integer number of cents/pence.'} notional_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Is the loan reported on the balance sheet of the financial institution?'} on_balance_sheet: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the originator of the loan product.'} originator_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The type of financial institution that acted as the originator of the loan product.'} originator_type: fire::loan_base::originator_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The most recent previous date at which interest was paid or accrued_interest balance returned to zero.'} prev_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the product as given by the financial institution to be used for display and reference purposes'} product_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of reserves that is provisioned by the financial institution to cover the potential loss on the loan. Monetary type represented as a naturally positive integer number of cents/pence'} provision_amount: Integer[0..1];
+  provision_type: fire::loan_base::provision_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The underlying reason the borrower has requested the loan.'} purpose: fire::loan_base::purpose[0..1];
+  {meta::pure::profiles::doc.doc = 'The full interest rate applied to the loan balance. Note that for tracker rates this includes the benchmark (ie. not the credit spread). Percentages represented as a decimal/float, so 1.5 implies 1.5%.'} rate: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Describes the type of interest rate applied to the loan.'} rate_type: fire::loan_base::rate_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The reference income used for the customer(s) for this loan. Monetary type represented as an integer number of cents/pence.'} ref_income_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Is this loan regulated or unregulated?'} regulated: Boolean[0..1];
+  regulatory_book: fire::common::regulatory_book[0..1];
+  {meta::pure::profiles::doc.doc = 'Repayment frequency of the loan.'} repayment_frequency: fire::common::interest_repayment_frequency[0..1];
+  repayment_type: fire::loan_base::repayment_type[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the reporting legal entity for display purposes.'} reporting_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ID for the legal entity under which the account is being reported.'} reporting_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code describing where the risk for the product resides. In accordance with ISO 3166-1'} risk_country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The standardised approach risk weight represented as a decimal/float such that 1.5% is 0.015.'} risk_weight_std: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal risk weight represented as a decimal/float such that 1.5% is 0.015.'} risk_weight_irb: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Is this loan secured or unsecured?'} secured: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product commences. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} start_date: DateTime[0..1];
+  status: fire::loan_base::status[0..1];
+  type: fire::loan_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The volatility adjustment appropriate to the exposure.'} vol_adj: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'Describes the number of loans aggregated into a single row.'} count: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Indicates the minimum balance, in Euros, of each loan within the aggregate'} minimum_balance_eur: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The date on which the interest rate of the loan will be re-calculated. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} next_repricing_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The credit conversion factor that indicates the proportion of the undrawn amount that would be drawn down on default.'} ccf: Decimal[0..1];
+}
+
+Class fire::loan_base::customer
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the customer/s within the financial institution'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The reference income used for the customer(s) for this loan. Monetary type represented as an integer number of cents/pence.'} income_amount: Integer[1];
+}
+
+Class fire::loan_transaction
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the loan transaction within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'The size of the transaction in the loan transaction event. Monetary type represented as a naturally positive integer number of cents/pence.'} amount: Integer[1];
+  currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the affected loan/s within the financial institution.'} loan_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  type: fire::loan_transaction_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the transaction was valued or took place. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} value_date: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  sources() {$this.source->toOne()->split('-')}: String[*];
+}
+
+Class {meta::pure::profiles::doc.doc = 'A reporter represents a reporting entity.'} fire::reporter extends fire::common::entity
+{
+}
+
+Class {meta::pure::profiles::doc.doc = 'A security represents a tradable financial instrument held or financed by an institution for investment or collateral.'} fire::security
+[
+  '[cb_haircut] should be lower than 1': $this.cb_haircut <= 1.0,
+  '[cqs_standardised] should be lower than 6': $this.cqs_standardised <= 6,
+  '[cqs_irb] should be lower than 12': $this.cqs_irb <= 12,
+  '[encumbrance_amount] should be positive': $this.encumbrance_amount >= 0,
+  '[fvh_level] should be lower than 3': $this.fvh_level <= 3,
+  '[impairment_amount] should be positive': $this.impairment_amount >= 0,
+  '[insolvency_rank] should be at least 1': $this.insolvency_rank >= 1,
+  '[isin_code] should have 12 characters': $this.isin_code->toOne()->length() == 12,
+  '[stress_change] should be positive': $this.stress_change >= 0.0,
+  '[cb_haircut] should be greater than 0': $this.cb_haircut >= 0.0,
+  '[cqs_standardised] should be greater than 1': $this.cqs_standardised >= 1,
+  '[cqs_irb] should be greater than 1': $this.cqs_irb >= 1,
+  '[fvh_level] should be greater than 1': $this.fvh_level >= 1
+]
+{
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the security within the financial institution.'} id: String[1];
+  {meta::pure::profiles::doc.doc = 'The observation or effective date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} date: DateTime[1];
+  {meta::pure::profiles::doc.doc = 'Accumulated change in fair value before taxes.'} acc_fv_change_before_taxes: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Accumulated changes in fair value due to credit risk.'} acc_fv_change_credit_risk: Integer[0..1];
+  accounting_treatment: fire::common::accounting_treatment[0..1];
+  {meta::pure::profiles::doc.doc = 'The accrued interest since the last payment date and due at the next payment date. Monetary type represented as an integer number of cents/pence.'} accrued_interest: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Is the security (valued at either amortised cost or fair value) an asset or a liability on the firm\'s balance sheet.'} asset_liability: fire::common::asset_liability[0..1];
+  {meta::pure::profiles::doc.doc = 'The capital tiers based on own funds requirements.'} capital_tier: fire::security_base::capital_tier[0..1];
+  {meta::pure::profiles::doc.doc = 'The haircut as determined by the firm\'s central bank'} cb_haircut: Decimal[0..1];
+  {meta::pure::profiles::doc.doc = 'The organizational unit or sub-unit to which costs/profits are booked.'} cost_center_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Outstanding amount including accrued interest. Monetary integer number of cents/pence.'} balance: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The base rate represents the basis of the rate on the balance at the given date as agreed in the terms of the financial product.'} base_rate: fire::common::base_rate[0..1];
+  {meta::pure::profiles::doc.doc = 'Dates where this contract can be broken (by either party). Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} break_dates: DateTime[1..*];
+  {meta::pure::profiles::doc.doc = 'Dates where this contract can be called (by the customer). Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} call_dates: DateTime[1..*];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code for security location/jurisdiction. In accordance with ISO 3166-1.'} country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The credit quality step for standardised approach.'} cqs_standardised: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The credit quality step for internal ratings based approach.'} cqs_irb: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier of the credit support annex this security falls under. Typically where used as derivatives collateral.'} csa_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Actual currency of the security in accordance with ISO 4217 standards. It should be consistent with balance, accrued_interest, guarantee_amount and other monetary amounts.'} currency_code: fire::common::currency_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the customer for this product.'} customer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier used by the financial institution to identify the deal for this product that links it to other products of the same or different type.'} deal_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The amount of the security that is encumbered by potential future commitments or legal liabilities such as within a repo pool. Monetary type represented as a naturally positive integer number of cents/pence.'} encumbrance_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} end_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Fair value hierarchy category according to IFRS 13.93 (b)'} fvh_level: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The first payment date for interest payments.'} first_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the guarantor within the financial institution.'} guarantor_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The first day the security became guaranteed by the guarantor. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601'} guarantee_start_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'What is the HQLA classification of this security?'} hqla_class: fire::security_base::hqla_class[0..1];
+  {meta::pure::profiles::doc.doc = 'The impairment amount for a security is the allowance set aside by the firm for losses.'} impairment_amount: Integer[0..1];
+  impairment_status: fire::common::impairment_status[0..1];
+  {meta::pure::profiles::doc.doc = 'The insolvency ranking as per the national legal fraamework of the reporting institution.'} insolvency_rank: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Constituents and their proportion in an index.'} index_composition: fire::security_base::composition[1..*];
+  {meta::pure::profiles::doc.doc = 'Repayment frequency of the interest.'} interest_repayment_frequency: fire::common::interest_repayment_frequency[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique International Securities Identification Decimal for the security according to ISO 6166.'} isin_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier for the issuer within the financial institution.'} issuer_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The size of the issue denominated in the original currency of the security'} issue_size: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The date on which the security is issued. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} issue_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The final payment date for interest payments, often coincides with end_date or the maturity date'} last_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ledger code or line item name.'} ledger_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The date on which the principal repayment of the security is due. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} maturity_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The market identifier code as defined by the International Standards Organisation."'} mic_code: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The unique identifier of the Master Netting Agreement this security falls under. Typically where used as derivatives collateral.'} mna_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The movement parameter describes how the security arrived to the firm.'} movement: fire::security_base::movement[0..1];
+  {meta::pure::profiles::doc.doc = 'The mark-to-market value of the security excluding interest. Monetary number of cents/pence.'} mtm_clean: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The mark-to-market value of the security including interest. Monetary number of cents/pence.'} mtm_dirty: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'The next date at which interest will be paid or accrued_interest balance returned to zero.'} next_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The notional value is the total amount of a security\'s underlying asset at its spot price. Monetary number of cents.'} notional_amount: Integer[0..1];
+  {meta::pure::profiles::doc.doc = 'Is the security reported on the balance sheet of the financial institution?'} on_balance_sheet: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The most recent previous date at which interest was paid or accrued_interest balance returned to zero.'} prev_payment_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the product as given by the financial institution to be used for display and reference purposes.'} product_name: String[0..1];
+  purpose: fire::security_base::purpose[0..1];
+  {meta::pure::profiles::doc.doc = 'The full interest rate applied to the security notional in percentage terms. Note that this therefore includes the base_rate (ie. not the spread).'} rate: Decimal[0..1];
+  regulatory_book: fire::common::regulatory_book[0..1];
+  {meta::pure::profiles::doc.doc = 'Can the security be rehypothecated by the borrower?'} rehypothecation: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The name of the reporting legal entity for display purposes.'} reporting_entity_name: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The internal ID for the legal entity under which the account is being reported.'} reporting_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'Two-letter country code describing where the risk for the security resides. In accordance with ISO 3166-1'} risk_country_code: fire::common::country_code[0..1];
+  {meta::pure::profiles::doc.doc = 'The seniority of the security in the event of sale or bankruptcy of the issuer.'} seniority: fire::security_base::seniority[0..1];
+  {meta::pure::profiles::doc.doc = 'The sft_type parameter defines the transaction mechanism conducted for the SFT for this security product.'} sft_type: fire::security_base::sft_type[0..1];
+  fitch_lt: fire::common::fitch_lt[0..1];
+  fitch_st: fire::common::fitch_st[0..1];
+  moodys_lt: fire::common::moodys_lt[0..1];
+  moodys_st: fire::common::moodys_st[0..1];
+  snp_lt: fire::common::snp_lt[0..1];
+  snp_st: fire::common::snp_st[0..1];
+  {meta::pure::profiles::doc.doc = 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'} source: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product commences. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} start_date: DateTime[0..1];
+  status: fire::security_base::status[0..1];
+  {meta::pure::profiles::doc.doc = 'The level of variation on the security\'s price or haircut or during a 30 day calendar market stress period in percentage terms'} stress_change: Decimal[0..1];
+  type: fire::security_base::type[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product terms are agreed. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} trade_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'Can the security be transferred between parties or negotiated on the capital market?'} transferable: Boolean[0..1];
+  {meta::pure::profiles::doc.doc = 'The timestamp that the trade or financial product was valued. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} value_date: DateTime[0..1];
+  {meta::pure::profiles::doc.doc = 'The version identifier of the data such as the firm\'s internal batch identifier.'} version_id: String[0..1];
+  {meta::pure::profiles::doc.doc = 'The date on which the interest rate of the security will be re-calculated. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601.'} next_repricing_date: DateTime[0..1];
+}
+
+Class {meta::pure::profiles::doc.doc = 'Constituent and their proportion in an index.'} fire::security_base::composition
+{
+  {meta::pure::profiles::doc.doc = 'The reference security id for the weight.'} reference_id: String[1];
+  {meta::pure::profiles::doc.doc = 'The proportion of the reference in the index. It is recorded in decimal format.'} weight: Decimal[1];
+}

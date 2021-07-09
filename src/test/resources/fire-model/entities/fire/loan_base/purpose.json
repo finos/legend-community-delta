@@ -1,0 +1,58 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "purpose",
+    "package" : "fire::loan_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The underlying reason the borrower has requested the loan."
+    } ],
+    "values" : [ {
+      "value" : "house_purchase"
+    }, {
+      "value" : "first_time_buyer"
+    }, {
+      "value" : "buy_to_let"
+    }, {
+      "value" : "consumer_buy_to_let"
+    }, {
+      "value" : "buy_to_let_house_purchase"
+    }, {
+      "value" : "buy_to_let_remortgage"
+    }, {
+      "value" : "buy_to_let_further_advance"
+    }, {
+      "value" : "buy_to_let_other"
+    }, {
+      "value" : "remortgage"
+    }, {
+      "value" : "remortgage_other"
+    }, {
+      "value" : "lifetime_mortgage"
+    }, {
+      "value" : "bridging_loan"
+    }, {
+      "value" : "further_advance"
+    }, {
+      "value" : "promotional"
+    }, {
+      "value" : "other"
+    }, {
+      "value" : "ips"
+    }, {
+      "value" : "speculative_property"
+    }, {
+      "value" : "operational"
+    }, {
+      "value" : "agriculture"
+    }, {
+      "value" : "construction"
+    }, {
+      "value" : "project_finance"
+    } ]
+  }
+}

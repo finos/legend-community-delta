@@ -1,0 +1,7 @@
+SPDXVersion: SPDX-2.0
+DataLicense: CC0-1.0
+Creator: Databricks, Inc.
+PackageName: legend-delta
+PackageOriginator: Databricks, Inc.
+PackageHomePage: https://github.com/finos-labs/legend-delta
+PackageLicenseDeclared: Apache-2.0

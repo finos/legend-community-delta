@@ -1,0 +1,152 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "loan_transaction",
+    "package" : "fire",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier for the loan transaction within the financial institution."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "amount",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The size of the transaction in the loan transaction event. Monetary type represented as a naturally positive integer number of cents/pence."
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "currency_code",
+      "type" : "fire::common::currency_code"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "loan_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier for the affected loan/s within the financial institution."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "source",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "type",
+      "type" : "fire::loan_transaction_base::type"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "value_date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The timestamp that the transaction was valued or took place. YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "version_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The version identifier of the data such as the firm's internal batch identifier."
+      } ],
+      "type" : "String"
+    } ],
+    "qualifiedProperties" : [ {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "split",
+        "parameters" : [ {
+          "_type" : "func",
+          "function" : "toOne",
+          "parameters" : [ {
+            "_type" : "property",
+            "parameters" : [ {
+              "_type" : "var",
+              "name" : "this"
+            } ],
+            "property" : "source"
+          } ]
+        }, {
+          "_type" : "string",
+          "multiplicity" : {
+            "lowerBound" : 1,
+            "upperBound" : 1
+          },
+          "values" : [ "-" ]
+        } ]
+      } ],
+      "name" : "sources",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 0
+      },
+      "returnType" : "String"
+    } ]
+  }
+}

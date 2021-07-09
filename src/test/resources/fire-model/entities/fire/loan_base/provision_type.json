@@ -1,0 +1,20 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "provision_type",
+    "package" : "fire::loan_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The provision type parameter details the provisions the issuing firm has allocated to cover potential losses from issuing a loan."
+    } ],
+    "values" : [ {
+      "value" : "none"
+    }, {
+      "value" : "other"
+    } ]
+  }
+}

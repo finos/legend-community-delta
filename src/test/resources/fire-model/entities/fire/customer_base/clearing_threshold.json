@@ -1,0 +1,20 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "clearing_threshold",
+    "package" : "fire::customer_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Status of the clearing threshold as defined in EMIR"
+    } ],
+    "values" : [ {
+      "value" : "above"
+    }, {
+      "value" : "below"
+    } ]
+  }
+}

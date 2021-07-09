@@ -1,0 +1,22 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "impairment_type",
+    "package" : "fire::loan_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The loss event resulting in the impairment of the loan."
+    } ],
+    "values" : [ {
+      "value" : "collective"
+    }, {
+      "value" : "individual"
+    }, {
+      "value" : "write_off"
+    } ]
+  }
+}

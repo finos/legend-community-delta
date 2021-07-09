@@ -1,0 +1,58 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "moodys_lt",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Moody's long term credit ratings"
+    } ],
+    "values" : [ {
+      "value" : "aaa"
+    }, {
+      "value" : "aa1"
+    }, {
+      "value" : "aa2"
+    }, {
+      "value" : "aa3"
+    }, {
+      "value" : "a1"
+    }, {
+      "value" : "a2"
+    }, {
+      "value" : "a3"
+    }, {
+      "value" : "baa1"
+    }, {
+      "value" : "baa2"
+    }, {
+      "value" : "baa3"
+    }, {
+      "value" : "ba1"
+    }, {
+      "value" : "ba2"
+    }, {
+      "value" : "ba3"
+    }, {
+      "value" : "b1"
+    }, {
+      "value" : "b2"
+    }, {
+      "value" : "b3"
+    }, {
+      "value" : "caa1"
+    }, {
+      "value" : "caa2"
+    }, {
+      "value" : "caa3"
+    }, {
+      "value" : "ca"
+    }, {
+      "value" : "c"
+    } ]
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "name" : "curve",
+    "package" : "fire",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The unique identifier for the curve."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "date",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The observation date for the data in this object. Formatted as YYYY-MM-DDTHH:MM:SSZ in accordance with ISO 8601."
+      } ],
+      "type" : "DateTime"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "currency_code",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The currency reference code in accordance with ISO 4217 standards."
+      } ],
+      "type" : "fire::common::currency_code"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "name",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The internal name of the curve."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "source",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1
+      },
+      "name" : "values",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The list of values for this curve."
+      } ],
+      "type" : "fire::curve_base::value"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "version_id",
+      "taggedValues" : [ {
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "value" : "doc"
+        },
+        "value" : "The version identifier of the data such as the firm's internal batch identifier."
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "type",
+      "type" : "fire::curve_base::type"
+    } ],
+    "qualifiedProperties" : [ {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "split",
+        "parameters" : [ {
+          "_type" : "func",
+          "function" : "toOne",
+          "parameters" : [ {
+            "_type" : "property",
+            "parameters" : [ {
+              "_type" : "var",
+              "name" : "this"
+            } ],
+            "property" : "source"
+          } ]
+        }, {
+          "_type" : "string",
+          "multiplicity" : {
+            "lowerBound" : 1,
+            "upperBound" : 1
+          },
+          "values" : [ "-" ]
+        } ]
+      } ],
+      "name" : "sources",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 0
+      },
+      "returnType" : "String"
+    } ],
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "A Curve represents a series of points on a plot. Typically, interest rates, volatility or forward prices."
+    } ]
+  }
+}

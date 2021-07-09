@@ -1,0 +1,206 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "purpose",
+    "package" : "fire::account_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The purpose for which the account was created or is being used."
+    } ],
+    "values" : [ {
+      "value" : "admin"
+    }, {
+      "value" : "annual_bonus_accruals"
+    }, {
+      "value" : "benefit_in_kind"
+    }, {
+      "value" : "capital_gain_tax"
+    }, {
+      "value" : "cash_management"
+    }, {
+      "value" : "cf_hedge"
+    }, {
+      "value" : "ci_service"
+    }, {
+      "value" : "clearing"
+    }, {
+      "value" : "collateral"
+    }, {
+      "value" : "commitments"
+    }, {
+      "value" : "computer_and_it_cost"
+    }, {
+      "value" : "corporation_tax"
+    }, {
+      "value" : "credit_card_fee"
+    }, {
+      "value" : "critical_service"
+    }, {
+      "value" : "current_account_fee"
+    }, {
+      "value" : "custody"
+    }, {
+      "value" : "employee_stock_option"
+    }, {
+      "value" : "dealing_revenue"
+    }, {
+      "value" : "dealing_rev_deriv"
+    }, {
+      "value" : "dealing_rev_deriv_nse"
+    }, {
+      "value" : "dealing_rev_fx"
+    }, {
+      "value" : "dealing_rev_fx_nse"
+    }, {
+      "value" : "dealing_rev_sec"
+    }, {
+      "value" : "dealing_rev_sec_nse"
+    }, {
+      "value" : "deposit"
+    }, {
+      "value" : "derivative_fee"
+    }, {
+      "value" : "dividend"
+    }, {
+      "value" : "div_from_cis"
+    }, {
+      "value" : "div_from_money_mkt"
+    }, {
+      "value" : "donation"
+    }, {
+      "value" : "employee"
+    }, {
+      "value" : "escrow"
+    }, {
+      "value" : "fees"
+    }, {
+      "value" : "fine"
+    }, {
+      "value" : "firm_operating_expenses"
+    }, {
+      "value" : "firm_operations"
+    }, {
+      "value" : "fx"
+    }, {
+      "value" : "goodwill"
+    }, {
+      "value" : "insurance_fee"
+    }, {
+      "value" : "intra_group_fee"
+    }, {
+      "value" : "investment_banking_fee"
+    }, {
+      "value" : "inv_in_subsidiary"
+    }, {
+      "value" : "investment_property"
+    }, {
+      "value" : "interest"
+    }, {
+      "value" : "int_on_bond_and_frn"
+    }, {
+      "value" : "int_on_bridging_loan"
+    }, {
+      "value" : "int_on_credit_card"
+    }, {
+      "value" : "int_on_ecgd_lending"
+    }, {
+      "value" : "int_on_deposit"
+    }, {
+      "value" : "int_on_derivative"
+    }, {
+      "value" : "int_on_deriv_hedge"
+    }, {
+      "value" : "int_on_loan_and_adv"
+    }, {
+      "value" : "int_on_money_mkt"
+    }, {
+      "value" : "int_on_mortgage"
+    }, {
+      "value" : "int_on_sft"
+    }, {
+      "value" : "ips"
+    }, {
+      "value" : "loan_and_advance_fee"
+    }, {
+      "value" : "ni_contribution"
+    }, {
+      "value" : "manufactured_dividend"
+    }, {
+      "value" : "mortgage_fee"
+    }, {
+      "value" : "non_life_ins_premium"
+    }, {
+      "value" : "occupancy_cost"
+    }, {
+      "value" : "operational"
+    }, {
+      "value" : "operational_excess"
+    }, {
+      "value" : "operational_escrow"
+    }, {
+      "value" : "other"
+    }, {
+      "value" : "other_expenditure"
+    }, {
+      "value" : "other_fs_fee"
+    }, {
+      "value" : "other_non_fs_fee"
+    }, {
+      "value" : "other_social_contrib"
+    }, {
+      "value" : "other_staff_rem"
+    }, {
+      "value" : "other_staff_cost"
+    }, {
+      "value" : "overdraft_fee"
+    }, {
+      "value" : "own_property"
+    }, {
+      "value" : "pension"
+    }, {
+      "value" : "ppe"
+    }, {
+      "value" : "prime_brokerage"
+    }, {
+      "value" : "property"
+    }, {
+      "value" : "recovery"
+    }, {
+      "value" : "redundancy_pymt"
+    }, {
+      "value" : "reference"
+    }, {
+      "value" : "reg_loss"
+    }, {
+      "value" : "regular_wages"
+    }, {
+      "value" : "release"
+    }, {
+      "value" : "rent"
+    }, {
+      "value" : "restructuring"
+    }, {
+      "value" : "retained_earnings"
+    }, {
+      "value" : "revaluation"
+    }, {
+      "value" : "revenue_reserve"
+    }, {
+      "value" : "share_plan"
+    }, {
+      "value" : "staff"
+    }, {
+      "value" : "system"
+    }, {
+      "value" : "tax"
+    }, {
+      "value" : "unsecured_loan_fee"
+    }, {
+      "value" : "write_off"
+    } ]
+  }
+}

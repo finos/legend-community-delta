@@ -1,0 +1,34 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "interest_repayment_frequency",
+    "package" : "fire::common",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "Repayment frequency of the interest."
+    } ],
+    "values" : [ {
+      "value" : "daily"
+    }, {
+      "value" : "weekly"
+    }, {
+      "value" : "bi_weekly"
+    }, {
+      "value" : "monthly"
+    }, {
+      "value" : "bi_monthly"
+    }, {
+      "value" : "quarterly"
+    }, {
+      "value" : "semi_annually"
+    }, {
+      "value" : "annually"
+    }, {
+      "value" : "at_maturity"
+    } ]
+  }
+}

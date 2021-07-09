@@ -1,0 +1,42 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Enumeration",
+  "content" : {
+    "_type" : "Enumeration",
+    "name" : "type",
+    "package" : "fire::loan_base",
+    "taggedValues" : [ {
+      "tag" : {
+        "profile" : "meta::pure::profiles::doc",
+        "value" : "doc"
+      },
+      "value" : "The form of the loan product administered by the financial institution, with regards to common regulatory classifications."
+    } ],
+    "values" : [ {
+      "value" : "auto"
+    }, {
+      "value" : "commercial_property"
+    }, {
+      "value" : "commercial"
+    }, {
+      "value" : "credit_card"
+    }, {
+      "value" : "credit_facility"
+    }, {
+      "value" : "financial_lease"
+    }, {
+      "value" : "liquidity_facility"
+    }, {
+      "value" : "mortgage"
+    }, {
+      "value" : "personal"
+    }, {
+      "value" : "trade_finance"
+    }, {
+      "value" : "multiccy_facility"
+    }, {
+      "value" : "nostro"
+    }, {
+      "value" : "other"
+    } ]
+  }
+}
