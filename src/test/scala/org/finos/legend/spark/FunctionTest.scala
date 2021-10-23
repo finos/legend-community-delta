@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
- * Copyright 2021 FINOS Legend2Delta contributors - see NOTICE.md file
+ * Copyright 2021 Databricks - see NOTICE.md file
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,9 @@ import org.scalatest.flatspec.AnyFlatSpec
 trait FunctionTest extends AnyFlatSpec {
 
   implicit class StringPure(lambda: String) {
-    def pure2sql: String = {
-      val parser = PureGrammarParser.newInstance()
-      val parsed = parser.parseLambda(lambda, "id")
-      require(parsed.body != null && parsed.body.size() > 0)
-      parsed.body.get(0).convertToSQL()
-    }
-
     def toValueSpec: ValueSpecification = {
       val parser = PureGrammarParser.newInstance()
-      val parsed = parser.parseLambda(lambda, "id")
+      val parsed = parser.parseLambda(lambda, "id", true)
       require(parsed.body != null && parsed.body.size() > 0)
       parsed.body.get(0)
     }

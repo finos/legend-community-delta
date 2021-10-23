@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
- * Copyright 2021 FINOS Legend2Delta contributors - see NOTICE.md file
+ * Copyright 2021 Databricks - see NOTICE.md file
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,16 @@
 package org.finos.legend.spark
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{Row, SparkSession}
+import org.finos.legend.engine.language.pure.compiler.Compiler
+import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
 import org.finos.legend.engine.language.pure.grammar.to.{DEPRECATED_PureGrammarComposerCore, PureGrammarComposerContext}
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
-import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.application.AppliedFunction
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
+import org.finos.legend.engine.shared.core.deployment.DeploymentMode
 import org.finos.legend.sdlc.domain.model.entity.Entity
+import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
+import org.pac4j.core.profile.CommonProfile
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConverters._
@@ -37,6 +39,7 @@ class Legend(entities: Map[String, Entity]) {
 
   /**
    * Return a legend entity given a namespace::object path
+   *
    * @param entityName the entity name to retrieve
    * @return the legend entity
    */
@@ -46,13 +49,33 @@ class Legend(entities: Map[String, Entity]) {
   }
 
   /**
+   * Return all legend entities
+   *
+   * @return iterable of legend entities
+   */
+  def getEntities: Iterable[Entity] = {
+    entities.values
+  }
+
+  /**
+   * Given the legend entities loaded from SDLC, we compile all packageable elements as PURE model.
+   *
+   * @return the PURE model
+   */
+  def toPure: PureModel = {
+    PureModelBuilder.newBuilder.withEntities(getEntities.asJava).build.getPureModel
+  }
+
+  /**
    * With namespace fully loaded, we return the list of available legend entities
+   *
    * @return the name of all available entities
    */
   def getEntityNames: Set[String] = entities.filter(_._2.isClass).keySet
 
   /**
    * Creating a spark schema in line with Legend specification
+   *
    * @param entityName the entity to load schema from, provided as [namespace::entity] format
    * @return the corresponding Spark schema for the provided entity name
    */
@@ -71,11 +94,11 @@ class Legend(entities: Map[String, Entity]) {
   /**
    * Programmatically extract all SQL constraints as defined in a legend schema for a given entity
    * We extract both schema constraints (e.g. cardinality, nullable) as well as Pure specific constraints
+   *
    * @param entityName the entity of type [Class] to extract constraints from
-   * @param validate whether or not we want to evaluate rules on an empty dataframe (requires an active spark session)
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend schema
    */
-  def getEntityExpectations(entityName: String, validate: Boolean = true): Seq[Expectation] = {
+  def getEntityExpectations(entityName: String): Seq[Expectation] = {
 
     // We ensure the specified entity exists in the list of legend entities loaded
     logger.info("Creating expectations for entity [{}]", entityName)
@@ -84,83 +107,13 @@ class Legend(entities: Map[String, Entity]) {
 
     // Retrieve all rules as SQL expressions
     logger.debug("Creating SQL expectations from legend schema for entity [{}]", entityName)
-    val expectations = getLegendClassExpectations(entity.toLegendClass).map(rule => {
+    getLegendClassExpectations(entity.toLegendClass).map(rule => {
       rule.expression match {
         case Failure(e) => logger.warn(s"Error creating rule [${rule.name}], ${e.getMessage}")
         case Success(_) =>
       }
       rule
     })
-
-    if(!validate) return expectations
-
-    // Validate rules are schema compatible by evaluating against an empty dataframe
-    // Requires an active spark session (hence optional, default = true)
-    logger.debug("Evaluating {} expectation(s) against an empty dataframe", expectations.size)
-    val spark = SparkSession.getActiveSession
-    require(spark.isDefined, "A spark session should be active to validate rules")
-
-    // Creating a dummy dataframe of valid schema
-    val df = spark.get.createDataFrame(spark.get.sparkContext.emptyRDD[Row], schema)
-    expectations.map(rule => {
-      if (rule.expression.isFailure) rule else {
-        Try(df.withColumn(rule.name, expr(rule.expression.get))) match {
-          case Success(_) => rule // valid SQL rule
-          case Failure(e) =>
-            logger.warn(s"Error evaluating rule [${rule.name}], ${e.getMessage}")
-            rule.copy(expression = Failure(e)) // invalid rule
-        }
-      }
-    })
-  }
-
-  /**
-   * Programmatically derive all SQL expression as defined in a legend derivations for a given entity
-   * We retrieve the name of the field to derive from a row as well as the PURE function expressed as SQL
-   * @param entityName the entity of type [Class] to extract derivations from
-   * @param validate whether or not we want to evaluate expression on an empty dataframe (requires an active spark session)
-   * @return the list of derivation as fieldName + fieldSQL code to apply to our dataframe
-   */
-  def getEntityDerivations(entityName: String, validate: Boolean = true): Seq[Derivation] = {
-
-    // We ensure the specified entity exists in the list of legend entities loaded
-    logger.info("Creating derivations for entity [{}]", entityName)
-    val schema = getEntitySchema(entityName)
-    val entity = entities(entityName)
-
-    val entityClass = entity.toLegendClass
-    val derivations = entityClass.qualifiedProperties.asScala.filter(p => p.body != null && !p.body.isEmpty).map(property => {
-      val returnType = if(property.returnMultiplicity.isInfinite || property.returnMultiplicity.getUpperBound > 1) {
-        ArrayType(convertDataTypeFromString(property.returnType))
-      } else {
-        convertDataTypeFromString(property.returnType)
-      }
-      val expression = Try(property.body.get(0).convertToSQL())
-      val derivation = Derivation(s"`${property.name}`", returnType, expression, property.getDoc)
-      derivation.build
-    })
-
-    if(!validate) return derivations
-
-    // Validate rules are schema compatible by evaluating against an empty dataframe
-    // Requires an active spark session (hence optional, default = true)
-    logger.debug("Evaluating {} derivation(s) against an empty dataframe", derivations.size)
-    val spark = SparkSession.getActiveSession
-    require(spark.isDefined, "A spark session should be active to validate columns")
-
-    // Creating a dummy dataframe of valid schema
-    val df = spark.get.createDataFrame(spark.get.sparkContext.emptyRDD[Row], schema)
-    derivations.map(rule => {
-      if (rule.expression.isFailure) rule else {
-        Try(df.withColumn(rule.fieldName, expr(rule.expression.get))) match {
-          case Success(_) => rule // valid SQL expression
-          case Failure(e) =>
-            logger.warn(s"Error evaluating derivation [${rule.fieldName}], ${e.getMessage}")
-            rule.copy(expression = Failure(e)) // invalid derivation
-        }
-      }
-    })
-
   }
 
   /**
@@ -195,14 +148,14 @@ class Legend(entities: Map[String, Entity]) {
     // Deletion is not permitted on delta
     val isDeleted = prevSchema.exists(f => {
       val missing = !newSchema.fields.map(_.name).contains(f.name)
-      if(missing) logger.error("Column [{}] missing, incompatible schema", f.name)
+      if (missing) logger.error("Column [{}] missing, incompatible schema", f.name)
       missing
     })
 
     // Changing datatype is not permitted, we need to flag schema incompatibility
     val isChanged = newSchema.exists(f => {
       val changed = oldSchemaMap.contains(f.name) && oldSchemaMap(f.name).dataType != f.dataType
-      if(changed) logger.error("Column [{}] changed from [{}] to [{}], incompatible schema", f.name, oldSchemaMap(f.name).dataType, f.dataType)
+      if (changed) logger.error("Column [{}] changed from [{}] to [{}], incompatible schema", f.name, oldSchemaMap(f.name).dataType, f.dataType)
       changed
     })
 
@@ -212,6 +165,7 @@ class Legend(entities: Map[String, Entity]) {
 
   /**
    * Given a legend entity of type [Class], we return all its properties as StructField
+   *
    * @param clazz the entity to get StructField from
    * @return the list of StructField objects
    */
@@ -224,6 +178,7 @@ class Legend(entities: Map[String, Entity]) {
   /**
    * Given a field of an entity, we convert this property as a StructField object
    * If field is enum or class, legend specs must have been loaded as well. These may results in nested field in our spark schema
+   *
    * @param property is a legend object of type [Property], capturing all field specifications
    * @return the corresponding StructField, capturing name, datatype, nullable and metadata
    */
@@ -275,8 +230,8 @@ class Legend(entities: Map[String, Entity]) {
 
         // Neither an enumeration or a class object
         case _ => throw new IllegalArgumentException(
-            s"Referenced legend entities should be of type [enumeration] or [class]," +
-              s" got [${nestedEntity.getContent.get("_type").toString}]")
+          s"Referenced legend entities should be of type [enumeration] or [class]," +
+            s" got [${nestedEntity.getContent.get("_type").toString}]")
       }
 
     } else {
@@ -293,6 +248,7 @@ class Legend(entities: Map[String, Entity]) {
    * expressed as a Pure Lambda function. All constraints are expressed as SQL statements that we further evaluate as a
    * spark expression (syntax check). Invalid rules (whether syntactically invalid - e.g. referencing a wrong field) or
    * illegal (unsupported PURE function) will still be returned as a Try[String] object
+   *
    * @param legendClass the legend entity of type [Class]
    * @param parentField empty if top level object, it contains parent field for nested structure
    * @return the list of rules to evaluate dataframe against, as SQL expressions
@@ -301,7 +257,7 @@ class Legend(entities: Map[String, Entity]) {
 
     // Retrieve and evaluate all PURE domain expert constraints
     logger.debug(s"Converting user defined PURE constraints for class [${legendClass.name}]")
-    val pureConstraints = legendClass.constraints.asScala.map(c => getLegendConstraintExpectations(c, parentField))
+    //    val pureConstraints = legendClass.constraints.asScala.map(c => getLegendExpectations(c, parentField))
 
     // Infer rules from the legend schema itself
     logger.debug(s"Converting schema specific constraints for class [${legendClass.name}]")
@@ -309,14 +265,16 @@ class Legend(entities: Map[String, Entity]) {
 
     // Check that rules are syntactically valid SQL expression
     logger.debug(s"Validating SQL expression syntax for class [${legendClass.name}]")
-    (pureConstraints ++ schemaConstraints).map(_.build)
+    //    (pureConstraints ++ schemaConstraints).map(_.build)
+    schemaConstraints.map(_.validate)
   }
 
   /**
    * We retrieve all rules from the Legend schema. This will create SQL expression to validate schema integrity (nullable, multiplicity)
    * as well as allowed values for enumerations
+   *
    * @param legendProperty the legend property object to create rules from
-   * @param parentField empty if top level object, it contains parent field for nested structure
+   * @param parentField    empty if top level object, it contains parent field for nested structure
    * @return the list of rules expressed as SQL expressions. Unchecked yet, we'll test for syntax later
    */
   private def getLegendPropertyExpectations(legendProperty: Property, parentField: String): Seq[Expectation] = {
@@ -337,7 +295,7 @@ class Legend(entities: Map[String, Entity]) {
           // We need to validate each underlying object if field is not optional
           // We simply recurse the same logic at a child level
           // FIXME: find a way to validate each underlying object of a list
-          if(legendProperty.isCollection) defaultRules else {
+          if (legendProperty.isCollection) defaultRules else {
             val nestedRules = getLegendClassExpectations(nestedEntity.toLegendClass, childFieldName(legendProperty.name, parentField))
             defaultRules ++ nestedRules
           }
@@ -358,8 +316,9 @@ class Legend(entities: Map[String, Entity]) {
   /**
    * The top level rules are the simplest rules to infer. Those are driven by the schema itself, checking for nullable
    * or multiplicity. Each rule has a name and an associated SQL expression. Unchecked yet, we'll test syntax later
+   *
    * @param legendProperty the legend property object (i.e. the field) to infer rules from
-   * @param parentField empty if top level object, it contains parent field for nested structure
+   * @param parentField    empty if top level object, it contains parent field for nested structure
    * @return the list of rules checking for mandatory value and multiplicity
    */
   private def getFieldExpectations(legendProperty: Property, parentField: String): Seq[Expectation] = {
@@ -386,27 +345,6 @@ class Legend(entities: Map[String, Entity]) {
     // Aggregate both mandatory and multiplicity rules
     Seq(mandatoryRule, multiplicityRule).flatten
   }
-
-  /**
-   * The most complex part of this project, converting Legend user defined constraints from PURE language to SQL
-   * When specified, these rules are expressed as JSON, converted into PURE and eventually converted as SQL expression
-   * Since we cannot guarantee 1:1 compatibility from PURE to SQL, we ensure each rule is captured as a Try[String] to
-   * not fail for legend incompatibility, only evaluating compatible rules
-   * @param constraint the legend constraint as returned from the Legend entity json specs
-   * @param parentField empty if top level object, we have to ensure we call [parent.child] for nested entities
-   * @return the list of PURE constraints that could have been converted as SQL expression
-   */
-  private def getLegendConstraintExpectations(constraint: Constraint, parentField: String): Expectation = {
-    require(constraint.functionDefinition != null && constraint.functionDefinition.body != null, s"Constraint should have functionDefinition")
-    val body = constraint.functionDefinition.body.get(0)
-    require(body.isInstanceOf[AppliedFunction], s"Constraint should be expressed as [AppliedFunction], got [${body.getClass.toString}]")
-    val allFields = body.getFieldItAppliesTo(parentField).toList
-    Try(body.convertToSQL(parentField)) match {
-      case Success(sql) => Expectation(allFields, constraint.name, Some(constraint.toLambda), Success(sql))
-      case Failure(e) => Expectation(allFields, constraint.name, Some(constraint.toLambda), Failure(e))
-    }
-  }
-
 }
 
 object Legend {

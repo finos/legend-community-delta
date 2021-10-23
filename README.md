@@ -35,8 +35,8 @@ with expectations, derivations and constraints defined by business analysts.
 <img src="images/legend-studio.png" width="800">
 
 Defining entities using the [FIRE](https://suade.org/fire/) data model as an example for regulatory reporting
-(PURE code is available [here](src/test/resources/model.pure) for reference), we demonstrate how tables, expectations
-and derivation can be dynamically generated on Delta Lake to ensure data quality, availability and compliance.
+(PURE code is available [here](src/test/resources/model.pure) for reference), we demonstrate how tables and expectations
+can be dynamically generated on Delta Lake to ensure data quality, availability and compliance.
 
 ## Usage
 
@@ -225,48 +225,6 @@ or business defined.
 +----+------------------+-------------------+-------------------+-------------+--------------------------------------------------+
 ```
 
-### Retrieve derivations
-
-In addition to defining schema, metadata and constraints, business analysts can also create fields derivations from the Legend 
-studio interface. 
-
-<img src="images/legend-derivations.png" width="500">
-
-Expressed as PURE functions, these fields are dynamically generated as SQL expressions, naturally fitting within 
-a `withColumn` pattern. Similar to our expectations strategy, we retrieve derivations and convert PURE functions into 
-SQL expressions.
-
-
-```scala
-val derivations = legend.getEntityDerivations("fire::collateral", validate = true)
-``` 
-
-We compute all derivations at once on a given dataframe using a Legend implicit class, resulting in the same 
-data enriched with an additional columns derived from specified PURE functions. 
-
-```scala
-import org.finos.legend.spark._
-val derivated = collateral.legendDerivations(derivations)
-```
-
-Our unique derivation was based on the number of days between start and end date. Expressed on Legend Studio as a 
-PURE function, this function was re-coded as a custom UDF, later translated as an extra field `days_between` in our 
-final dataset.
-
-```
-+----+-------------------+-------------------+------------+
-|id  |date               |end_date           |days_between|
-+----+-------------------+-------------------+------------+
-|2000|2021-05-24 09:43:43|2046-11-03 17:26:12|9294        |
-|2001|2021-05-24 09:43:43|2031-01-16 14:02:31|3524        |
-|2002|2021-05-24 09:43:43|2041-12-11 19:40:52|7506        |
-|2003|2021-05-24 09:43:43|2019-03-17 00:41:42|-799        |
-|2004|2021-05-24 09:43:43|2022-04-01 01:38:13|312         |
-|2005|2021-05-24 09:43:43|2020-08-20 19:57:23|-277        |
-|2006|2021-05-24 09:43:43|2038-01-25 07:29:54|6090        |
-+----+-------------------+-------------------+------------+
-```
-
 ### Ingest and validate new records using Auto-loader
 
 With the legend building blocks defined, organizations can easily schematize raw data, 
@@ -288,7 +246,6 @@ val legend = LegendFileLoader.loadResources("/path/to/fire-model")
 val entity = "fire::collateral"
 val schema = legend.getEntitySchema(entity)
 val expectations = legend.getEntityExpectations(entity)
-val derivations = legend.getEntityDerivations(entity)
 
 // Processing input JSON files
 val inputStream = spark
@@ -299,7 +256,6 @@ val inputStream = spark
 
 val outputStream = inputStream
     .legendExpectations(expectations) // validate
-    .legendDerivations(derivations)   // enrich
 
 // Writing results to a delta table
 outputStream
