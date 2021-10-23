@@ -1,0 +1,222 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "constraints" : [ ],
+    "name" : "employee",
+    "originalMilestonedProperties" : [ ],
+    "package" : "databricks",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 92,
+        "endLine" : 3,
+        "sourceId" : "",
+        "startColumn" : 86,
+        "startLine" : 3
+      },
+      "sourceInformation" : {
+        "endColumn" : 96,
+        "endLine" : 3,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 3
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 79,
+          "endLine" : 3,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 3
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 3,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 3
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 3,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 3
+          },
+          "value" : "doc"
+        },
+        "value" : "Unique identifier of a databricks employee"
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "sme",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 93,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 88,
+        "startLine" : 4
+      },
+      "sourceInformation" : {
+        "endColumn" : 97,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 4
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 80,
+          "endLine" : 4,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 4
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 4,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 4
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 4,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 4
+          },
+          "value" : "doc"
+        },
+        "value" : "Programming skill that person truly masters"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "joined_date",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 92,
+        "endLine" : 5,
+        "sourceId" : "",
+        "startColumn" : 89,
+        "startLine" : 5
+      },
+      "sourceInformation" : {
+        "endColumn" : 96,
+        "endLine" : 5,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 5
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 73,
+          "endLine" : 5,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 5
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 5,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 5
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 5,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 5
+          },
+          "value" : "doc"
+        },
+        "value" : "When did that person join Databricks"
+      } ],
+      "type" : "Date"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "high_fives",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 97,
+        "endLine" : 6,
+        "sourceId" : "",
+        "startColumn" : 91,
+        "startLine" : 6
+      },
+      "sourceInformation" : {
+        "endColumn" : 101,
+        "endLine" : 6,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 6
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 76,
+          "endLine" : 6,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 6
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 6,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 6
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 6,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 6
+          },
+          "value" : "doc"
+        },
+        "value" : "Hpw many high fives did that person get"
+      } ],
+      "type" : "Integer"
+    } ],
+    "qualifiedProperties" : [ ],
+    "sourceInformation" : {
+      "endColumn" : 1,
+      "endLine" : 7,
+      "sourceId" : "",
+      "startColumn" : 1,
+      "startLine" : 1
+    },
+    "stereotypes" : [ ],
+    "superTypes" : [ "databricks::person" ],
+    "taggedValues" : [ ]
+  }
+}

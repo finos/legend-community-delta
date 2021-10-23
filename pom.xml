@@ -61,8 +61,9 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.0.0</spark.version>
         <java.version>1.8</java.version>
-        <legend.engine.version>2.17.0</legend.engine.version>
-        <legend.sdlc.version>0.20.0</legend.sdlc.version>
+        <legend.engine.version>2.45.1-DELTA</legend.engine.version>
+        <legend.pure.version>1.38.1-DELTA</legend.pure.version>
+        <legend.sdlc.version>0.50.1-DELTA</legend.sdlc.version>
     </properties>
 
     <dependencies>
@@ -95,23 +96,33 @@
         <!-- USER DEPENDENCIES -->
         <dependency>
             <groupId>org.finos.legend.sdlc</groupId>
-            <artifactId>legend-sdlc-entity-serialization</artifactId>
+            <artifactId>legend-sdlc-generation-service</artifactId>
             <version>${legend.sdlc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-shared-core</artifactId>
+            <artifactId>legend-engine-executionPlan-execution-store-relational</artifactId>
             <version>${legend.engine.version}</version>
         </dependency>
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-language-pure-grammar-api</artifactId>
+            <artifactId>legend-engine-language-pure-grammar</artifactId>
             <version>${legend.engine.version}</version>
         </dependency>
         <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.10.10</version>
+            <groupId>org.finos.legend.engine</groupId>
+            <artifactId>legend-engine-language-pure-store-relational</artifactId>
+            <version>${legend.engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.finos.legend.engine</groupId>
+            <artifactId>legend-engine-executionPlan-execution-store-inMemory</artifactId>
+            <version>${legend.engine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>1.1</version>
         </dependency>
         <!-- TEST DEPENDENCIES -->
         <dependency>
