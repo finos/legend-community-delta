@@ -6,7 +6,7 @@
       "_type" : "RelationalDatabaseConnection",
       "authenticationStrategy" : {
         "_type" : "apiToken",
-        "apiToken" : "XXXXXXXXXXXXXXXXXXXXXX",
+        "apiToken" : "dapi3eb10ee66cbf730f0ca38e159be12c8f",
         "sourceInformation" : {
           "endColumn" : 4,
           "endLine" : 16,
@@ -18,10 +18,10 @@
       "databaseType" : "Databricks",
       "datasourceSpecification" : {
         "_type" : "databricks",
-        "hostname" : "XXXXXXXXXXXXXXXXXXXXXX",
-        "httpPath" : "XXXXXXXXXXXXXXXXXXXXXX",
-        "port"     : "XXXXXXXXXXXXXXXXXXXXXX",
-        "protocol" : "XXXXXXXXXXXXXXXXXXXXXX",
+        "hostname" : "e2-demo-west.cloud.databricks.com",
+        "httpPath" : "/sql/1.0/endpoints/3930839871f3d4ef",
+        "port" : "443",
+        "protocol" : "https",
         "sourceInformation" : {
           "endColumn" : 4,
           "endLine" : 12,
@@ -30,9 +30,9 @@
           "startLine" : 6
         }
       },
-      "element" : "databricks::lakehouse::deltalake",
+      "element" : "databricks::lakehouse::schema",
       "elementSourceInformation" : {
-        "endColumn" : 41,
+        "endColumn" : 38,
         "endLine" : 4,
         "sourceId" : "",
         "startColumn" : 10,
@@ -48,7 +48,7 @@
       },
       "type" : "Databricks"
     },
-    "name" : "e2demo",
+    "name" : "demo",
     "package" : "databricks::lakehouse",
     "sourceInformation" : {
       "endColumn" : 1,

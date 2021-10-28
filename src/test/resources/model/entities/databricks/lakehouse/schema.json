@@ -5,7 +5,7 @@
     "filters" : [ ],
     "includedStores" : [ ],
     "joins" : [ ],
-    "name" : "deltalake",
+    "name" : "schema",
     "package" : "databricks::lakehouse",
     "schemas" : [ {
       "name" : "legend",

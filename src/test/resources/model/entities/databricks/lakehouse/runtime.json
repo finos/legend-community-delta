@@ -15,9 +15,9 @@
           "startLine" : 10
         },
         "store" : {
-          "path" : "databricks::lakehouse::deltalake",
+          "path" : "databricks::lakehouse::schema",
           "sourceInformation" : {
-            "endColumn" : 36,
+            "endColumn" : 33,
             "endLine" : 10,
             "sourceId" : "",
             "startColumn" : 5,
@@ -28,9 +28,9 @@
         "storeConnections" : [ {
           "connection" : {
             "_type" : "connectionPointer",
-            "connection" : "databricks::lakehouse::e2demo",
+            "connection" : "databricks::lakehouse::demo",
             "sourceInformation" : {
-              "endColumn" : 49,
+              "endColumn" : 47,
               "endLine" : 12,
               "sourceId" : "",
               "startColumn" : 21,
@@ -39,7 +39,7 @@
           },
           "id" : "connection_1",
           "sourceInformation" : {
-            "endColumn" : 49,
+            "endColumn" : 47,
             "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 7,
@@ -48,9 +48,9 @@
         } ]
       } ],
       "mappings" : [ {
-        "path" : "databricks::lakehouse::employee",
+        "path" : "databricks::lakehouse::emp2delta",
         "sourceInformation" : {
-          "endColumn" : 35,
+          "endColumn" : 36,
           "endLine" : 6,
           "sourceId" : "",
           "startColumn" : 5,

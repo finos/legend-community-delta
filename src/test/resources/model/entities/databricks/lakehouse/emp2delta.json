@@ -17,14 +17,14 @@
       "groupBy" : [ ],
       "mainTable" : {
         "_type" : "Table",
-        "database" : "databricks::lakehouse::deltalake",
-        "mainTableDb" : "databricks::lakehouse::deltalake",
+        "database" : "databricks::lakehouse::schema",
+        "mainTableDb" : "databricks::lakehouse::schema",
         "schema" : "legend",
         "sourceInformation" : {
-          "endColumn" : 64,
+          "endColumn" : 61,
           "endLine" : 10,
-          "sourceId" : "databricks::lakehouse::employee",
-          "startColumn" : 50,
+          "sourceId" : "databricks::lakehouse::emp2delta",
+          "startColumn" : 47,
           "startLine" : 10
         },
         "table" : "employee"
@@ -33,22 +33,22 @@
         "_type" : "column",
         "column" : "id",
         "sourceInformation" : {
-          "endColumn" : 58,
+          "endColumn" : 55,
           "endLine" : 8,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 7,
           "startLine" : 8
         },
         "table" : {
           "_type" : "Table",
-          "database" : "databricks::lakehouse::deltalake",
-          "mainTableDb" : "databricks::lakehouse::deltalake",
+          "database" : "databricks::lakehouse::schema",
+          "mainTableDb" : "databricks::lakehouse::schema",
           "schema" : "legend",
           "sourceInformation" : {
-            "endColumn" : 55,
+            "endColumn" : 52,
             "endLine" : 8,
-            "sourceId" : "databricks::lakehouse::employee",
-            "startColumn" : 41,
+            "sourceId" : "databricks::lakehouse::emp2delta",
+            "startColumn" : 38,
             "startLine" : 8
           },
           "table" : "employee"
@@ -63,7 +63,7 @@
           "sourceInformation" : {
             "endColumn" : 6,
             "endLine" : 11,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 11
           }
@@ -72,22 +72,22 @@
           "_type" : "column",
           "column" : "id",
           "sourceInformation" : {
-            "endColumn" : 60,
+            "endColumn" : 57,
             "endLine" : 11,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 9,
             "startLine" : 11
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 57,
+              "endColumn" : 54,
               "endLine" : 11,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 43,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 40,
               "startLine" : 11
             },
             "table" : "employee"
@@ -95,9 +95,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 60,
+          "endColumn" : 57,
           "endLine" : 11,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 7,
           "startLine" : 11
         }
@@ -109,7 +109,7 @@
           "sourceInformation" : {
             "endColumn" : 14,
             "endLine" : 12,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 12
           }
@@ -118,22 +118,22 @@
           "_type" : "column",
           "column" : "first_name",
           "sourceInformation" : {
-            "endColumn" : 76,
+            "endColumn" : 73,
             "endLine" : 12,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 17,
             "startLine" : 12
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 65,
+              "endColumn" : 62,
               "endLine" : 12,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 51,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 48,
               "startLine" : 12
             },
             "table" : "employee"
@@ -141,9 +141,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 76,
+          "endColumn" : 73,
           "endLine" : 12,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 15,
           "startLine" : 12
         }
@@ -155,7 +155,7 @@
           "sourceInformation" : {
             "endColumn" : 13,
             "endLine" : 13,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 13
           }
@@ -164,22 +164,22 @@
           "_type" : "column",
           "column" : "last_name",
           "sourceInformation" : {
-            "endColumn" : 74,
+            "endColumn" : 71,
             "endLine" : 13,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 16,
             "startLine" : 13
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 64,
+              "endColumn" : 61,
               "endLine" : 13,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 50,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 47,
               "startLine" : 13
             },
             "table" : "employee"
@@ -187,9 +187,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 74,
+          "endColumn" : 71,
           "endLine" : 13,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 14,
           "startLine" : 13
         }
@@ -201,7 +201,7 @@
           "sourceInformation" : {
             "endColumn" : 14,
             "endLine" : 14,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 14
           }
@@ -210,22 +210,22 @@
           "_type" : "column",
           "column" : "birth_date",
           "sourceInformation" : {
-            "endColumn" : 76,
+            "endColumn" : 73,
             "endLine" : 14,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 17,
             "startLine" : 14
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 65,
+              "endColumn" : 62,
               "endLine" : 14,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 51,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 48,
               "startLine" : 14
             },
             "table" : "employee"
@@ -233,9 +233,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 76,
+          "endColumn" : 73,
           "endLine" : 14,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 15,
           "startLine" : 14
         }
@@ -247,7 +247,7 @@
           "sourceInformation" : {
             "endColumn" : 7,
             "endLine" : 15,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 15
           }
@@ -256,22 +256,22 @@
           "_type" : "column",
           "column" : "sme",
           "sourceInformation" : {
-            "endColumn" : 62,
+            "endColumn" : 59,
             "endLine" : 15,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 10,
             "startLine" : 15
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 58,
+              "endColumn" : 55,
               "endLine" : 15,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 44,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 41,
               "startLine" : 15
             },
             "table" : "employee"
@@ -279,9 +279,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 62,
+          "endColumn" : 59,
           "endLine" : 15,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 8,
           "startLine" : 15
         }
@@ -293,7 +293,7 @@
           "sourceInformation" : {
             "endColumn" : 15,
             "endLine" : 16,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 16
           }
@@ -302,22 +302,22 @@
           "_type" : "column",
           "column" : "joined_date",
           "sourceInformation" : {
-            "endColumn" : 78,
+            "endColumn" : 75,
             "endLine" : 16,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 18,
             "startLine" : 16
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 66,
+              "endColumn" : 63,
               "endLine" : 16,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 52,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 49,
               "startLine" : 16
             },
             "table" : "employee"
@@ -325,9 +325,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 78,
+          "endColumn" : 75,
           "endLine" : 16,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 16,
           "startLine" : 16
         }
@@ -339,7 +339,7 @@
           "sourceInformation" : {
             "endColumn" : 14,
             "endLine" : 17,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 5,
             "startLine" : 17
           }
@@ -348,22 +348,22 @@
           "_type" : "column",
           "column" : "high_fives",
           "sourceInformation" : {
-            "endColumn" : 76,
+            "endColumn" : 73,
             "endLine" : 17,
-            "sourceId" : "databricks::lakehouse::employee",
+            "sourceId" : "databricks::lakehouse::emp2delta",
             "startColumn" : 17,
             "startLine" : 17
           },
           "table" : {
             "_type" : "Table",
-            "database" : "databricks::lakehouse::deltalake",
-            "mainTableDb" : "databricks::lakehouse::deltalake",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 65,
+              "endColumn" : 62,
               "endLine" : 17,
-              "sourceId" : "databricks::lakehouse::employee",
-              "startColumn" : 51,
+              "sourceId" : "databricks::lakehouse::emp2delta",
+              "startColumn" : 48,
               "startLine" : 17
             },
             "table" : "employee"
@@ -371,9 +371,9 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 76,
+          "endColumn" : 73,
           "endLine" : 17,
-          "sourceId" : "databricks::lakehouse::employee",
+          "sourceId" : "databricks::lakehouse::emp2delta",
           "startColumn" : 15,
           "startLine" : 17
         }
@@ -389,7 +389,7 @@
     } ],
     "enumerationMappings" : [ ],
     "includedMappings" : [ ],
-    "name" : "employee",
+    "name" : "emp2delta",
     "package" : "databricks::lakehouse",
     "sourceInformation" : {
       "endColumn" : 1,

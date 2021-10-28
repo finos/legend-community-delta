@@ -20,9 +20,11 @@ package org.finos.legend
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
+import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.{Class, Constraint, Enumeration, Property, QualifiedProperty}
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.ValueSpecification
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.application.{AppliedFunction, AppliedProperty}
+import org.finos.legend.pure.generated.{Root_meta_relational_mapping_RelationalPropertyMapping_Impl, Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl, Root_meta_relational_metamodel_TableAliasColumn_Impl, Root_meta_relational_metamodel_relation_Table_Impl}
 import org.finos.legend.sdlc.domain.model.entity.Entity
 
 import scala.collection.JavaConverters._
@@ -105,7 +107,7 @@ package object spark {
      *
      * @return the rule further evaluated for SQL syntax check
      */
-    def validate: Expectation = {
+    def build: Expectation = {
       if (expression.isFailure) return this
       val sql = nullableFields.length match {
         case 0 => expression.get
@@ -119,14 +121,33 @@ package object spark {
     }
   }
 
-  /**
-   * Capturing drift of a legend entity given a predefined schema. If backwards compatible, we store all alter statements
-   * one could run to update a Spark table, including new columns or metadata
-   *
-   * @param alterStatements alter SQL statements to update a table with
-   * @param isCompatible    if new schema resulted in datatype change or delete columns, we breack backwards compatibility
-   */
-  case class SchemaDrift(alterStatements: Seq[String], isCompatible: Boolean)
+  implicit class TransformationImpl(transformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl) {
+    def getTransformations: Seq[(String, String)] = {
+      transformation._propertyMappings.asScala.flatMap({ o =>
+        o match {
+          case p: Root_meta_relational_mapping_RelationalPropertyMapping_Impl =>
+            p._relationalOperationElement match {
+              case e: Root_meta_relational_metamodel_TableAliasColumn_Impl =>
+                Some((p._property()._name(), e._columnName()))
+              case _ => None
+            }
+          case _ =>
+            None
+        }
+      }).toSeq
+    }
+
+    def getSrcEntity: String = {
+      // TODO: Ensure nested packages are captured
+      transformation._class()._package()._name() + "::" + transformation._class()._name()
+    }
+
+    def getDstTable: String = {
+      val target = transformation._mainTableAlias._relationalElement().asInstanceOf[Root_meta_relational_metamodel_relation_Table_Impl]
+      target._schema._name() + "." + target._name()
+    }
+
+  }
 
   /**
    * Utility class to manipulate Legend Entity object easily, deserializing Entity content as a Class or Enumeration
@@ -221,8 +242,24 @@ package object spark {
      * @return the Lambda representation of a constraint
      */
     def toLambda: String = {
-      Legend.objectMapper.writeValueAsString(constraint.functionDefinition.accept(Legend.grammarComposer))
+      Legend
+        .objectMapper
+        .writeValueAsString(constraint.functionDefinition.accept(Legend.grammarComposer))
+        .dropRight(1)
+        .drop(2)
+        .replaceAll("\\\\n", "")
+        .replaceAll("\\s+", "")
     }
   }
+
+  implicit class StringPure(lambda: String) {
+    def toValueSpec: ValueSpecification = {
+      val parser = PureGrammarParser.newInstance()
+      val parsed = parser.parseLambda(lambda, "id", true)
+      require(parsed.body != null && parsed.body.size() > 0)
+      parsed.body.get(0)
+    }
+  }
+
 
 }
