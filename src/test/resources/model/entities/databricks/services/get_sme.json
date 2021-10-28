@@ -275,9 +275,9 @@
           "startLine" : 9
         }
       },
-      "mapping" : "databricks::lakehouse::employee",
+      "mapping" : "databricks::lakehouse::emp2delta",
       "mappingSourceInformation" : {
-        "endColumn" : 44,
+        "endColumn" : 45,
         "endLine" : 25,
         "sourceId" : "",
         "startColumn" : 14,
@@ -302,7 +302,7 @@
         "startLine" : 7
       }
     },
-    "name" : "sme",
+    "name" : "get_sme",
     "owners" : [ ],
     "package" : "databricks::services",
     "pattern" : "/get_sme/{language}",

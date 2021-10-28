@@ -23,7 +23,7 @@ import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.slf4j.{Logger, LoggerFactory}
 
-class LegendTest extends AnyFlatSpec {
+class EntityTest extends AnyFlatSpec {
 
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
@@ -59,45 +59,11 @@ class LegendTest extends AnyFlatSpec {
     schema.fields.foreach(f => logger.info(s"[${f.toDDL}]"))
   }
 
-  "Expectations" should "be created from a [databricks::employee] class" in {
+  "Technical expectations" should "be created from a [databricks::employee] class" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val expectations = legend.getEntityExpectations("databricks::employee")
     expectations.foreach(println)
     assert(expectations.nonEmpty)
-  }
-
-  "A schema" should "defined as backwards compatible" in {
-    val legend = LegendClasspathLoader.loadResources("model")
-    val schema1 = legend.getEntitySchema("databricks::employee")
-    val schema0 = StructType(schema1.drop(1))
-    val drift = legend.detectEntitySchemaDrift("databricks::employee", schema0)
-    assert(drift.isCompatible)
-    drift.alterStatements.foreach(p => logger.info(s"[ALTER TABLE bobby_table1 $p]"))
-  }
-
-  it should "allow for new metadata" in {
-    val legend = LegendClasspathLoader.loadResources("model")
-    val schema1 = legend.getEntitySchema("databricks::employee")
-    val schema0 = StructType(schema1.fields.map(_.copy(metadata = new MetadataBuilder().putString("comment", "this is a new comment").build())))
-    val drift = legend.detectEntitySchemaDrift("databricks::employee", schema0)
-    assert(drift.isCompatible)
-    drift.alterStatements.foreach(p => logger.info(s"[ALTER TABLE bobby_table1 $p]"))
-  }
-
-  it should "be incompatible when column was dropped" in {
-    val legend = LegendClasspathLoader.loadResources("model")
-    val schema1 = legend.getEntitySchema("databricks::employee")
-    val schema0 = StructType(schema1 :+ StructField("test", StringType, nullable = true))
-    val drift = legend.detectEntitySchemaDrift("databricks::employee", schema0)
-    assert(!drift.isCompatible)
-  }
-
-  it should "be incompatible when column type changed" in {
-    val legend = LegendClasspathLoader.loadResources("model")
-    val schema1 = legend.getEntitySchema("databricks::employee")
-    val schema0 = StructType(schema1.drop(1) :+ StructField(schema1.head.name, BinaryType, nullable = true))
-    val drift = legend.detectEntitySchemaDrift("databricks::employee", schema0)
-    assert(!drift.isCompatible)
   }
 
   "Legend Return type" should "be converted in DataType" in {

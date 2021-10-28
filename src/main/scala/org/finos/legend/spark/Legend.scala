@@ -17,17 +17,31 @@
 
 package org.finos.legend.spark
 
+import java.io.StringReader
+import java.util.Collections
+
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.sf.jsqlparser.parser.CCJSqlParserManager
+import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.spark.sql.types._
-import org.finos.legend.engine.language.pure.compiler.Compiler
-import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
+import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime.{Runtime => PureRuntime}
+import org.finos.legend.engine.language.pure.compiler.toPureGraph.{HelperValueSpecificationBuilder, PureModel}
 import org.finos.legend.engine.language.pure.grammar.to.{DEPRECATED_PureGrammarComposerCore, PureGrammarComposerContext}
+import org.finos.legend.engine.plan.generation.PlanGenerator
+import org.finos.legend.engine.plan.generation.transformers.LegendPlanTransformers
+import org.finos.legend.engine.plan.platform.PlanPlatform
+import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.store.relational.connection.DatabaseType
+import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.application.AppliedFunction
+import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.raw.Lambda
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
-import org.finos.legend.engine.shared.core.deployment.DeploymentMode
+import org.finos.legend.pure.generated.{Root_meta_pure_metamodel_function_LambdaFunction_Impl, Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl, Root_meta_relational_metamodel_relation_Table_Impl, core_relational_relational_router_router_extension}
+import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
+import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction
+import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
-import org.pac4j.core.profile.CommonProfile
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConverters._
@@ -36,35 +50,6 @@ import scala.util.{Failure, Success, Try}
 class Legend(entities: Map[String, Entity]) {
 
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
-
-  /**
-   * Return a legend entity given a namespace::object path
-   *
-   * @param entityName the entity name to retrieve
-   * @return the legend entity
-   */
-  def getEntity(entityName: String): Entity = {
-    require(entities.contains(entityName), s"Could not find entity [$entityName]")
-    entities(entityName)
-  }
-
-  /**
-   * Return all legend entities
-   *
-   * @return iterable of legend entities
-   */
-  def getEntities: Iterable[Entity] = {
-    entities.values
-  }
-
-  /**
-   * Given the legend entities loaded from SDLC, we compile all packageable elements as PURE model.
-   *
-   * @return the PURE model
-   */
-  def toPure: PureModel = {
-    PureModelBuilder.newBuilder.withEntities(getEntities.asJava).build.getPureModel
-  }
 
   /**
    * With namespace fully loaded, we return the list of available legend entities
@@ -84,7 +69,7 @@ class Legend(entities: Map[String, Entity]) {
     // We ensure the specified entity exists in the list of legend entities loaded
     logger.info("Loading Legend schema for entity [{}]", entityName)
     require(entities.contains(entityName), s"Could not find entity [$entityName]")
-    val entity = entities(entityName)
+    val entity: Entity = entities(entityName)
 
     // Create spark schema as a StructType
     logger.debug("Creating spark schema for entity [{}]", entityName)
@@ -98,69 +83,124 @@ class Legend(entities: Map[String, Entity]) {
    * @param entityName the entity of type [Class] to extract constraints from
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend schema
    */
-  def getEntityExpectations(entityName: String): Seq[Expectation] = {
+  def getEntityExpectations(entityName: String): Seq[(String, String)] = {
 
     // We ensure the specified entity exists in the list of legend entities loaded
-    logger.info("Creating expectations for entity [{}]", entityName)
-    val schema = getEntitySchema(entityName)
+    require(entities.contains(entityName), s"Could not find entity [$entityName]")
     val entity = entities(entityName)
 
     // Retrieve all rules as SQL expressions
-    logger.debug("Creating SQL expectations from legend schema for entity [{}]", entityName)
-    getLegendClassExpectations(entity.toLegendClass).map(rule => {
+    logger.info("Creating expectations for entity [{}]", entityName)
+    getLegendClassExpectations(entity.toLegendClass).flatMap(rule => {
       rule.expression match {
-        case Failure(e) => logger.warn(s"Error creating rule [${rule.name}], ${e.getMessage}")
-        case Success(_) =>
+        case Failure(e) =>
+          logger.warn(s"Error creating rule [${rule.name}], ${e.getMessage}")
+          None
+        case Success(sql) =>
+          Some(rule.name, sql)
       }
-      rule
+    })
+  }
+//
+//  def getMapping(mappingName: String): Mapping = {
+//    logger.info(s"Retrieving mapping [$mappingName]")
+//    Try(toPure.getMapping(mappingName)) match {
+//      case Success(value) => value
+//      case Failure(e) => throw new IllegalArgumentException("could not find mapping " + mappingName, e)
+//    }
+//  }
+//
+  private def getRelationalMapping(mapping: Mapping): Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl = {
+    val transformations = mapping._classMappings().asScala
+    require(transformations.nonEmpty)
+    require(transformations.head.isInstanceOf[Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl])
+    val transformation = transformations.head.asInstanceOf[Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl]
+
+    require(transformation._mainTableAlias._relationalElement() != null)
+    require(transformation._mainTableAlias._relationalElement().isInstanceOf[Root_meta_relational_metamodel_relation_Table_Impl])
+    transformation
+  }
+
+  def getLambdaConstraints(pure: PureModel, entityName: String, mapping: Mapping, runtime: PureRuntime): Seq[(String, String)] = {
+
+    require(entities.contains(entityName), "could not find entity " + entityName)
+    val entity = entities(entityName)
+
+    require(entity.isClass, s"Entity ${entityName} should be of type class")
+
+    entity.toLegendClass.constraints.asScala.map(c => {
+      val query = s"${entityName}->getAll()->filter(this|${c.toLambda})"
+      val lambda = new Lambda()
+      println(query)
+      lambda.body = Collections.singletonList(query.toValueSpec)
+      val function = HelperValueSpecificationBuilder.buildLambda(lambda, pure.getContext)
+      (c.name, function)
+
+      val plan = PlanGenerator.generateExecutionPlan(
+        function,
+        mapping,
+        runtime,
+        null,
+        pure,
+        "vX_X_X",
+        PlanPlatform.JAVA,
+        null,
+        core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pure.getExecutionSupport),
+        LegendPlanTransformers.transformers
+      )
+
+      val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+      (c.name, parseSql(sqlExecPlan))
     })
   }
 
+  // Parse SQL to retrieve WHERE clause and table alias
+  // TODO: find a way not to generate the full SQL but only visit the lambda condition
+  def parseSql(executionPlan: SQLExecutionNode): String = {
+    val parserRealSql = new CCJSqlParserManager()
+    val select = parserRealSql.parse(new StringReader(executionPlan.sqlQuery)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
+    val alias = s"${select.getFromItem.getAlias.getName}."
+    val where = select.getWhere
+    where.toString.replaceAll(alias, "")
+  }
+
   /**
-   * As we can programmatically infer Spark schema from a legend object of type [Class], we can detect schema compatibility
-   * with an existing dataframe. We return eventual drift as a case class object that includes SQL statements one may have to
-   * run to update an existing table against an updated schema.
+   * Given a legend mapping, we generate all transformations required to persist an entity to a relational table on delta lake
    *
-   * We capture new columns as well as description change (metadata)
-   * Note that incompatible changes such as DELETE or ALTER DATATYPE will be flagged with isCompatible boolean
-   *
-   * @param entityName the name of the legend entity (as namespace::entity) to load Spark schema from
-   * @param prevSchema the schema of a dataframe to validate new schema against
-   * @return the list of SQL statements to update table with
+   * @param mappingName the name of the mapping
+   * @return the set of transformations required
    */
-  def detectEntitySchemaDrift(entityName: String, prevSchema: StructType): SchemaDrift = {
+  def transform(entityName: String, mappingName: String, runtimeName: String): Transform = {
 
-    // Retrieve new schema from our legend entity
-    logger.info("Detecting drift for entity [{}]", entityName)
-    val newSchema = getEntitySchema(entityName)
-    val oldSchemaMap = prevSchema.map(f => (f.name, f)).toMap
+    val pureModel: PureModel = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build.getPureModel
 
-    // detect new columns
-    val newFields = newSchema.filter(f => !oldSchemaMap.contains(f.name)).map(s => s"ADD COLUMNS (${s.toDDL})")
-    newFields.foreach(s => logger.warn("New column detected! [{}]", s))
+    val entity = Try(entities(entityName)) match {
+      case Success(value) => value
+      case Failure(e) => throw new IllegalArgumentException("could not find entity " + entityName, e)
+    }
 
-    // detect metadata changes
-    val newSoftChanges = newSchema.filter(f => oldSchemaMap.contains(f.name)).filter(f => {
-      oldSchemaMap(f.name).getComment() != f.getComment() && f.getComment().isDefined && oldSchemaMap(f.name).dataType == f.dataType
-    }).map(f => s"ALTER COLUMN `${f.name}` COMMENT '${f.getComment().getOrElse("''").replaceAll("'", "\\'")}'")
-    newFields.foreach(s => logger.debug("New metadata detected! [{}]", s))
+    val mapping = Try(pureModel.getMapping(mappingName)) match {
+      case Success(value) => value
+      case Failure(e) => throw new IllegalArgumentException("could not find mapping " + mappingName, e)
+    }
 
-    // Deletion is not permitted on delta
-    val isDeleted = prevSchema.exists(f => {
-      val missing = !newSchema.fields.map(_.name).contains(f.name)
-      if (missing) logger.error("Column [{}] missing, incompatible schema", f.name)
-      missing
-    })
+    val runtime = Try(pureModel.getRuntime(runtimeName)) match {
+      case Success(value) => value
+      case Failure(e) => throw new IllegalArgumentException("could not find runtimeName " + runtimeName, e)
+    }
 
-    // Changing datatype is not permitted, we need to flag schema incompatibility
-    val isChanged = newSchema.exists(f => {
-      val changed = oldSchemaMap.contains(f.name) && oldSchemaMap(f.name).dataType != f.dataType
-      if (changed) logger.error("Column [{}] changed from [{}] to [{}], incompatible schema", f.name, oldSchemaMap(f.name).dataType, f.dataType)
-      changed
-    })
+    val constraints = getLambdaConstraints(pureModel, entityName, mapping, runtime)
+    val relational = getRelationalMapping(mapping)
 
-    // Return Drift object with SQL ALTER statements (if any) and backwards compatibility flag
-    SchemaDrift(newFields ++ newSoftChanges, !isChanged && !isDeleted)
+    Transform(
+      entityName,
+      getEntitySchema(entityName),
+      getEntityExpectations(entityName),
+      relational.getTransformations,
+      constraints,
+      relational.getDstTable
+    )
+
   }
 
   /**
@@ -255,10 +295,6 @@ class Legend(entities: Map[String, Entity]) {
    */
   private def getLegendClassExpectations(legendClass: Class, parentField: String = ""): Seq[Expectation] = {
 
-    // Retrieve and evaluate all PURE domain expert constraints
-    logger.debug(s"Converting user defined PURE constraints for class [${legendClass.name}]")
-    //    val pureConstraints = legendClass.constraints.asScala.map(c => getLegendExpectations(c, parentField))
-
     // Infer rules from the legend schema itself
     logger.debug(s"Converting schema specific constraints for class [${legendClass.name}]")
     val schemaConstraints = legendClass.properties.asScala.flatMap(property => getLegendPropertyExpectations(property, parentField))
@@ -266,7 +302,7 @@ class Legend(entities: Map[String, Entity]) {
     // Check that rules are syntactically valid SQL expression
     logger.debug(s"Validating SQL expression syntax for class [${legendClass.name}]")
     //    (pureConstraints ++ schemaConstraints).map(_.build)
-    schemaConstraints.map(_.validate)
+    schemaConstraints.map(_.build)
   }
 
   /**
