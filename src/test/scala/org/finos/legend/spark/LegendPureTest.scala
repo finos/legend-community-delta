@@ -32,17 +32,14 @@ class LegendPureTest extends AnyFlatSpec {
   "Pure model" should "be generated from SDLC entities" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val pureModel = legend.pureModel
-
     assertThrows[EngineException] {
       pureModel.getMapping("foo:bar")
     }
 
     val mapping = pureModel.getMapping("databricks::lakehouse::emp2delta")
     assert(mapping._name() == "emp2delta")
-
     val runtime = pureModel.getRuntime("databricks::lakehouse::runtime")
     assert(runtime._connections().asScala.nonEmpty)
-
   }
 
   "A lambda function" should "be generated from a string representation" in {
@@ -54,7 +51,6 @@ class LegendPureTest extends AnyFlatSpec {
 
   it should "be validated against a pure model" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    assert(legend.getEntityNames.contains("databricks::employee"))
 
     assertThrows[EngineException] {
       val lambdaString = "test->getAll()->filter(x|$x.foo = 'bar')"
@@ -66,10 +62,8 @@ class LegendPureTest extends AnyFlatSpec {
     assert(function._expressionSequence().asScala.nonEmpty)
   }
 
-  it should "generate an execution plan" in {
+  it should "generate a valid execution plan" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    assert(legend.getEntityNames.contains("databricks::employee"))
-
     val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
     val runtime = legend.getRuntime("databricks::lakehouse::runtime")
 
@@ -83,13 +77,10 @@ class LegendPureTest extends AnyFlatSpec {
     assert(plan.rootExecutionNode.executionNodes.get(0).isInstanceOf[SQLExecutionNode])
   }
 
-  "An execution plan" should "be converted as SQL clause" in {
+  it should "support NULL functions" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    assert(legend.getEntityNames.contains("databricks::employee"))
-
     val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
     val runtime = legend.getRuntime("databricks::lakehouse::runtime")
-
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
@@ -97,13 +88,21 @@ class LegendPureTest extends AnyFlatSpec {
     assert(sql == "highfives > 20")
   }
 
-  "A more complex function" should "be converted as SQL clause" in {
+  it should "support complex spark functions" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    assert(legend.getEntityNames.contains("databricks::employee"))
-
     val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
     val runtime = legend.getRuntime("databricks::lakehouse::runtime")
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.id->isEmpty())"
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
+    val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+    val sql = LegendUtils.parseSql(sqlPlan)
+    assert(sql == "id IS NULL")
+  }
 
+  "A more complex function" should "be converted as SQL clause" in {
+    val legend = LegendClasspathLoader.loadResources("model")
+    val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
+    val runtime = legend.getRuntime("databricks::lakehouse::runtime")
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.joined_date->dateDiff($x.birth_date, DurationUnit.YEARS) > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
