@@ -121,7 +121,7 @@
             },
             "relationalOperation": {
               "_type": "column",
-              "column": "first_name",
+              "column": "firstname",
               "sourceInformation": {
                 "endColumn": 73,
                 "endLine": 12,
@@ -168,7 +168,7 @@
             },
             "relationalOperation": {
               "_type": "column",
-              "column": "last_name",
+              "column": "lastname",
               "sourceInformation": {
                 "endColumn": 71,
                 "endLine": 13,
@@ -215,7 +215,7 @@
             },
             "relationalOperation": {
               "_type": "column",
-              "column": "birth_date",
+              "column": "birthdate",
               "sourceInformation": {
                 "endColumn": 73,
                 "endLine": 14,
@@ -309,7 +309,7 @@
             },
             "relationalOperation": {
               "_type": "column",
-              "column": "joined_date",
+              "column": "joineddate",
               "sourceInformation": {
                 "endColumn": 75,
                 "endLine": 16,
@@ -356,7 +356,7 @@
             },
             "relationalOperation": {
               "_type": "column",
-              "column": "high_fives",
+              "column": "highfives",
               "sourceInformation": {
                 "endColumn": 73,
                 "endLine": 17,

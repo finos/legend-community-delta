@@ -35,7 +35,7 @@
                 }
               },
               {
-                "name": "first_name",
+                "name": "firstname",
                 "nullable": true,
                 "sourceInformation": {
                   "endColumn": 29,
@@ -50,7 +50,7 @@
                 }
               },
               {
-                "name": "last_name",
+                "name": "lastname",
                 "nullable": true,
                 "sourceInformation": {
                   "endColumn": 28,
@@ -65,7 +65,7 @@
                 }
               },
               {
-                "name": "birth_date",
+                "name": "birthdate",
                 "nullable": true,
                 "sourceInformation": {
                   "endColumn": 21,
@@ -124,7 +124,7 @@
                 }
               },
               {
-                "name": "joined_date",
+                "name": "joineddate",
                 "nullable": true,
                 "sourceInformation": {
                   "endColumn": 22,
@@ -138,7 +138,7 @@
                 }
               },
               {
-                "name": "high_fives",
+                "name": "highfives",
                 "nullable": true,
                 "sourceInformation": {
                   "endColumn": 24,

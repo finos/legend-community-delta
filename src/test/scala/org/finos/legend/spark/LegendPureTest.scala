@@ -94,7 +94,7 @@ class LegendPureTest extends AnyFlatSpec {
     val plan = Legend.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = Legend.parseSql(sqlPlan)
-    assert(sql == "high_fives > 20")
+    assert(sql == "highfives > 20")
   }
 
   "A more complex function" should "be converted as SQL clause" in {
@@ -108,7 +108,7 @@ class LegendPureTest extends AnyFlatSpec {
     val plan = Legend.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = Legend.parseSql(sqlPlan)
-    assert(sql == "year(joined_date) - year(birth_date) > 20")
+    assert(sql == "year(joineddate) - year(birthdate) > 20")
   }
 
 }
