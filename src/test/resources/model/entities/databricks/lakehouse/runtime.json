@@ -1,0 +1,83 @@
+{
+  "classifierPath": "meta::pure::runtime::PackageableRuntime",
+  "content": {
+    "_type": "runtime",
+    "name": "runtime",
+    "package": "databricks::lakehouse",
+    "runtimeValue": {
+      "_type": "engineRuntime",
+      "connections": [
+        {
+          "sourceInformation": {
+            "endColumn": 5,
+            "endLine": 13,
+            "sourceId": "",
+            "startColumn": 5,
+            "startLine": 10
+          },
+          "store": {
+            "path": "databricks::lakehouse::schema",
+            "sourceInformation": {
+              "endColumn": 33,
+              "endLine": 10,
+              "sourceId": "",
+              "startColumn": 5,
+              "startLine": 10
+            },
+            "type": "STORE"
+          },
+          "storeConnections": [
+            {
+              "connection": {
+                "_type": "connectionPointer",
+                "connection": "databricks::lakehouse::demo",
+                "sourceInformation": {
+                  "endColumn": 47,
+                  "endLine": 12,
+                  "sourceId": "",
+                  "startColumn": 21,
+                  "startLine": 12
+                }
+              },
+              "id": "connection_1",
+              "sourceInformation": {
+                "endColumn": 47,
+                "endLine": 12,
+                "sourceId": "",
+                "startColumn": 7,
+                "startLine": 12
+              }
+            }
+          ]
+        }
+      ],
+      "mappings": [
+        {
+          "path": "databricks::lakehouse::emp2delta",
+          "sourceInformation": {
+            "endColumn": 36,
+            "endLine": 6,
+            "sourceId": "",
+            "startColumn": 5,
+            "startLine": 6
+          },
+          "type": "MAPPING"
+        }
+      ],
+      "sourceInformation": {
+        "endColumn": 1,
+        "endLine": 15,
+        "sourceId": "",
+        "startColumn": 1,
+        "startLine": 2
+      }
+    },
+    "sourceInformation": {
+      "endColumn": 1,
+      "endLine": 15,
+      "sourceId": "",
+      "startColumn": 1,
+      "startLine": 2
+    }
+  }
+}

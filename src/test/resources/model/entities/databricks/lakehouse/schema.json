@@ -1,0 +1,180 @@
+{
+  "classifierPath": "meta::relational::metamodel::Database",
+  "content": {
+    "_type": "relational",
+    "filters": [],
+    "includedStores": [],
+    "joins": [],
+    "name": "schema",
+    "package": "databricks::lakehouse",
+    "schemas": [
+      {
+        "name": "legend",
+        "sourceInformation": {
+          "endColumn": 3,
+          "endLine": 18,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 4
+        },
+        "tables": [
+          {
+            "columns": [
+              {
+                "name": "id",
+                "nullable": false,
+                "sourceInformation": {
+                  "endColumn": 28,
+                  "endLine": 8,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 8
+                },
+                "type": {
+                  "_type": "Integer"
+                }
+              },
+              {
+                "name": "firstname",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 29,
+                  "endLine": 9,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 9
+                },
+                "type": {
+                  "_type": "Varchar",
+                  "size": 255
+                }
+              },
+              {
+                "name": "lastname",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 28,
+                  "endLine": 10,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 10
+                },
+                "type": {
+                  "_type": "Varchar",
+                  "size": 255
+                }
+              },
+              {
+                "name": "birthdate",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 21,
+                  "endLine": 11,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 11
+                },
+                "type": {
+                  "_type": "Date"
+                }
+              },
+              {
+                "name": "gender",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 25,
+                  "endLine": 12,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 12
+                },
+                "type": {
+                  "_type": "Varchar",
+                  "size": 255
+                }
+              },
+              {
+                "name": "sme",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 22,
+                  "endLine": 13,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 13
+                },
+                "type": {
+                  "_type": "Varchar",
+                  "size": 255
+                }
+              },
+              {
+                "name": "role",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 23,
+                  "endLine": 14,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 14
+                },
+                "type": {
+                  "_type": "Varchar",
+                  "size": 255
+                }
+              },
+              {
+                "name": "joineddate",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 22,
+                  "endLine": 15,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 15
+                },
+                "type": {
+                  "_type": "Date"
+                }
+              },
+              {
+                "name": "highfives",
+                "nullable": true,
+                "sourceInformation": {
+                  "endColumn": 24,
+                  "endLine": 16,
+                  "sourceId": "",
+                  "startColumn": 7,
+                  "startLine": 16
+                },
+                "type": {
+                  "_type": "Integer"
+                }
+              }
+            ],
+            "milestoning": [],
+            "name": "employee",
+            "primaryKey": [
+              "id"
+            ],
+            "sourceInformation": {
+              "endColumn": 5,
+              "endLine": 17,
+              "sourceId": "",
+              "startColumn": 5,
+              "startLine": 6
+            }
+          }
+        ],
+        "views": []
+      }
+    ],
+    "sourceInformation": {
+      "endColumn": 1,
+      "endLine": 19,
+      "sourceId": "",
+      "startColumn": 1,
+      "startLine": 2
+    }
+  }
+}

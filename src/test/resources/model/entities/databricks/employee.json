@@ -1,0 +1,574 @@
+{
+  "classifierPath": "meta::pure::metamodel::type::Class",
+  "content": {
+    "_type": "class",
+    "constraints": [
+      {
+        "functionDefinition": {
+          "_type": "lambda",
+          "body": [
+            {
+              "_type": "func",
+              "function": "greaterThan",
+              "parameters": [
+                {
+                  "_type": "property",
+                  "parameters": [
+                    {
+                      "_type": "var",
+                      "name": "this",
+                      "sourceInformation": {
+                        "endColumn": 41,
+                        "endLine": 3,
+                        "sourceId": "",
+                        "startColumn": 37,
+                        "startLine": 3
+                      }
+                    }
+                  ],
+                  "property": "high_fives",
+                  "sourceInformation": {
+                    "endColumn": 52,
+                    "endLine": 3,
+                    "sourceId": "",
+                    "startColumn": 43,
+                    "startLine": 3
+                  }
+                },
+                {
+                  "_type": "integer",
+                  "multiplicity": {
+                    "lowerBound": 1,
+                    "upperBound": 1
+                  },
+                  "sourceInformation": {
+                    "endColumn": 56,
+                    "endLine": 3,
+                    "sourceId": "",
+                    "startColumn": 56,
+                    "startLine": 3
+                  },
+                  "values": [
+                    0
+                  ]
+                }
+              ],
+              "sourceInformation": {
+                "endColumn": 56,
+                "endLine": 3,
+                "sourceId": "",
+                "startColumn": 54,
+                "startLine": 3
+              }
+            }
+          ],
+          "parameters": []
+        },
+        "name": "[high five] should be positive",
+        "sourceInformation": {
+          "endColumn": 56,
+          "endLine": 3,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 3
+        }
+      },
+      {
+        "functionDefinition": {
+          "_type": "lambda",
+          "body": [
+            {
+              "_type": "func",
+              "function": "greaterThan",
+              "parameters": [
+                {
+                  "_type": "func",
+                  "function": "dateDiff",
+                  "parameters": [
+                    {
+                      "_type": "property",
+                      "parameters": [
+                        {
+                          "_type": "var",
+                          "name": "this",
+                          "sourceInformation": {
+                            "endColumn": 31,
+                            "endLine": 4,
+                            "sourceId": "",
+                            "startColumn": 27,
+                            "startLine": 4
+                          }
+                        }
+                      ],
+                      "property": "joined_date",
+                      "sourceInformation": {
+                        "endColumn": 43,
+                        "endLine": 4,
+                        "sourceId": "",
+                        "startColumn": 33,
+                        "startLine": 4
+                      }
+                    },
+                    {
+                      "_type": "property",
+                      "parameters": [
+                        {
+                          "_type": "var",
+                          "name": "this",
+                          "sourceInformation": {
+                            "endColumn": 7,
+                            "endLine": 5,
+                            "sourceId": "",
+                            "startColumn": 3,
+                            "startLine": 5
+                          }
+                        }
+                      ],
+                      "property": "birth_date",
+                      "sourceInformation": {
+                        "endColumn": 18,
+                        "endLine": 5,
+                        "sourceId": "",
+                        "startColumn": 9,
+                        "startLine": 5
+                      }
+                    },
+                    {
+                      "_type": "property",
+                      "parameters": [
+                        {
+                          "_type": "packageableElementPtr",
+                          "fullPath": "DurationUnit",
+                          "sourceInformation": {
+                            "endColumn": 14,
+                            "endLine": 6,
+                            "sourceId": "",
+                            "startColumn": 3,
+                            "startLine": 6
+                          }
+                        }
+                      ],
+                      "property": "YEARS",
+                      "sourceInformation": {
+                        "endColumn": 20,
+                        "endLine": 6,
+                        "sourceId": "",
+                        "startColumn": 16,
+                        "startLine": 6
+                      }
+                    }
+                  ],
+                  "sourceInformation": {
+                    "endColumn": 53,
+                    "endLine": 4,
+                    "sourceId": "",
+                    "startColumn": 46,
+                    "startLine": 4
+                  }
+                },
+                {
+                  "_type": "integer",
+                  "multiplicity": {
+                    "lowerBound": 1,
+                    "upperBound": 1
+                  },
+                  "sourceInformation": {
+                    "endColumn": 6,
+                    "endLine": 7,
+                    "sourceId": "",
+                    "startColumn": 5,
+                    "startLine": 7
+                  },
+                  "values": [
+                    20
+                  ]
+                }
+              ],
+              "sourceInformation": {
+                "endColumn": 6,
+                "endLine": 7,
+                "sourceId": "",
+                "startColumn": 3,
+                "startLine": 7
+              }
+            }
+          ],
+          "parameters": []
+        },
+        "name": "[age] should be > 20",
+        "sourceInformation": {
+          "endColumn": 6,
+          "endLine": 7,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 4
+        }
+      }
+    ],
+    "name": "employee",
+    "originalMilestonedProperties": [],
+    "package": "databricks",
+    "properties": [
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "id",
+        "propertyTypeSourceInformation": {
+          "endColumn": 92,
+          "endLine": 10,
+          "sourceId": "",
+          "startColumn": 86,
+          "startLine": 10
+        },
+        "sourceInformation": {
+          "endColumn": 96,
+          "endLine": 10,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 10
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 79,
+              "endLine": 10,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 10
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 10,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 10
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 10,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 10
+              },
+              "value": "doc"
+            },
+            "value": "Unique identifier of a databricks employee"
+          }
+        ],
+        "type": "Integer"
+      },
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "sme",
+        "propertyTypeSourceInformation": {
+          "endColumn": 93,
+          "endLine": 11,
+          "sourceId": "",
+          "startColumn": 88,
+          "startLine": 11
+        },
+        "sourceInformation": {
+          "endColumn": 97,
+          "endLine": 11,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 11
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 80,
+              "endLine": 11,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 11
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 11,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 11
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 11,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 11
+              },
+              "value": "doc"
+            },
+            "value": "Programming skill that person truly masters"
+          }
+        ],
+        "type": "String"
+      },
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "joined_date",
+        "propertyTypeSourceInformation": {
+          "endColumn": 92,
+          "endLine": 12,
+          "sourceId": "",
+          "startColumn": 89,
+          "startLine": 12
+        },
+        "sourceInformation": {
+          "endColumn": 96,
+          "endLine": 12,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 12
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 73,
+              "endLine": 12,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 12
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 12,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 12
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 12,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 12
+              },
+              "value": "doc"
+            },
+            "value": "When did that person join Databricks"
+          }
+        ],
+        "type": "Date"
+      },
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "high_fives",
+        "propertyTypeSourceInformation": {
+          "endColumn": 97,
+          "endLine": 13,
+          "sourceId": "",
+          "startColumn": 91,
+          "startLine": 13
+        },
+        "sourceInformation": {
+          "endColumn": 101,
+          "endLine": 13,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 13
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 76,
+              "endLine": 13,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 13
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 13,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 13
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 13,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 13
+              },
+              "value": "doc"
+            },
+            "value": "Hpw many high fives did that person get"
+          }
+        ],
+        "type": "Integer"
+      }
+    ],
+    "qualifiedProperties": [
+      {
+        "body": [
+          {
+            "_type": "func",
+            "function": "dateDiff",
+            "parameters": [
+              {
+                "_type": "property",
+                "parameters": [
+                  {
+                    "_type": "var",
+                    "name": "this",
+                    "sourceInformation": {
+                      "endColumn": 87,
+                      "endLine": 14,
+                      "sourceId": "",
+                      "startColumn": 83,
+                      "startLine": 14
+                    }
+                  }
+                ],
+                "property": "joined_date",
+                "sourceInformation": {
+                  "endColumn": 99,
+                  "endLine": 14,
+                  "sourceId": "",
+                  "startColumn": 89,
+                  "startLine": 14
+                }
+              },
+              {
+                "_type": "property",
+                "parameters": [
+                  {
+                    "_type": "var",
+                    "name": "this",
+                    "sourceInformation": {
+                      "endColumn": 7,
+                      "endLine": 15,
+                      "sourceId": "",
+                      "startColumn": 3,
+                      "startLine": 15
+                    }
+                  }
+                ],
+                "property": "birth_date",
+                "sourceInformation": {
+                  "endColumn": 18,
+                  "endLine": 15,
+                  "sourceId": "",
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              },
+              {
+                "_type": "property",
+                "parameters": [
+                  {
+                    "_type": "packageableElementPtr",
+                    "fullPath": "DurationUnit",
+                    "sourceInformation": {
+                      "endColumn": 14,
+                      "endLine": 16,
+                      "sourceId": "",
+                      "startColumn": 3,
+                      "startLine": 16
+                    }
+                  }
+                ],
+                "property": "YEARS",
+                "sourceInformation": {
+                  "endColumn": 20,
+                  "endLine": 16,
+                  "sourceId": "",
+                  "startColumn": 16,
+                  "startLine": 16
+                }
+              }
+            ],
+            "sourceInformation": {
+              "endColumn": 109,
+              "endLine": 14,
+              "sourceId": "",
+              "startColumn": 102,
+              "startLine": 14
+            }
+          }
+        ],
+        "name": "age",
+        "parameters": [],
+        "returnMultiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "returnType": "Integer",
+        "sourceInformation": {
+          "endColumn": 15,
+          "endLine": 17,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 14
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 73,
+              "endLine": 14,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 14
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 14,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 14
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 14,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 14
+              },
+              "value": "doc"
+            },
+            "value": "Employee age when joining databricks"
+          }
+        ]
+      }
+    ],
+    "sourceInformation": {
+      "endColumn": 1,
+      "endLine": 18,
+      "sourceId": "",
+      "startColumn": 1,
+      "startLine": 1
+    },
+    "stereotypes": [],
+    "superTypes": [
+      "databricks::person"
+    ],
+    "taggedValues": []
+  }
+}

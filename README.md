@@ -34,10 +34,6 @@ with expectations, derivations and constraints defined by business analysts.
 
 <img src="images/legend-studio.png" width="800">
 
-Defining entities using the [FIRE](https://suade.org/fire/) data model as an example for regulatory reporting
-(PURE code is available [here](src/test/resources/model.pure) for reference), we demonstrate how tables, expectations
-and derivation can be dynamically generated on Delta Lake to ensure data quality, availability and compliance.
-
 ## Usage
 
 Make sure to have the jar file of `legend-delta` available in your classpath and a legend data model 
@@ -50,7 +46,6 @@ Legend project can be loaded by specifying a parent directory where `entities/${
 model definitions can be found. We load legend namespaces from a classpath or disk as follows
 
 ```scala
-import org.finos.legend.spark.LegendClasspathLoader
 val legend = LegendClasspathLoader.loadResources("datamodel")
 ```
 
@@ -67,11 +62,8 @@ legend.getEntityNames.foreach(println)
 ```
 
 ```
-fire::currency_code
-fire::regulatory_book
-fire::collateral
-fire::collateral_type
-fire::encumbrance_type
+databricks::employee
+databricks::person
 ```
 
 ### Convert pure to delta format
@@ -80,29 +72,21 @@ With our legend entities loaded, we can create the Delta schema for any entity o
 This process will recursively loop through each of its underlying fields, enums and possibly nested properties and supertypes.
 
 ```scala
-val schema = legend.getEntitySchema("fire::collateral")
+val schema = legend.getEntitySchema("databricks::employee")
+schema.fields.foreach(s => println(s.toDDL))
 ```
 
 Note that we do not only find fields and their data types, but also retrieve Legend `TaggedValues` 
 as business metadata (field description). One can simply create a delta table using the following `schema.toDDL` syntax.
 
 ```
-`id` STRING COMMENT 'The unique identifier for the collateral within the financial institution.'
-`date` TIMESTAMP,`loan_ids` ARRAY<STRING> COMMENT 'The unique identifiers for the loans within the financial institution.'
-`account_ids` ARRAY<STRING> COMMENT 'The unique identifier/s for the account/s within the financial institution.'
-`charge` INT COMMENT 'Lender charge on collateral, 1 indicates first charge, 2 second and so on. 0 indicates a combination of charge levels.'
-`currency_code` STRING COMMENT 'The currency of the contribution_amount in accordance with ISO 4217 standards.'
-`encumbrance_amount` INT COMMENT 'The amount of the collateral that is encumbered by potential future commitments or legal liabilities. Monetary type represented as a naturally positive integer number of cents/pence.'
-`encumbrance_type` STRING COMMENT 'The type of the encumbrance causing the encumbrance_amount.'
-`end_date` TIMESTAMP COMMENT 'The end date for recognition of the collateral'
-`regulatory_book` STRING COMMENT 'The type of portfolio in which the instrument is held.'
-`source` STRING COMMENT 'The source(s) where this data originated. If more than one source needs to be stored for data lineage, it should be separated by a dash. eg. Source1-Source2'
-`start_date` TIMESTAMP COMMENT 'The start date for recognition of the collateral'
-`type` STRING COMMENT 'The collateral type defines the form of the collateral provided (should not be null)'
-`value` INT COMMENT 'The valuation as used by the bank for the collateral on the value_date. Monetary type represented as a naturally positive integer number of cents/pence.'
-`value_date` TIMESTAMP COMMENT 'The timestamp that the collateral was valued',`version_id` STRING COMMENT 'The version identifier of the data such as the firm\'s internal batch identifier'
-`vol_adj` BIGINT COMMENT 'The volatility adjustment appropriate to the collateral.'
-`vol_adj_fx` BIGINT COMMENT 'The volatility adjustment appropriate to currency mismatch.'
+`first_name` STRING NOT NULL COMMENT 'Person first name'
+`last_name` STRING NOT NULL COMMENT 'Person last name'
+`birth_date` DATE NOT NULL COMMENT 'Person birth date'
+`id` INT NOT NULL COMMENT 'Unique identifier of a databricks employee'
+`sme` STRING NOT NULL COMMENT 'Programming skill that person truly masters'
+`joined_date` DATE NOT NULL COMMENT 'When did that person join Databricks'
+`high_fives` INT NOT NULL COMMENT 'How many high fives did that person get'
 ```
 
 Data can be schematized "on-the-fly" when reading raw records (see below an example reading JSON files).
@@ -110,92 +94,52 @@ Although JSON usually looks structured, imposing schema would guarantee missing 
 and data types fully enforced (e.g. a date object will be processed as a `java.sql.Date` instead of string)
 
 ```scala
-val collateral = spark.read.format("json").schema(schema).load("/path/to/collateral/json")
-```
-
-### Detecting schema drift
-
-As we dynamically create a Delta Lake schema off a legend entity, we can easily detect schema changes against an existing dataframe. 
-
-```scala
-val drift = legend.detectEntitySchemaDrift("fire::collateral", existing_df)
-require(drift.isCompatible)
-```
-
-Some changes will be considered as non backwards compatible (column was dropped or data type has changed). Others can
-be applied using a simple `ALTER` statement. New columms can be added, new metadata can be provided, and changes
-from Legend studio can be automatically applied using a CI/CD process (handling changes on Gitlab main branch).
-
-```scala
-drift.alterStatements.foreach(println)
-```
-
-```
-ADD COLUMNS (`id` STRING COMMENT 'The unique identifier for the collateral within the financial institution.')
+val schematized = spark
+  .read
+  .format("csv")
+  .schema(schema)
+  .load("/path/to/data/csv")
 ```
 
 ### Retrieve expectations
 
 Inferring the schema is one thing, enforcing its constraints is another. Given the `multiplicity` properties, we can 
-detect if a field is optional or not, if list has the right number of elements. Given an `enumeration`, 
-we check for value consistency. All these rules are dynamically generated as SQL expressions as follows
+detect if a field is optional or not or list has the right number of elements. Given an `enumeration`, 
+we check for value consistency. These will be considered **technical expectations**.
 
-```scala
-val expectations = legend.getEntityExpectations("fire::collateral")
-expectations.foreach(println)
-```
-
-```
-Expectation(charge_min,Success((`charge`) > (0)))
-Expectation(`id` mandatory,Success(`id` IS NOT NULL))
-Expectation(`date` mandatory,Success(`date` IS NOT NULL))
-Expectation(`loan_ids` multiplicity,Success(`loan_ids` IS NULL OR SIZE(`loan_ids`) >= 0))
-Expectation(`account_ids` multiplicity,Success(`account_ids` IS NULL OR SIZE(`account_ids`) >= 0))
-Expectation(`currency_code` contains,Success(CASE WHEN `currency_code` IS NOT NULL THEN `currency_code` IN ('AED', ...
-Expectation(`encumbrance_amount` mandatory,Success(`encumbrance_amount` IS NOT NULL))
-Expectation(`encumbrance_type` contains,Success(CASE WHEN `encumbrance_type` IS NOT NULL THEN `encumbrance_type` IN ('repo', ...
-Expectation(`regulatory_book` contains,Success(CASE WHEN `regulatory_book` IS NOT NULL THEN `regulatory_book` IN ('trading_book', ...
-Expectation(`type` mandatory,Success(`type` IS NOT NULL))
-Expectation(`type` contains,Success(CASE WHEN `type` IS NOT NULL THEN `type` IN ('residential_property', 'commercial_property', ...
-Expectation(`value` mandatory,Success(`value` IS NOT NULL))
-```
-
-In addition to the rules derived from the schema itself, we also support the conversion of business specific constraints 
-from the PURE language to SQL expressions. 
+In addition to the rules derived from the schema itself, we also support the conversion of business specific constraints
+from the PURE language to SQL expressions. See below an example of **business expectations** as defined in the legend 
+studio interface.
 
 <img src="images/legend-constraints.png" width="500">
 
-The syntax and validity of these expressions (e.g. a field must exist) are 
-evaluated against an empty dataframe and marked as `Success` or `Failure` accordingly.
-For instance, we ensure a PURE functions defined above can be evaluated against existing fields of valid type. 
-Such a validation beyond simple syntax requires a Spark context to be available, indicated via the `validate` flag.
+In order to convert PURE constraints into spark SQL equivalent, we need to indicate our framework
+the strategy to convert legend entities into relational table. By specifying both a mapping and a runtime (of type Databricks), 
+we leverage the legend-engine framework to generate an execution plan compatible with a DeltaLake backend.
+
 
 ```scala
-val expectations = legend.getEntityExpectations("fire::collateral", validate = true)
+val expectations = legend.getExpectations(
+  entityName = "databricks::employee",
+  mappingName = "databricks::lakehouse::mapping", 
+  runtimeName = "databricks::lakehouse::runtime"
+)
+expectations.foreach(println)
 ```
 
-See below an example of some business defined PURE functions automatically converted into Spark SQL constraints. 
+As reported below, we could derive the pure representation and SQL equivalent for both technical and
+business constraints.
 
-```scala
-sql = "|$this.legend_complexity->greaterThan($this.legend_efforts)".pure2sql
-Assert.assertEquals("(`legend_complexity`) > (`legend_efforts`)", sql)
-
-sql = "|$this.legend_complexity->lessThanEqual(2)".pure2sql
-Assert.assertEquals("(`legend_complexity`) <= (2)", sql)
-
-sql = "|OR($this.legend->monthNumber()->equal(1), $this.legend->hour()->lessThan(3))".pure2sql
-Assert.assertEquals("((MONTH(`legend`)) = (1)) OR ((HOUR(`legend`)) < (3))", sql)
-
-sql = "|OR(AND($this.legend->monthNumber()->equal(1), $this.legend->hour()->lessThan(3)), $this.legend->minute()->greaterThan(10))".pure2sql
-Assert.assertEquals("(((MONTH(`legend`)) = (1)) AND ((HOUR(`legend`)) < (3))) OR ((MINUTE(`legend`)) > (10))", sql)
 ```
-
-For PURE functions that do not have a direct Spark equivalent, we re-coded business logic as User Defined Functions 
-that must be registered on a spark context as follows. 
-
-```scala
-import org.finos.legend.spark.functions._
-spark.registerLegendUDFs()
+Expectation([first_name] is mandatory,$this.first_name->isNotEmpty(),firstname IS NOT NULL)
+Expectation([last_name] is mandatory,$this.last_name->isNotEmpty(),lastname IS NOT NULL)
+Expectation([birth_date] is mandatory,$this.birth_date->isNotEmpty(),birthdate IS NOT NULL)
+Expectation([id] is mandatory,$this.id->isNotEmpty(),id IS NOT NULL)
+Expectation([sme] is mandatory,$this.sme->isNotEmpty(),sme IS NOT NULL)
+Expectation([joined_date] is mandatory,$this.joined_date->isNotEmpty(),joineddate IS NOT NULL)
+Expectation([high_fives] is mandatory,$this.high_fives->isNotEmpty(),highfives IS NOT NULL)
+Expectation([high five] should be positive,$this.high_fives > 0,highfives > 0)
+Expectation([age] should be > 20,$this.joined_date->dateDiff($this.birth_date,DurationUnit.YEARS) > 20,year(joineddate) - year(birthdate) > 20)
 ```
 
 We can validate all expectations at once on a given dataframe using a Legend implicit class, resulting in the same 
@@ -206,107 +150,39 @@ constraints. Hence, an empty array consists in a fully validated record
 val validated = df.legendExpectations(expectations)
 ```
 
-In the example above, we simply explode our dataframe to easily access each and every failed expectation, being schema specific
-or business defined.
+In the example above, we simply explode our dataframe to easily access each and every failed expectation, 
+being schema specific or business defined.
 
 ```
-+----+------------------+-------------------+-------------------+-------------+--------------------------------------------------+
-|id  |encumbrance_amount|start_date         |end_date           |currency_code|legend                                            |
-+----+------------------+-------------------+-------------------+-------------+--------------------------------------------------+
-|2003|-18               |2024-03-10 14:55:40|2019-03-17 00:41:42|ILS          |[encumbrance_amount] should be between 0 and 99999|
-|2003|-18               |2024-03-10 14:55:40|2019-03-17 00:41:42|ILS          |[start_date] should be before [end_date]          |
-|2004|82178             |2048-01-23 13:27:46|2022-04-01 01:38:13|ZWD          |[start_date] should be before [end_date]          |
-|2004|82178             |2048-01-23 13:27:46|2022-04-01 01:38:13|ZWD          |`currency_code` contains                          |
-|2022|99571             |2034-08-29 04:05:56|2026-04-13 13:57:00|JOD          |[encumbrance_amount] should be between 0 and 99999|
-|2022|99571             |2034-08-29 04:05:56|2026-04-13 13:57:00|JOD          |[start_date] should be before [end_date]          |
-|2023|16218             |2024-07-07 13:21:46|2041-10-31 15:23:47|ZWD          |`currency_code` contains                          |
-|2025|16141             |2037-06-20 07:34:57|2015-03-06 23:02:17|HKD          |[start_date] should be before [end_date]          |
-|2026|89305             |2050-01-11 23:31:06|2019-01-14 16:37:11|MNT          |[start_date] should be before [end_date]          |
-+----+------------------+-------------------+-------------------+-------------+--------------------------------------------------+
++----------+---------+----------+---+------+----------+---------+--------------------+
+| firstname| lastname| birthdate| id|   sme|joineddate|highfives|              legend|
++----------+---------+----------+---+------+----------+---------+--------------------+
+|    Anthia|     Duck|1998-02-08| 10|Python|2015-01-14|      277|[age] should be > 20|
+|    Chrysa|  Mendoza|1999-03-19| 18|     R|2019-06-06|      195|[age] should be > 20|
+|   Sanders|   Dandie|1999-07-10| 20| Scala|2019-07-31|       77|[age] should be > 20|
+|   Yanaton|  Schultz|1999-04-16| 27|Python|2016-07-30|      261|[age] should be > 20|
++----------+---------+----------+---+------+----------+---------+--------------------+
 ```
 
-### Retrieve derivations
+### Transform strategy
 
-In addition to defining schema, metadata and constraints, business analysts can also create fields derivations from the Legend 
-studio interface. 
-
-<img src="images/legend-derivations.png" width="500">
-
-Expressed as PURE functions, these fields are dynamically generated as SQL expressions, naturally fitting within 
-a `withColumn` pattern. Similar to our expectations strategy, we retrieve derivations and convert PURE functions into 
-SQL expressions.
-
+For convenience, we wrapped all of the above in a one function that indicates the input schema, transformations required
+and both technical and business expectations required to store clean data to a target table. All this information is wrapped 
+within a `LegendRelationalStrategy` object as follows
 
 ```scala
-val derivations = legend.getEntityDerivations("fire::collateral", validate = true)
-``` 
+val legend = LegendClasspathLoader.loadResources("model")
 
-We compute all derivations at once on a given dataframe using a Legend implicit class, resulting in the same 
-data enriched with an additional columns derived from specified PURE functions. 
+val legendStrategy = legend.buildStrategy(
+  "databricks::employee",
+  "databricks::lakehouse::emp2delta",
+  "databricks::lakehouse::runtime"
+)
 
-```scala
-import org.finos.legend.spark._
-val derivated = collateral.legendDerivations(derivations)
-```
-
-Our unique derivation was based on the number of days between start and end date. Expressed on Legend Studio as a 
-PURE function, this function was re-coded as a custom UDF, later translated as an extra field `days_between` in our 
-final dataset.
-
-```
-+----+-------------------+-------------------+------------+
-|id  |date               |end_date           |days_between|
-+----+-------------------+-------------------+------------+
-|2000|2021-05-24 09:43:43|2046-11-03 17:26:12|9294        |
-|2001|2021-05-24 09:43:43|2031-01-16 14:02:31|3524        |
-|2002|2021-05-24 09:43:43|2041-12-11 19:40:52|7506        |
-|2003|2021-05-24 09:43:43|2019-03-17 00:41:42|-799        |
-|2004|2021-05-24 09:43:43|2022-04-01 01:38:13|312         |
-|2005|2021-05-24 09:43:43|2020-08-20 19:57:23|-277        |
-|2006|2021-05-24 09:43:43|2038-01-25 07:29:54|6090        |
-+----+-------------------+-------------------+------------+
-```
-
-### Ingest and validate new records using Auto-loader
-
-With the legend building blocks defined, organizations can easily schematize raw data, 
-validate technical and business constraints and persist cleansed records to a business semantic layer in batch or real time. 
-Using [Autoloader](https://databricks.com/blog/2020/02/24/introducing-databricks-ingest-easy-data-ingestion-into-delta-lake.html) 
-functionality of Delta and high governance standards provided by the Legend ecosystem, 
-we can ensure reliability **AND** timeliness of financial data pipeline through a simple code base.
-In the example below, we show you how to quickly stitch all those concepts together in a real time pipeline. 
-
-```scala
-import org.finos.legend.spark._
-import org.finos.legend.spark.functions._
-
-// Registering UDFs
-spark.registerLegendUDFs()
-
-// Retrieve specs
-val legend = LegendFileLoader.loadResources("/path/to/fire-model")
-val entity = "fire::collateral"
-val schema = legend.getEntitySchema(entity)
-val expectations = legend.getEntityExpectations(entity)
-val derivations = legend.getEntityDerivations(entity)
-
-// Processing input JSON files
-val inputStream = spark
-    .readStream
-    .format("json")
-    .schema(schema)                   // schematize
-    .load("/path/to/input/json")
-
-val outputStream = inputStream
-    .legendExpectations(expectations) // validate
-    .legendDerivations(derivations)   // enrich
-
-// Writing results to a delta table
-outputStream
-    .writeStream
-    .format("delta")
-    .option("checkpointLocation", "/path/to/checkpoint")
-    .start("/path/to/delta")
+val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load("/path/to/csv")
+val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
+val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
+cleanedDF.write.saveAsTable(legendStrategy.targetTable)
 ```
 
 ## Installation
@@ -316,6 +192,25 @@ mvn clean install [-P shaded]
 ```
 
 To create an uber jar that also includes all required legend dependencies, use the `-Pshaded` maven profile
+
+## Dependencies
+
+The entire project depends on latest changes from legend-engine, legend-sdlc and legend-pure that supports 
+Databricks data source. Until that code is merged to master, one would need to bring those changes and compile code locally
+
+```shell script
+git clone https://github.com/aamend/legend-engine.git
+git checkout deltaLake
+mvn clean install
+
+git clone https://github.com/aamend/legend-pure.git
+git checkout deltaLake
+mvn clean install
+
+git clone https://github.com/aamend/legend-sdlc.git
+git checkout deltaLake
+mvn clean install
+```
 
 ## Author
 

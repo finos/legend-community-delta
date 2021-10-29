@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
- * Copyright 2021 FINOS Legend2Delta contributors - see NOTICE.md file
+ * Copyright 2021 Databricks - see NOTICE.md file
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,55 +18,47 @@
 package org.finos.legend.spark
 
 import java.net.URL
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path, Paths}
 import java.util.Objects
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
-import org.finos.legend.spark.functions._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.slf4j.{Logger, LoggerFactory}
 
 class LegendIT extends AnyFlatSpec {
 
-  val logger: Logger = LoggerFactory.getLogger(this.getClass)
-
-  "Raw collateral files" should "be processed fully from a legend specs" in {
-
-    val spark = SparkSession.builder().master("local").appName("legend").getOrCreate()
-    import spark.implicits._
-
-    spark.registerLegendUDFs()
-
-    val dataModel = "fire::collateral"
-    val legend = LegendClasspathLoader.loadResources("fire-model")
-    val schema = legend.getEntitySchema(dataModel)
-    val expectations = legend.getEntityExpectations(dataModel)
-    val derivations = legend.getEntityDerivations(dataModel)
-
-    val input_df = spark
-      .read
-      .format("json")
-      .schema(schema)
-      .load(getCollateralDirectory)
-
-    input_df.show(truncate = false)
-
-    val output_df = input_df.legendExpectations(expectations)
-    output_df
-      .withColumn("legend", explode(col("legend")))
-      .select("id", "encumbrance_amount", "start_date", "end_date", "currency_code", "legend")
-      .show(truncate = false)
-
-    val derivationDDL = derivations.flatMap(p => p.toDDL.toOption).toDF("derivation")
-    derivationDDL.show(2, truncate = false)
-
+  val dataPath: String = {
+    val url: URL = Objects.requireNonNull(this.getClass.getClassLoader.getResource("data"))
+    val directory: Path = Paths.get(url.toURI)
+    if (!Files.isDirectory(directory)) throw new IllegalAccessException("Not a directory: " + directory)
+    directory.toString
   }
 
-  def getCollateralDirectory: String = {
-    val url: URL = Objects.requireNonNull(this.getClass.getClassLoader.getResource("sample-data"))
-    val directory: Path = Paths.get(url.toURI)
-    directory.toString
+  val spark: SparkSession = SparkSession.builder().appName("TEST").master("local[1]").getOrCreate()
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
+  "Raw files" should "be processed fully from a legend specs" in {
+
+    val legend = LegendClasspathLoader.loadResources("model")
+
+    val legendStrategy = legend.buildStrategy(
+      "databricks::employee",
+      "databricks::lakehouse::emp2delta",
+      "databricks::lakehouse::runtime"
+    )
+
+    val inputDF = spark.read.format("json").schema(legendStrategy.schema).load(dataPath)
+    inputDF.show()
+
+    val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
+    mappedDF.show()
+
+    val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
+    cleanedDF.withColumn("legend", explode(col("legend"))).show()
+
+    assert(legendStrategy.targetTable == "legend.employee")
+
   }
 
 }

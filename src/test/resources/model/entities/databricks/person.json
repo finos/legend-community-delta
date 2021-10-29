@@ -1,0 +1,182 @@
+{
+  "classifierPath": "meta::pure::metamodel::type::Class",
+  "content": {
+    "_type": "class",
+    "constraints": [],
+    "name": "person",
+    "originalMilestonedProperties": [],
+    "package": "databricks",
+    "properties": [
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "first_name",
+        "propertyTypeSourceInformation": {
+          "endColumn": 74,
+          "endLine": 3,
+          "sourceId": "",
+          "startColumn": 69,
+          "startLine": 3
+        },
+        "sourceInformation": {
+          "endColumn": 78,
+          "endLine": 3,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 3
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 54,
+              "endLine": 3,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 3
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 3,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 3
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 3,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 3
+              },
+              "value": "doc"
+            },
+            "value": "Person first name"
+          }
+        ],
+        "type": "String"
+      },
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "last_name",
+        "propertyTypeSourceInformation": {
+          "endColumn": 72,
+          "endLine": 4,
+          "sourceId": "",
+          "startColumn": 67,
+          "startLine": 4
+        },
+        "sourceInformation": {
+          "endColumn": 76,
+          "endLine": 4,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 4
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 53,
+              "endLine": 4,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 4
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 4,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 4
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 4,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 4
+              },
+              "value": "doc"
+            },
+            "value": "Person last name"
+          }
+        ],
+        "type": "String"
+      },
+      {
+        "multiplicity": {
+          "lowerBound": 1,
+          "upperBound": 1
+        },
+        "name": "birth_date",
+        "propertyTypeSourceInformation": {
+          "endColumn": 72,
+          "endLine": 5,
+          "sourceId": "",
+          "startColumn": 69,
+          "startLine": 5
+        },
+        "sourceInformation": {
+          "endColumn": 76,
+          "endLine": 5,
+          "sourceId": "",
+          "startColumn": 3,
+          "startLine": 5
+        },
+        "stereotypes": [],
+        "taggedValues": [
+          {
+            "sourceInformation": {
+              "endColumn": 54,
+              "endLine": 5,
+              "sourceId": "",
+              "startColumn": 4,
+              "startLine": 5
+            },
+            "tag": {
+              "profile": "meta::pure::profiles::doc",
+              "profileSourceInformation": {
+                "endColumn": 28,
+                "endLine": 5,
+                "sourceId": "",
+                "startColumn": 4,
+                "startLine": 5
+              },
+              "sourceInformation": {
+                "endColumn": 32,
+                "endLine": 5,
+                "sourceId": "",
+                "startColumn": 30,
+                "startLine": 5
+              },
+              "value": "doc"
+            },
+            "value": "Person birth date"
+          }
+        ],
+        "type": "Date"
+      }
+    ],
+    "qualifiedProperties": [],
+    "sourceInformation": {
+      "endColumn": 1,
+      "endLine": 6,
+      "sourceId": "",
+      "startColumn": 1,
+      "startLine": 1
+    },
+    "stereotypes": [],
+    "superTypes": [],
+    "taggedValues": []
+  }
+}
