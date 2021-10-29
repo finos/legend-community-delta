@@ -17,29 +17,15 @@
 
 package org.finos.legend.spark
 
-import java.io.StringReader
-import java.util.Collections
-
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.sf.jsqlparser.parser.CCJSqlParserManager
-import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.spark.sql.types._
-import org.finos.legend.engine.language.pure.compiler.toPureGraph.{HelperValueSpecificationBuilder, PureModel}
-import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
+import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
 import org.finos.legend.engine.language.pure.grammar.to.{DEPRECATED_PureGrammarComposerCore, PureGrammarComposerContext}
-import org.finos.legend.engine.plan.generation.PlanGenerator
-import org.finos.legend.engine.plan.generation.transformers.LegendPlanTransformers
-import org.finos.legend.engine.plan.platform.PlanPlatform
-import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.SingleExecutionPlan
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
-import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.ValueSpecification
-import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.raw.Lambda
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
-import org.finos.legend.pure.generated.core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_
 import org.finos.legend.pure.generated.{Root_meta_pure_alloy_connections_RelationalDatabaseConnection_Impl, Root_meta_pure_alloy_connections_alloy_specification_DatabricksDatasourceSpecification_Impl}
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
-import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
@@ -107,7 +93,7 @@ class Legend(entities: Map[String, Entity]) {
   /**
    * BUSINESS EXPECTATIONS
    * Programmatically generate all SQL constraints as defined in a legend PURE language for a given entity
-   * We extract pure language constraints (e.g. |$this.score > 0) that we convert into spark SQL
+   * We extract pure language constraints (e.g. `|this.score > 0`) that we convert into spark SQL
    * Although technical expectations apply to a legend entities, business expectations can only be applied to the mapped
    * relational model. We generate SQL plan given a mapping and a runtime
    *
@@ -128,11 +114,11 @@ class Legend(entities: Map[String, Entity]) {
       val query = s"$entityName->getAll()->filter(this|${c.toLambda})"
 
       // We generate an execution plan
-      val plan = Legend.generateExecutionPlan(query, mapping, runtime, pureModel)
+      val plan = LegendUtils.generateExecutionPlan(query, mapping, runtime, pureModel)
 
       // We retrieve the SQL where clause
       val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-      Filter(c.name, Legend.parseSql(sqlExecPlan))
+      Filter(c.name, LegendUtils.parseSql(sqlExecPlan))
     })
   }
 
@@ -144,14 +130,14 @@ class Legend(entities: Map[String, Entity]) {
    * @param runtimeName the name of the runtime to use for that transformation
    * @return the set of transformations required
    */
-  def transform(entityName: String, mappingName: String, runtimeName: String): Transform = {
+  def buildStrategy(entityName: String, mappingName: String, runtimeName: String): TransformStrategy = {
 
     val relational = Try(pureModel.getMapping(mappingName)) match {
       case Success(value) => value.getRelationalTransformation
       case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
     }
 
-    Transform(
+    TransformStrategy(
       getEntitySchema(entityName),
       getTechnicalExpectations(entityName),
       relational.getTransformations,
@@ -179,21 +165,21 @@ class Legend(entities: Map[String, Entity]) {
 
       // Object being referenced externally, we have to ensure this was loaded
       val nestedEntity = getEntity(legendProperty.`type`)
-      val nestedColumn = Legend.childFieldName(legendProperty.name, parentField)
+      val nestedColumn = LegendUtils.childFieldName(legendProperty.name, parentField)
       nestedEntity.getContent.get("_type").asInstanceOf[String].toLowerCase() match {
 
         case "class" =>
           // We need to validate each underlying object if field is not optional
           // We simply recurse the same logic at a child level
           if (legendProperty.isCollection) defaultRules else {
-            val nestedRules: Seq[Filter] = getLegendClassExpectations(nestedEntity.toLegendClass, Legend.childFieldName(legendProperty.name, parentField))
+            val nestedRules: Seq[Filter] = getLegendClassExpectations(nestedEntity.toLegendClass, LegendUtils.childFieldName(legendProperty.name, parentField))
             defaultRules ++ nestedRules
           }
         case "enumeration" =>
           // We simply validate field against available enum values
           val values = nestedEntity.toLegendEnumeration.values.asScala.map(_.value)
           val sql = s"$nestedColumn IS NULL OR $nestedColumn IN (${values.map(v => s"'$v'").mkString(", ")})"
-          val allowedValues = Filter(s"[${Legend.cleanColumnName(nestedColumn)}] not allowed value", sql)
+          val allowedValues = Filter(s"[${LegendUtils.cleanColumnName(nestedColumn)}] not allowed value", sql)
           defaultRules :+ allowedValues
 
         case _ => throw new IllegalArgumentException(
@@ -304,21 +290,21 @@ class Legend(entities: Map[String, Entity]) {
   private def getFieldExpectations(legendProperty: Property, parentField: String): Seq[Filter] = {
 
     // Ensure we have the right field name if this is a nested entity
-    val fieldName = Legend.childFieldName(legendProperty.name, parentField)
+    val fieldName = LegendUtils.childFieldName(legendProperty.name, parentField)
 
     // Checking for non optional fields
     val mandatoryRule: Option[Filter] = if (!legendProperty.isNullable) {
-      Some(Filter(s"[${Legend.cleanColumnName(fieldName)}] is mandatory", s"$fieldName IS NOT NULL"))
+      Some(Filter(s"[${LegendUtils.cleanColumnName(fieldName)}] is mandatory", s"$fieldName IS NOT NULL"))
     } else None: Option[Filter]
 
     // Checking legend multiplicity if more than 1 value is allowed
     val multiplicityRule: Option[Filter] = if (legendProperty.isCollection) {
       if (legendProperty.multiplicity.isInfinite) {
         val sql = s"$fieldName IS NULL OR SIZE($fieldName) >= ${legendProperty.multiplicity.lowerBound}"
-        Some(Filter(s"[${Legend.cleanColumnName(fieldName)}] has invalid size", sql))
+        Some(Filter(s"[${LegendUtils.cleanColumnName(fieldName)}] has invalid size", sql))
       } else {
         val sql = s"$fieldName IS NULL OR SIZE($fieldName) BETWEEN ${legendProperty.multiplicity.lowerBound} AND ${legendProperty.multiplicity.getUpperBound.toInt}"
-        Some(Filter(s"[${Legend.cleanColumnName(fieldName)}] has invalid size", sql))
+        Some(Filter(s"[${LegendUtils.cleanColumnName(fieldName)}] has invalid size", sql))
       }
     } else None: Option[Filter]
 
@@ -331,98 +317,6 @@ object Legend {
 
   lazy val objectMapper: ObjectMapper = ObjectMapperFactory.getNewStandardObjectMapperWithPureProtocolExtensionSupports
   lazy val grammarComposer: DEPRECATED_PureGrammarComposerCore = DEPRECATED_PureGrammarComposerCore.Builder.newInstance.withRenderStyle(PureGrammarComposerContext.RenderStyle.PRETTY).build
-
-  /**
-   * A complexity when dealing with nested fields is to make sure we call a field with a [parent.child] syntax
-   *
-   * @param fieldName       the name of the field
-   * @param parentFieldName the name of the parent field this field is included into (empty for top level object)
-   * @return the concatenation of [parent.child] to reference this field
-   */
-  def childFieldName(fieldName: String, parentFieldName: String): String =
-    if (parentFieldName.isEmpty) s"`$fieldName`" else s"$parentFieldName.`$fieldName`"
-
-  /**
-   * We need to ensure fields (especially nested) are enclosed with backticks for spark SQL
-   *
-   * @param name of the field
-   * @return cleaned version of the field to query
-   */
-  def cleanColumnName(name: String): String = name.replaceAll("`", "")
-
-  /**
-   * Simple mapping function that converts Legend data type into Spark SQL DataType
-   *
-   * @return the corresponding DataType for a given legend type
-   */
-  def convertDataTypeFromString(returnType: String): DataType = {
-    returnType match {
-      case "String" => StringType
-      case "Boolean" => BooleanType
-      case "Binary" => BinaryType
-      case "Integer" => IntegerType
-      case "Number" => LongType
-      case "Float" => FloatType
-      case "Decimal" => DoubleType
-      case "Date" => DateType
-      case "StrictDate" => DateType
-      case "DateTime" => TimestampType
-      case _ =>
-        throw new IllegalArgumentException(s"entity of class [${returnType}] is not supported as primitive")
-    }
-  }
-
-  /**
-   * Parse SQL to retrieve WHERE clause and table alias
-   * TODO: find a way not to generate the full SQL but only visit the lambda condition
-   *
-   * @param executionPlan generated SQL plan from legend engine
-   * @return the WHERE clause of the generated SQL expression
-   */
-  def parseSql(executionPlan: SQLExecutionNode): String = {
-    val parserRealSql = new CCJSqlParserManager()
-    val select = parserRealSql.parse(new StringReader(executionPlan.sqlQuery)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
-    val alias = s"${select.getFromItem.getAlias.getName}."
-    val where = select.getWhere
-    where.toString.replaceAll(alias, "")
-  }
-
-  def generateExecutionPlan(query: String, legendMapping: Mapping, legendRuntime: runtime.Runtime, pureModel: PureModel): SingleExecutionPlan = {
-    PlanGenerator.generateExecutionPlan(
-      Legend.buildLambda(query, pureModel),
-      legendMapping,
-      legendRuntime,
-      null,
-      pureModel,
-      "vX_X_X",
-      PlanPlatform.JAVA,
-      "1.0",
-      Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),
-      LegendPlanTransformers.transformers
-    )
-  }
-
-  /**
-   * Build the value specification for a lambda function
-   *
-   * @param lambdaString the string representation of the lambda function
-   * @param pureModel    the pure model
-   * @return the compiled function
-   */
-  def buildLambda(lambdaString: String, pureModel: PureModel): LambdaFunction[_] = {
-    val function = buildLambda(lambdaString)
-    val lambda = new Lambda()
-    lambda.body = Collections.singletonList(function)
-    HelperValueSpecificationBuilder.buildLambda(lambda, pureModel.getContext)
-  }
-
-  def buildLambda(lambdaString: String): ValueSpecification = {
-    val parser = PureGrammarParser.newInstance()
-    val parsed = parser.parseLambda(lambdaString, "id", true)
-    require(parsed.body != null && parsed.body.size() > 0)
-    parsed.body.get(0)
-  }
-
 
 }
 

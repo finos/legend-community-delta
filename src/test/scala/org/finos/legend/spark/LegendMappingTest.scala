@@ -27,7 +27,7 @@ class LegendMappingTest extends AnyFlatSpec {
   "A spark execution  strategy" should "be generated" in {
     val legend = LegendClasspathLoader.loadResources("model")
 
-    val transform = legend.transform(
+    val transform = legend.buildStrategy(
       "databricks::employee",
       "databricks::lakehouse::emp2delta",
       "databricks::lakehouse::runtime"
@@ -38,7 +38,7 @@ class LegendMappingTest extends AnyFlatSpec {
     val expectations = transform.filters.map(_.sql).toSet
     assert(expectations == Set("`id` IS NOT NULL", "`sme` IS NOT NULL", "`joined_date` IS NOT NULL", "`high_fives` IS NOT NULL"))
 
-    val withColumns = transform.withColumnsRenamed
+    val withColumns = transform.transformations
     assert(withColumns.map(_.from).toSet == Set("id", "first_name", "last_name", "birth_date", "sme", "joined_date", "high_fives"))
     assert(withColumns.map(_.to).toSet == Set("id", "firstname", "lastname", "birthdate", "sme", "joineddate", "highfives"))
 

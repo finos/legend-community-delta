@@ -23,7 +23,6 @@
 //
 //import org.apache.spark.sql.SparkSession
 //import org.apache.spark.sql.functions._
-//import org.finos.legend.spark.functions._
 //import org.scalatest.flatspec.AnyFlatSpec
 //import org.slf4j.{Logger, LoggerFactory}
 //
@@ -31,38 +30,10 @@
 //
 //  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 //
-//  "Raw collateral files" should "be processed fully from a legend specs" in {
+//  "Raw files" should "be processed fully from a legend specs" in {
 //
-//    val spark = SparkSession.builder().master("local").appName("legend").getOrCreate()
-//    import spark.implicits._
 //
-//    spark.registerLegendUDFs()
 //
-//    val dataModel = "fire::collateral"
-//    val legend = LegendClasspathLoader.loadResources("fire-model")
-//    val schema = legend.getEntitySchema(dataModel)
-//    val expectations = legend.getEntityExpectations(dataModel)
-//
-//    val input_df = spark
-//      .read
-//      .format("json")
-//      .schema(schema)
-//      .load(getCollateralDirectory)
-//
-//    input_df.show(truncate = false)
-//
-//    val output_df = input_df.legendExpectations(expectations)
-//    output_df
-//      .withColumn("legend", explode(col("legend")))
-//      .select("id", "encumbrance_amount", "start_date", "end_date", "currency_code", "legend")
-//      .show(truncate = false)
-//
-//  }
-//
-//  def getCollateralDirectory: String = {
-//    val url: URL = Objects.requireNonNull(this.getClass.getClassLoader.getResource("sample-data"))
-//    val directory: Path = Paths.get(url.toURI)
-//    directory.toString
 //  }
 //
 //}
