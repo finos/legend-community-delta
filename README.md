@@ -193,6 +193,25 @@ mvn clean install [-P shaded]
 
 To create an uber jar that also includes all required legend dependencies, use the `-Pshaded` maven profile
 
+## Dependencies
+
+The entire project depends on latest changes from legend-engine, legend-sdlc and legend-pure that supports 
+Databricks data source. Until that code is merged to master, one would need to bring those changes and compile code locally
+
+```shell script
+git clone https://github.com/aamend/legend-engine.git
+git checkout deltaLake
+mvn clean install
+
+git clone https://github.com/aamend/legend-pure.git
+git checkout deltaLake
+mvn clean install
+
+git clone https://github.com/aamend/legend-sdlc.git
+git checkout deltaLake
+mvn clean install
+```
+
 ## Author
 
 Databricks, Inc.
