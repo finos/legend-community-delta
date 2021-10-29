@@ -54,7 +54,7 @@ class LegendIT extends AnyFlatSpec {
     val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
     mappedDF.show()
 
-    val cleanedDF = mappedDF.legendExpectations(legendStrategy.expectations, "legend")
+    val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
     cleanedDF.withColumn("legend", explode(col("legend"))).show()
 
     assert(legendStrategy.targetTable == "legend.employee")

@@ -30,7 +30,7 @@ package object spark {
         .foldLeft(df)((d, w) => d.withColumnRenamed(w.from, w.to))
     }
 
-    def legendExpectations(expectations: Seq[LegendExpectation], colName: String = "legend"): DataFrame = {
+    def legendValidate(expectations: Seq[LegendExpectation], colName: String = "legend"): DataFrame = {
 
       val filter_constraints = udf((r: Row) => {
         val names = r.getAs[Seq[String]](0)

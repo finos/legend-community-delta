@@ -181,7 +181,7 @@ val legendStrategy = legend.buildStrategy(
 
 val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load("/path/to/csv")
 val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
-val cleanedDF = mappedDF.legendExpectations(legendStrategy.expectations, "legend")
+val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
 cleanedDF.write.saveAsTable(legendStrategy.targetTable)
 ```
 
