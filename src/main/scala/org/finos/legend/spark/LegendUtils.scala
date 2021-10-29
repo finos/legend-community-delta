@@ -228,13 +228,13 @@ object LegendUtils {
 
   implicit class TransformationImpl(transformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl) {
 
-    def getTransformations: Seq[Transformation] = {
+    def getTransformations: Seq[LegendRelationalTransformation] = {
       transformation._propertyMappings.asScala.flatMap({ o =>
         o match {
           case p: Root_meta_relational_mapping_RelationalPropertyMapping_Impl =>
             p._relationalOperationElement match {
               case e: Root_meta_relational_metamodel_TableAliasColumn_Impl =>
-                Some(Transformation(p._property()._name(), e._columnName()))
+                Some(LegendRelationalTransformation(p._property()._name(), e._columnName()))
               case _ => None
             }
           case _ =>
