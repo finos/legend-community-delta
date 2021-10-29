@@ -38,11 +38,12 @@ class LegendMappingTest extends AnyFlatSpec {
     val expectations = transform.filters.map(_.sql).toSet
     assert(expectations == Set("`id` IS NOT NULL", "`sme` IS NOT NULL", "`joined_date` IS NOT NULL", "`high_fives` IS NOT NULL"))
 
-    val withColumns = transform.withColumnsRenamed.map(_.from).toSet
-    assert(withColumns == Set("id", "first_name", "last_name", "birth_date", "sme", "joined_date", "high_fives"))
+    val withColumns = transform.withColumnsRenamed
+    assert(withColumns.map(_.from).toSet == Set("id", "first_name", "last_name", "birth_date", "sme", "joined_date", "high_fives"))
+    assert(withColumns.map(_.to).toSet == Set("id", "firstname", "lastname", "birthdate", "sme", "joineddate", "highfives"))
 
     val constraints = transform.constraints.map(_.sql).toSet
-    assert(constraints == Set("high_fives > 0", "year(joined_date) - year(birth_date) > 20"))
+    assert(constraints == Set("highfives > 0", "year(joineddate) - year(birthdate) > 20"))
 
   }
 
