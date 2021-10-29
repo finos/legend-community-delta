@@ -17,27 +17,15 @@
 
 package org.finos.legend.spark
 
-import java.io.File
-
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.slf4j.{Logger, LoggerFactory}
 
-class EntityTest extends AnyFlatSpec {
+class LegendEntityTest extends AnyFlatSpec {
 
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-  "A legend resources directory" should "be loaded from classpath" in {
-    assert(LegendClasspathLoader.loadResources("model").getEntityNames.nonEmpty)
-  }
-
-  it should "also be loaded from external directory" in {
-    val classLoader = getClass.getClassLoader
-    val file = new File(classLoader.getResource("model").getFile)
-    assert(LegendFileLoader.loadResources(file.toString).getEntityNames.nonEmpty)
-  }
-
-  it should "contain specification for [databricks::person]" in {
+  "A legend resources directory" should "contain specification for [databricks::person]" in {
     val legend = LegendClasspathLoader.loadResources("model")
     assert(legend.getEntityNames.contains("databricks::person"))
     val fields = legend.getEntitySchema("databricks::person").fields.map(_.name)
@@ -61,20 +49,21 @@ class EntityTest extends AnyFlatSpec {
 
   "Technical expectations" should "be created from a [databricks::employee] class" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val expectations = legend.getEntityExpectations("databricks::employee")
+    val expectations = legend.getTechnicalExpectations("databricks::employee")
     expectations.foreach(println)
     assert(expectations.nonEmpty)
+    assert(expectations.map(_.sql).toSet == Set("`id` IS NOT NULL", "`sme` IS NOT NULL", "`joined_date` IS NOT NULL", "`high_fives` IS NOT NULL"))
   }
 
   "Legend Return type" should "be converted in DataType" in {
     val returnTypes = Seq("String", "Boolean", "Binary", "Integer", "Number", "Float", "Decimal", "Date", "StrictDate", "DateTime")
     val dataType = Seq(StringType, BooleanType, BinaryType, IntegerType, LongType, FloatType, DoubleType, DateType, DateType, TimestampType)
     returnTypes.zip(dataType).foreach({ case (returnType, dataType) =>
-      val converted = convertDataTypeFromString(returnType)
+      val converted = Legend.convertDataTypeFromString(returnType)
       assert(converted == dataType, s"[$returnType] should be converted as [$dataType], got [$converted]")
     })
     assertThrows[IllegalArgumentException] {
-      convertDataTypeFromString("Foo Bar")
+      Legend.convertDataTypeFromString("Foo Bar")
     }
   }
 }
