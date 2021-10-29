@@ -47,7 +47,7 @@ class LegendPureTest extends AnyFlatSpec {
 
   "A lambda function" should "be generated from a string representation" in {
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
-    val function = Legend.buildLambda(lambdaString)
+    val function = LegendUtils.buildLambda(lambdaString)
     assert(function.isInstanceOf[AppliedFunction])
     assert(function.asInstanceOf[AppliedFunction].function == "filter")
   }
@@ -58,11 +58,11 @@ class LegendPureTest extends AnyFlatSpec {
 
     assertThrows[EngineException] {
       val lambdaString = "test->getAll()->filter(x|$x.foo = 'bar')"
-      Legend.buildLambda(lambdaString, legend.pureModel)
+      LegendUtils.buildLambda(lambdaString, legend.pureModel)
     }
 
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
-    val function = Legend.buildLambda(lambdaString, legend.pureModel)
+    val function = LegendUtils.buildLambda(lambdaString, legend.pureModel)
     assert(function._expressionSequence().asScala.nonEmpty)
   }
 
@@ -75,11 +75,11 @@ class LegendPureTest extends AnyFlatSpec {
 
     assertThrows[EngineException] {
       val lambdaString = "foobar->getAll()->filter(x|$x.foo = 'bar')"
-      Legend.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
+      LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     }
 
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
-    val plan = Legend.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     assert(plan.rootExecutionNode.executionNodes.get(0).isInstanceOf[SQLExecutionNode])
   }
 
@@ -91,9 +91,9 @@ class LegendPureTest extends AnyFlatSpec {
     val runtime = legend.getRuntime("databricks::lakehouse::runtime")
 
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
-    val plan = Legend.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = Legend.parseSql(sqlPlan)
+    val sql = LegendUtils.parseSql(sqlPlan)
     assert(sql == "highfives > 20")
   }
 
@@ -105,9 +105,9 @@ class LegendPureTest extends AnyFlatSpec {
     val runtime = legend.getRuntime("databricks::lakehouse::runtime")
 
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.joined_date->dateDiff($x.birth_date, DurationUnit.YEARS) > 20)"
-    val plan = Legend.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, runtime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = Legend.parseSql(sqlPlan)
+    val sql = LegendUtils.parseSql(sqlPlan)
     assert(sql == "year(joineddate) - year(birthdate) > 20")
   }
 

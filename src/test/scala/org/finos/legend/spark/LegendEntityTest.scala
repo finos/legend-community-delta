@@ -59,11 +59,11 @@ class LegendEntityTest extends AnyFlatSpec {
     val returnTypes = Seq("String", "Boolean", "Binary", "Integer", "Number", "Float", "Decimal", "Date", "StrictDate", "DateTime")
     val dataType = Seq(StringType, BooleanType, BinaryType, IntegerType, LongType, FloatType, DoubleType, DateType, DateType, TimestampType)
     returnTypes.zip(dataType).foreach({ case (returnType, dataType) =>
-      val converted = Legend.convertDataTypeFromString(returnType)
+      val converted = LegendUtils.convertDataTypeFromString(returnType)
       assert(converted == dataType, s"[$returnType] should be converted as [$dataType], got [$converted]")
     })
     assertThrows[IllegalArgumentException] {
-      Legend.convertDataTypeFromString("Foo Bar")
+      LegendUtils.convertDataTypeFromString("Foo Bar")
     }
   }
 }

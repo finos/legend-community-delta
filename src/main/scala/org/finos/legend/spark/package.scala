@@ -17,6 +17,7 @@
 
 package org.finos.legend
 
+import org.apache.spark.sql.DataFrameReader
 import org.apache.spark.sql.types._
 
 
@@ -27,17 +28,38 @@ package object spark {
                      sql: String
                    )
 
-  case class WithColumnRenamed(
+  case class Transformation(
                                 from: String,
                                 to: String
                               )
 
-  case class Transform(
-                        schema: StructType,
-                        filters: Seq[Filter],
-                        withColumnsRenamed: Seq[WithColumnRenamed],
-                        constraints: Seq[Filter],
-                        table: String
-                      )
+  case class TransformStrategy(
+                                schema: StructType,
+                                filters: Seq[Filter],
+                                transformations: Seq[Transformation],
+                                constraints: Seq[Filter],
+                                table: String
+                      ) {
+
+    def execute(dr: DataFrameReader, inputPath: String, outputPath: String): Unit = {
+
+      // Load and schematize
+      val rawDF = dr.schema(schema).load(inputPath)
+
+      // Apply technical expectations
+      val filterDF = filters.foldLeft(rawDF)((df, f) => df.filter(f.sql))
+
+      // Transform as table
+      val transformDF = transformations.foldLeft(filterDF)((df, w) => df.withColumnRenamed(w.from, w.to))
+
+      // Run business expectations
+      val goldDF = constraints.foldLeft(transformDF)((df, f) => df.filter(f.sql))
+
+      // Persist change
+      goldDF.write.format("delta").save(outputPath)
+
+    }
+
+  }
 
 }

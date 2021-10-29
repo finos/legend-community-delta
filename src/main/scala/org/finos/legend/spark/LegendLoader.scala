@@ -3,7 +3,8 @@ package org.finos.legend.spark
 import java.nio.file.Path
 
 import org.finos.legend.sdlc.serialization.EntityLoader
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 
 trait LegendLoader {
 
