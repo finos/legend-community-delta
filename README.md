@@ -50,7 +50,6 @@ Legend project can be loaded by specifying a parent directory where `entities/${
 model definitions can be found. We load legend namespaces from a classpath or disk as follows
 
 ```scala
-import org.finos.legend.spark.LegendClasspathLoader
 val legend = LegendClasspathLoader.loadResources("datamodel")
 ```
 

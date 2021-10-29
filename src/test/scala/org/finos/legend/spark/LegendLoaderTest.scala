@@ -19,36 +19,20 @@ package org.finos.legend.spark
 
 import java.io.File
 
-import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.slf4j.{Logger, LoggerFactory}
 
-class MappingTest extends AnyFlatSpec {
+class LegendLoaderTest extends AnyFlatSpec {
 
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   "A legend resources directory" should "be loaded from classpath" in {
-    val legend = LegendFileLoader.loadResources("src/test/resources/model")
-
-    val transform = legend.transform(
-      "databricks::employee",
-      "databricks::lakehouse::emp2delta",
-      "databricks::lakehouse::runtime"
-    )
-
-    assert(transform.dstTable == "legend.employee")
-
-    transform.srcExpectations.foreach({ case (src, dst) =>
-      println(src + " -> " + dst)
-    })
-
-    transform.transformations.foreach({ case (src, dst) =>
-      println(src + " -> " + dst)
-    })
-
-    transform.constraints.foreach({ case (src, dst) =>
-      println(src + " -> " + dst)
-    })
+    assert(LegendClasspathLoader.loadResources("model").getEntityNames.nonEmpty)
   }
 
+  it should "also be loaded from external directory" in {
+    val classLoader = getClass.getClassLoader
+    val file = new File(classLoader.getResource("model").getFile)
+    assert(LegendFileLoader.loadResources(file.toString).getEntityNames.nonEmpty)
+  }
 }
