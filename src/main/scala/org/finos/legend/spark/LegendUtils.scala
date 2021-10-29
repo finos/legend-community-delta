@@ -5,7 +5,7 @@ import java.util.Collections
 
 import net.sf.jsqlparser.parser.CCJSqlParserManager
 import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
-import org.apache.spark.sql.types.{BinaryType, BooleanType, DataType, DateType, DoubleType, FloatType, IntegerType, LongType, StringType, TimestampType}
+import org.apache.spark.sql.types._
 import org.finos.legend.engine.language.pure.compiler.toPureGraph.{HelperValueSpecificationBuilder, PureModel}
 import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
 import org.finos.legend.engine.plan.generation.PlanGenerator
@@ -69,15 +69,7 @@ object LegendUtils {
    * @return the concatenation of [parent.child] to reference this field
    */
   def childFieldName(fieldName: String, parentFieldName: String): String =
-    if (parentFieldName.isEmpty) s"`$fieldName`" else s"$parentFieldName.`$fieldName`"
-
-  /**
-   * We need to ensure fields (especially nested) are enclosed with backticks for spark SQL
-   *
-   * @param name of the field
-   * @return cleaned version of the field to query
-   */
-  def cleanColumnName(name: String): String = name.replaceAll("`", "")
+    if (parentFieldName.isEmpty) fieldName else s"$parentFieldName.$fieldName"
 
   /**
    * Simple mapping function that converts Legend data type into Spark SQL DataType
@@ -229,7 +221,7 @@ object LegendUtils {
         .writeValueAsString(constraint.functionDefinition.accept(Legend.grammarComposer))
         .dropRight(1)
         .drop(2)
-        .replaceAll("\\\\n", "")
+        .replaceAll("\\\\n\\s*", "")
     }
   }
 
