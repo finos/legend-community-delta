@@ -6,7 +6,7 @@
       "_type": "RelationalDatabaseConnection",
       "authenticationStrategy": {
         "_type": "apiToken",
-        "apiToken": "dapi3eb10ee66cbf730f0ca38e159be12c8f",
+        "apiToken": "XXXXXXXXXXXXX",
         "sourceInformation": {
           "endColumn": 4,
           "endLine": 16,
@@ -18,8 +18,8 @@
       "databaseType": "Databricks",
       "datasourceSpecification": {
         "_type": "databricks",
-        "hostname": "e2-demo-west.cloud.databricks.com",
-        "httpPath": "/sql/1.0/endpoints/3930839871f3d4ef",
+        "hostname": "XXXXXXXXXXXXX",
+        "httpPath": "XXXXXXXXXXXXX",
         "port": "443",
         "protocol": "https",
         "sourceInformation": {
