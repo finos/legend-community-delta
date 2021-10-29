@@ -87,7 +87,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param runtimeName the runtime to use against that specific mapping
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
    */
-  def getExpectations(entityName: String, mappingName: String, runtimeName: String): Seq[Expectation] = {
+  def getExpectations(entityName: String, mappingName: String, runtimeName: String): Seq[LegendExpectation] = {
     val entity = getEntity(entityName)
     val expectations = getLegendClassExpectations(entity.toLegendClass)
 
@@ -117,14 +117,14 @@ class Legend(entities: Map[String, Entity]) {
    * @param runtimeName the name of the runtime to use for that transformation
    * @return the set of transformations required
    */
-  def buildStrategy(entityName: String, mappingName: String, runtimeName: String): RelationalStrategy = {
+  def buildStrategy(entityName: String, mappingName: String, runtimeName: String): LegendRelationalStrategy = {
 
     val relational = Try(pureModel.getMapping(mappingName)) match {
       case Success(value) => value.getRelationalTransformation
       case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
     }
 
-    RelationalStrategy(
+    LegendRelationalStrategy(
       getEntitySchema(entityName),
       relational.getTransformations,
       getExpectations(entityName, mappingName, runtimeName),
@@ -141,10 +141,10 @@ class Legend(entities: Map[String, Entity]) {
    * @param parentField    empty if top level object, it contains parent field for nested structure
    * @return the list of rules expressed as SQL expressions. Unchecked yet, we'll test for syntax later
    */
-  private def getLegendPropertyExpectations(legendProperty: Property, parentField: String): Seq[Expectation] = {
+  private def getLegendPropertyExpectations(legendProperty: Property, parentField: String): Seq[LegendExpectation] = {
 
     // the first series of rules are simply derived from the nullability and multiplicity of each field
-    val defaultRules: Seq[Expectation] = getFieldExpectations(legendProperty, parentField)
+    val defaultRules: Seq[LegendExpectation] = getFieldExpectations(legendProperty, parentField)
 
     // we need to go through more complex structures, such as nested fields or enumerations
     if (legendProperty.`type`.contains("::")) {
@@ -158,14 +158,14 @@ class Legend(entities: Map[String, Entity]) {
           // We need to validate each underlying object if field is not optional
           // We simply recurse the same logic at a child level
           if (legendProperty.isCollection) defaultRules else {
-            val nestedRules: Seq[Expectation] = getLegendClassExpectations(nestedEntity.toLegendClass, LegendUtils.childFieldName(legendProperty.name, parentField))
+            val nestedRules: Seq[LegendExpectation] = getLegendClassExpectations(nestedEntity.toLegendClass, LegendUtils.childFieldName(legendProperty.name, parentField))
             defaultRules ++ nestedRules
           }
         case "enumeration" =>
           // We simply validate field against available enum values
           val values = nestedEntity.toLegendEnumeration.values.asScala.map(_.value)
           val sql = "$this.%1$s->isEmpty() || $this.%1$s->in(%2$s)".format(nestedColumn, values.map(v => s"'$v'").mkString(", "))
-          val allowedValues = Expectation(s"[$nestedColumn] not allowed value", sql)
+          val allowedValues = LegendExpectation(s"[$nestedColumn] not allowed value", sql)
           defaultRules :+ allowedValues
 
         case _ => throw new IllegalArgumentException(
@@ -261,7 +261,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param parentField empty if top level object, it contains parent field for nested structure
    * @return the list of rules to evaluate dataframe against, as SQL expressions
    */
-  private def getLegendClassExpectations(legendClass: Class, parentField: String = ""): Seq[Expectation] = {
+  private def getLegendClassExpectations(legendClass: Class, parentField: String = ""): Seq[LegendExpectation] = {
 
     val supertypes = legendClass.superTypes.asScala.flatMap(superType => {
       getLegendClassExpectations(getEntity(superType).toLegendClass, parentField)
@@ -272,7 +272,7 @@ class Legend(entities: Map[String, Entity]) {
     })
 
     val constraints = legendClass.constraints.asScala.map(c => {
-      Expectation(c.name, c.toLambda)
+      LegendExpectation(c.name, c.toLambda)
     })
 
     supertypes ++ expectations ++ constraints
@@ -287,26 +287,26 @@ class Legend(entities: Map[String, Entity]) {
    * @param parentField    empty if top level object, it contains parent field for nested structure
    * @return the list of rules checking for mandatory value and multiplicity
    */
-  private def getFieldExpectations(legendProperty: Property, parentField: String): Seq[Expectation] = {
+  private def getFieldExpectations(legendProperty: Property, parentField: String): Seq[LegendExpectation] = {
 
     // Ensure we have the right field name if this is a nested entity
     val fieldName = LegendUtils.childFieldName(legendProperty.name, parentField)
 
     // Checking for non optional fields
-    val mandatoryRule: Option[Expectation] = if (!legendProperty.isNullable) {
-      Some(Expectation(s"[$fieldName] is mandatory", "$this.%1$s->isNotEmpty()".format(fieldName)))
-    } else None: Option[Expectation]
+    val mandatoryRule: Option[LegendExpectation] = if (!legendProperty.isNullable) {
+      Some(LegendExpectation(s"[$fieldName] is mandatory", "$this.%1$s->isNotEmpty()".format(fieldName)))
+    } else None: Option[LegendExpectation]
 
     // Checking legend multiplicity if more than 1 value is allowed
-    val multiplicityRule: Option[Expectation] = if (legendProperty.isCollection) {
+    val multiplicityRule: Option[LegendExpectation] = if (legendProperty.isCollection) {
       if (legendProperty.multiplicity.isInfinite) {
         val sql = "$this.%1$s->isEmpty() || $this.%1$s->size() >= %2$s".format(fieldName, legendProperty.multiplicity.lowerBound)
-        Some(Expectation(s"[$fieldName] has invalid size", sql))
+        Some(LegendExpectation(s"[$fieldName] has invalid size", sql))
       } else {
         val sql = "$this.%1$s->isEmpty() || ($this.%1$s->size() >= %2$s && $this.%1$s->size() <= %3$s)".format(fieldName, legendProperty.multiplicity.lowerBound, legendProperty.multiplicity.getUpperBound.toInt)
-        Some(Expectation(s"[$fieldName] has invalid size", sql))
+        Some(LegendExpectation(s"[$fieldName] has invalid size", sql))
       }
-    } else None: Option[Expectation]
+    } else None: Option[LegendExpectation]
 
     // Aggregate both mandatory and multiplicity rules
     Seq(mandatoryRule, multiplicityRule).flatten

@@ -125,4 +125,11 @@ class LegendTest extends AnyFlatSpec {
     assert(withColumns.map(_.from).toSet == Set("id", "first_name", "last_name", "birth_date", "sme", "joined_date", "high_fives"))
     assert(withColumns.map(_.to).toSet == Set("id", "firstname", "lastname", "birthdate", "sme", "joineddate", "highfives"))
   }
+
+  "A readme" should "be generated" in {
+    val legend = LegendClasspathLoader.loadResources("model")
+    val schema = legend.getEntitySchema("databricks::employee")
+    schema.fields.foreach(s => println(s.toDDL))
+  }
+
 }
