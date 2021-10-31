@@ -48,7 +48,7 @@ class LegendIT extends AnyFlatSpec {
       "databricks::lakehouse::runtime"
     )
 
-    val inputDF = spark.read.format("json").schema(legendStrategy.schema).load(dataPath)
+    val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load(dataPath)
     inputDF.show()
 
     val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
@@ -56,8 +56,11 @@ class LegendIT extends AnyFlatSpec {
 
     val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
     cleanedDF.withColumn("legend", explode(col("legend"))).show()
-
+    val test = cleanedDF.withColumn("legend", explode(col("legend"))).groupBy("legend").count()
+    test.show()
+    assert(test.count() == 2)
     assert(legendStrategy.targetTable == "legend.employee")
+
 
   }
 

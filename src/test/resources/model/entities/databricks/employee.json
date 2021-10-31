@@ -9,7 +9,7 @@
           "body": [
             {
               "_type": "func",
-              "function": "greaterThan",
+              "function": "lessThan",
               "parameters": [
                 {
                   "_type": "property",
@@ -49,7 +49,7 @@
                     "startLine": 3
                   },
                   "values": [
-                    0
+                    300
                   ]
                 }
               ],
@@ -64,7 +64,7 @@
           ],
           "parameters": []
         },
-        "name": "[high five] should be positive",
+        "name": "[high five] should be less than 300",
         "sourceInformation": {
           "endColumn": 56,
           "endLine": 3,
