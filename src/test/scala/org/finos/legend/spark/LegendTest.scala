@@ -94,7 +94,7 @@ class LegendTest extends AnyFlatSpec {
         "sme IS NOT NULL",
         "joineddate IS NOT NULL",
         "highfives IS NOT NULL",
-        "highfives > 0",
+        "highfives < 300",
         "year(joineddate) - year(birthdate) > 20"
       )
     )
@@ -108,7 +108,7 @@ class LegendTest extends AnyFlatSpec {
         "$this.sme->isNotEmpty()",
         "$this.joined_date->isNotEmpty()",
         "$this.high_fives->isNotEmpty()",
-        "$this.high_fives > 0",
+        "$this.high_fives < 300",
         "$this.joined_date->dateDiff($this.birth_date,DurationUnit.YEARS) > 20"
       )
     )
