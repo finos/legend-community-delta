@@ -115,14 +115,13 @@ studio interface.
 
 In order to convert PURE constraints into spark SQL equivalent, we need to indicate our framework
 the strategy to convert legend entities into relational table. By specifying both a mapping and a runtime (of type Databricks), 
-we leverage the legend-engine framework to generate an execution plan compatible with a DeltaLake backend.
+we leverage the legend-engine framework to generate an execution plan compatible with a Spark backend.
 
 
 ```scala
 val expectations = legend.getExpectations(
   entityName = "databricks::employee",
-  mappingName = "databricks::lakehouse::mapping", 
-  runtimeName = "databricks::lakehouse::runtime"
+  mappingName = "databricks::lakehouse::mapping"
 )
 expectations.foreach(println)
 ```
@@ -175,8 +174,7 @@ val legend = LegendClasspathLoader.loadResources("model")
 
 val legendStrategy = legend.buildStrategy(
   "databricks::employee",
-  "databricks::lakehouse::emp2delta",
-  "databricks::lakehouse::runtime"
+  "databricks::lakehouse::emp2delta"
 )
 
 val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load("/path/to/csv")
@@ -196,21 +194,8 @@ To create an uber jar that also includes all required legend dependencies, use t
 ## Dependencies
 
 The entire project depends on latest changes from legend-engine, legend-sdlc and legend-pure that supports 
-Databricks data source. Until that code is merged to master, one would need to bring those changes and compile code locally
-
-```shell script
-git clone https://github.com/aamend/legend-engine.git
-git checkout deltaLake
-mvn clean install
-
-git clone https://github.com/aamend/legend-pure.git
-git checkout deltaLake
-mvn clean install
-
-git clone https://github.com/aamend/legend-sdlc.git
-git checkout deltaLake
-mvn clean install
-```
+Databricks data source. Until that code is merged to master, one would need to bring those changes and compile code locally.
+Please refer to [scripts](scripts/legend-install.sh) for more information.
 
 ## Author
 

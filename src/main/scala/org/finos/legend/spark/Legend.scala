@@ -17,14 +17,18 @@
 
 package org.finos.legend.spark
 
+import java.util.UUID
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.spark.sql.types._
+import org.finos.legend.engine.language.pure.compiler.Compiler
 import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
+import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
 import org.finos.legend.engine.language.pure.grammar.to.{DEPRECATED_PureGrammarComposerCore, PureGrammarComposerContext}
+import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextData
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
-import org.finos.legend.pure.generated.{Root_meta_pure_alloy_connections_RelationalDatabaseConnection_Impl, Root_meta_pure_alloy_connections_alloy_specification_DatabricksDatasourceSpecification_Impl}
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
 import org.finos.legend.sdlc.domain.model.entity.Entity
@@ -38,6 +42,7 @@ import scala.util.{Failure, Success, Try}
 class Legend(entities: Map[String, Entity]) {
 
   lazy val pureModel: PureModel = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build.getPureModel
+  lazy val sparkRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   def getEntityNames: Seq[String] = entities.keys.toSeq
@@ -51,18 +56,6 @@ class Legend(entities: Map[String, Entity]) {
     Try(pureModel.getMapping(mappingName)) match {
       case Success(value) => value
       case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
-    }
-  }
-
-  def getRuntime(runtimeName: String): runtime.Runtime = {
-    Try(pureModel.getRuntime(runtimeName)) match {
-      case Success(value) =>
-        val mainConnection = value._connections().asScala.head
-        require(mainConnection.isInstanceOf[Root_meta_pure_alloy_connections_RelationalDatabaseConnection_Impl], "connection should be of type relational")
-        val relational = mainConnection.asInstanceOf[Root_meta_pure_alloy_connections_RelationalDatabaseConnection_Impl]
-        require(relational._datasourceSpecification.isInstanceOf[Root_meta_pure_alloy_connections_alloy_specification_DatabricksDatasourceSpecification_Impl], "connection should be of type [Databricks]")
-        value
-      case Failure(e) => throw new IllegalArgumentException(s"could not load runtimeName [$runtimeName]", e)
     }
   }
 
@@ -84,15 +77,13 @@ class Legend(entities: Map[String, Entity]) {
    *
    * @param entityName  the entity of type [Class] to extract constraints from
    * @param mappingName the mapping entity used to transform entity onto a table
-   * @param runtimeName the runtime to use against that specific mapping
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
    */
-  def getExpectations(entityName: String, mappingName: String, runtimeName: String): Seq[LegendExpectation] = {
+  def getExpectations(entityName: String, mappingName: String): Seq[LegendExpectation] = {
     val entity = getEntity(entityName)
     val expectations = getLegendClassExpectations(entity.toLegendClass)
 
     val mapping = getMapping(mappingName)
-    val runtime = getRuntime(runtimeName)
 
     expectations.map(expectation => {
 
@@ -100,7 +91,7 @@ class Legend(entities: Map[String, Entity]) {
       val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation.lambda)
 
       // We generate an execution plan
-      val plan = LegendUtils.generateExecutionPlan(query, mapping, runtime, pureModel)
+      val plan = LegendUtils.generateExecutionPlan(query, mapping, sparkRuntime, pureModel)
 
       // We retrieve the SQL where clause
       val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
@@ -114,10 +105,9 @@ class Legend(entities: Map[String, Entity]) {
    *
    * @param entityName  the name of the entity to process
    * @param mappingName the name of the mapping to transform entity into a table
-   * @param runtimeName the name of the runtime to use for that transformation
    * @return the set of transformations required
    */
-  def buildStrategy(entityName: String, mappingName: String, runtimeName: String): LegendRelationalStrategy = {
+  def buildStrategy(entityName: String, mappingName: String): LegendRelationalStrategy = {
 
     val relational = Try(pureModel.getMapping(mappingName)) match {
       case Success(value) => value.getRelationalTransformation
@@ -127,7 +117,7 @@ class Legend(entities: Map[String, Entity]) {
     LegendRelationalStrategy(
       getEntitySchema(entityName),
       relational.getTransformations,
-      getExpectations(entityName, mappingName, runtimeName),
+      getExpectations(entityName, mappingName),
       relational.getTable
     )
 
@@ -317,6 +307,73 @@ object Legend {
 
   lazy val objectMapper: ObjectMapper = ObjectMapperFactory.getNewStandardObjectMapperWithPureProtocolExtensionSupports
   lazy val grammarComposer: DEPRECATED_PureGrammarComposerCore = DEPRECATED_PureGrammarComposerCore.Builder.newInstance.withRenderStyle(PureGrammarComposerContext.RenderStyle.PRETTY).build
+
+  /**
+   * We generate a runtime that can be used to map entities using a spark backend. The key point here is to not force end user
+   * writing a DatabricksSourceSpecification and authentication strategy just to process data transformations on spark
+   * We create a minimalistic runtime with dummy entities to indicate the framework generated SQL must be spark compatible
+   * Although the mapping used by user and runtime are disconnected, we want to minimize possible side effects of
+   * conflicting entities by using a unique identifier.
+   *
+   * @param uuid a unique identifier to minimize conflicts with user defined pure model
+   * @return a legend runtime of type Databricks that can be used to build SQL code
+   */
+  def buildRuntime(uuid: String): runtime.Runtime = {
+
+    val uniqueIdentifier = uuid.replaceAll("-", "")
+    val pureModelString  =
+      """
+        |###Connection
+        |RelationalDatabaseConnection %1$s::connection
+        |{
+        |  store: %1$s::store;
+        |  type: Databricks;
+        |  specification: Databricks
+        |  {
+        |    hostname: 'this';
+        |    port: 'is';
+        |    protocol: 'not';
+        |    httpPath: 'required';
+        |  };
+        |  auth: DefaultH2;
+        |}
+        |
+        |###Relational
+        |Database %1$s::store
+        |(
+        |  Schema foo
+        |  (
+        |    Table bar
+        |    (
+        |    )
+        |  )
+        |)
+        |
+        |###Mapping
+        |Mapping %1$s::mapping
+        |(
+        |  *%1$s::entity: Relational
+        |  {
+        |    ~mainTable [%1$s::store]foo.bar
+        |  }
+        |)
+        |
+        |###Pure
+        |Class %1$s::entity
+        |{
+        |}
+        |
+        |###Runtime
+        |Runtime %1$s::runtime
+        |{
+        |  mappings: [%1$s::mapping];
+        |  connections: [%1$s::store: [c: %1$s::connection]];
+        |}""".stripMargin.format(uniqueIdentifier)
+
+    val contextData: PureModelContextData = PureGrammarParser.newInstance.parseModel(pureModelString)
+    val additionalPure = Compiler.compile(contextData, null, null)
+    additionalPure.getRuntime(s"${uniqueIdentifier}::runtime")
+  }
 
 }
 

@@ -71,8 +71,7 @@ class LegendTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val expectations = legend.getExpectations(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta",
-      "databricks::lakehouse::runtime"
+      "databricks::lakehouse::emp2delta"
     )
     assert(expectations.nonEmpty)
   }
@@ -81,8 +80,7 @@ class LegendTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val transform = legend.buildStrategy(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta",
-      "databricks::lakehouse::runtime"
+      "databricks::lakehouse::emp2delta"
     )
 
     assert(
@@ -118,18 +116,10 @@ class LegendTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val transform = legend.buildStrategy(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta",
-      "databricks::lakehouse::runtime"
+      "databricks::lakehouse::emp2delta"
     )
     val withColumns = transform.transformations
     assert(withColumns.map(_.from).toSet == Set("id", "first_name", "last_name", "birth_date", "sme", "joined_date", "high_fives"))
     assert(withColumns.map(_.to).toSet == Set("id", "firstname", "lastname", "birthdate", "sme", "joineddate", "highfives"))
   }
-
-  "A readme" should "be generated" in {
-    val legend = LegendClasspathLoader.loadResources("model")
-    val schema = legend.getEntitySchema("databricks::employee")
-    schema.fields.foreach(s => println(s.toDDL))
-  }
-
 }

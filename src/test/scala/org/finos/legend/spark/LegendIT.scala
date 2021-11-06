@@ -44,8 +44,7 @@ class LegendIT extends AnyFlatSpec {
 
     val legendStrategy = legend.buildStrategy(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta",
-      "databricks::lakehouse::runtime"
+      "databricks::lakehouse::emp2delta"
     )
 
     val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load(dataPath)
@@ -60,8 +59,6 @@ class LegendIT extends AnyFlatSpec {
     test.show()
     assert(test.count() == 2)
     assert(legendStrategy.targetTable == "legend.employee")
-
-
   }
 
 }
