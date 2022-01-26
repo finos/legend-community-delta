@@ -1,182 +1,222 @@
 {
-  "classifierPath": "meta::pure::metamodel::type::Class",
-  "content": {
-    "_type": "class",
-    "constraints": [],
-    "name": "person",
-    "originalMilestonedProperties": [],
-    "package": "databricks",
-    "properties": [
-      {
-        "multiplicity": {
-          "lowerBound": 1,
-          "upperBound": 1
-        },
-        "name": "first_name",
-        "propertyTypeSourceInformation": {
-          "endColumn": 74,
-          "endLine": 3,
-          "sourceId": "",
-          "startColumn": 69,
-          "startLine": 3
-        },
-        "sourceInformation": {
-          "endColumn": 78,
-          "endLine": 3,
-          "sourceId": "",
-          "startColumn": 3,
-          "startLine": 3
-        },
-        "stereotypes": [],
-        "taggedValues": [
-          {
-            "sourceInformation": {
-              "endColumn": 54,
-              "endLine": 3,
-              "sourceId": "",
-              "startColumn": 4,
-              "startLine": 3
-            },
-            "tag": {
-              "profile": "meta::pure::profiles::doc",
-              "profileSourceInformation": {
-                "endColumn": 28,
-                "endLine": 3,
-                "sourceId": "",
-                "startColumn": 4,
-                "startLine": 3
-              },
-              "sourceInformation": {
-                "endColumn": 32,
-                "endLine": 3,
-                "sourceId": "",
-                "startColumn": 30,
-                "startLine": 3
-              },
-              "value": "doc"
-            },
-            "value": "Person first name"
-          }
-        ],
-        "type": "String"
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "constraints" : [ ],
+    "name" : "person",
+    "originalMilestonedProperties" : [ ],
+    "package" : "databricks",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
       },
-      {
-        "multiplicity": {
-          "lowerBound": 1,
-          "upperBound": 1
-        },
-        "name": "last_name",
-        "propertyTypeSourceInformation": {
-          "endColumn": 72,
-          "endLine": 4,
-          "sourceId": "",
-          "startColumn": 67,
-          "startLine": 4
-        },
-        "sourceInformation": {
-          "endColumn": 76,
-          "endLine": 4,
-          "sourceId": "",
-          "startColumn": 3,
-          "startLine": 4
-        },
-        "stereotypes": [],
-        "taggedValues": [
-          {
-            "sourceInformation": {
-              "endColumn": 53,
-              "endLine": 4,
-              "sourceId": "",
-              "startColumn": 4,
-              "startLine": 4
-            },
-            "tag": {
-              "profile": "meta::pure::profiles::doc",
-              "profileSourceInformation": {
-                "endColumn": 28,
-                "endLine": 4,
-                "sourceId": "",
-                "startColumn": 4,
-                "startLine": 4
-              },
-              "sourceInformation": {
-                "endColumn": 32,
-                "endLine": 4,
-                "sourceId": "",
-                "startColumn": 30,
-                "startLine": 4
-              },
-              "value": "doc"
-            },
-            "value": "Person last name"
-          }
-        ],
-        "type": "String"
+      "name" : "firstName",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 73,
+        "endLine" : 3,
+        "sourceId" : "",
+        "startColumn" : 68,
+        "startLine" : 3
       },
-      {
-        "multiplicity": {
-          "lowerBound": 1,
-          "upperBound": 1
+      "sourceInformation" : {
+        "endColumn" : 77,
+        "endLine" : 3,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 3
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 54,
+          "endLine" : 3,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 3
         },
-        "name": "birth_date",
-        "propertyTypeSourceInformation": {
-          "endColumn": 72,
-          "endLine": 5,
-          "sourceId": "",
-          "startColumn": 69,
-          "startLine": 5
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 3,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 3
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 3,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 3
+          },
+          "value" : "doc"
         },
-        "sourceInformation": {
-          "endColumn": 76,
-          "endLine": 5,
-          "sourceId": "",
-          "startColumn": 3,
-          "startLine": 5
+        "value" : "Person first name"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "lastName",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 71,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 66,
+        "startLine" : 4
+      },
+      "sourceInformation" : {
+        "endColumn" : 75,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 4
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 53,
+          "endLine" : 4,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 4
         },
-        "stereotypes": [],
-        "taggedValues": [
-          {
-            "sourceInformation": {
-              "endColumn": 54,
-              "endLine": 5,
-              "sourceId": "",
-              "startColumn": 4,
-              "startLine": 5
-            },
-            "tag": {
-              "profile": "meta::pure::profiles::doc",
-              "profileSourceInformation": {
-                "endColumn": 28,
-                "endLine": 5,
-                "sourceId": "",
-                "startColumn": 4,
-                "startLine": 5
-              },
-              "sourceInformation": {
-                "endColumn": 32,
-                "endLine": 5,
-                "sourceId": "",
-                "startColumn": 30,
-                "startLine": 5
-              },
-              "value": "doc"
-            },
-            "value": "Person birth date"
-          }
-        ],
-        "type": "Date"
-      }
-    ],
-    "qualifiedProperties": [],
-    "sourceInformation": {
-      "endColumn": 1,
-      "endLine": 6,
-      "sourceId": "",
-      "startColumn": 1,
-      "startLine": 1
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 4,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 4
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 4,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 4
+          },
+          "value" : "doc"
+        },
+        "value" : "Person last name"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "birthDate",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 71,
+        "endLine" : 5,
+        "sourceId" : "",
+        "startColumn" : 68,
+        "startLine" : 5
+      },
+      "sourceInformation" : {
+        "endColumn" : 75,
+        "endLine" : 5,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 5
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 54,
+          "endLine" : 5,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 5
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 5,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 5
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 5,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 5
+          },
+          "value" : "doc"
+        },
+        "value" : "Person birth date"
+      } ],
+      "type" : "Date"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "gender",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 69,
+        "endLine" : 6,
+        "sourceId" : "",
+        "startColumn" : 64,
+        "startLine" : 6
+      },
+      "sourceInformation" : {
+        "endColumn" : 76,
+        "endLine" : 6,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 6
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 53,
+          "endLine" : 6,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 6
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 6,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 6
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 6,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 6
+          },
+          "value" : "doc"
+        },
+        "value" : "Disclosed gender"
+      } ],
+      "type" : "String"
+    } ],
+    "qualifiedProperties" : [ ],
+    "sourceInformation" : {
+      "endColumn" : 1,
+      "endLine" : 7,
+      "sourceId" : "",
+      "startColumn" : 1,
+      "startLine" : 1
     },
-    "stereotypes": [],
-    "superTypes": [],
-    "taggedValues": []
+    "stereotypes" : [ ],
+    "superTypes" : [ ],
+    "taggedValues" : [ ]
   }
 }
