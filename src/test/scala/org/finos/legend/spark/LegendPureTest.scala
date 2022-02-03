@@ -35,12 +35,12 @@ class LegendPureTest extends AnyFlatSpec {
     assertThrows[EngineException] {
       pureModel.getMapping("foo:bar")
     }
-    val mapping = pureModel.getMapping("databricks::lakehouse::emp2delta")
-    assert(mapping._name() == "emp2delta")
+    val mapping = pureModel.getMapping("databricks::lakehouse::mapping")
+    assert(mapping._name() == "mapping")
   }
 
   "A lambda function" should "be generated from a string representation" in {
-    val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.highFives > 20)"
     val function = LegendUtils.buildLambda(lambdaString)
     assert(function.isInstanceOf[AppliedFunction])
     assert(function.asInstanceOf[AppliedFunction].function == "filter")
@@ -54,38 +54,38 @@ class LegendPureTest extends AnyFlatSpec {
       LegendUtils.buildLambda(lambdaString, legend.pureModel)
     }
 
-    val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.highFives > 20)"
     val function = LegendUtils.buildLambda(lambdaString, legend.pureModel)
     assert(function._expressionSequence().asScala.nonEmpty)
   }
 
   it should "generate a valid execution plan" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
+    val mapping = legend.getMapping("databricks::lakehouse::mapping")
 
     assertThrows[EngineException] {
       val lambdaString = "foobar->getAll()->filter(x|$x.foo = 'bar')"
       LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
     }
 
-    val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.highFives > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
     assert(plan.rootExecutionNode.executionNodes.get(0).isInstanceOf[SQLExecutionNode])
   }
 
   it should "support NULL functions" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
-    val lambdaString = "databricks::employee->getAll()->filter(x|$x.high_fives > 20)"
+    val mapping = legend.getMapping("databricks::lakehouse::mapping")
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.highFives > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSql(sqlPlan)
-    assert(sql == "highfives > 20")
+    assert(sql == "high_fives > 20")
   }
 
   it should "support complex spark functions" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
+    val mapping = legend.getMapping("databricks::lakehouse::mapping")
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.id->isEmpty())"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
@@ -95,12 +95,12 @@ class LegendPureTest extends AnyFlatSpec {
 
   "A more complex function" should "be converted as SQL clause" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val mapping = legend.getMapping("databricks::lakehouse::emp2delta")
-    val lambdaString = "databricks::employee->getAll()->filter(x|$x.joined_date->dateDiff($x.birth_date, DurationUnit.YEARS) > 20)"
+    val mapping = legend.getMapping("databricks::lakehouse::mapping")
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.joinedDate->dateDiff($x.birthDate, DurationUnit.YEARS) > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSql(sqlPlan)
-    assert(sql == "year(joineddate) - year(birthdate) > 20")
+    assert(sql == "year(joined_date) - year(birth_date) > 20")
   }
 
 }

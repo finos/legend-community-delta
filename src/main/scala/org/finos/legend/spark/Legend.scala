@@ -330,12 +330,15 @@ object Legend {
         |  type: Databricks;
         |  specification: Databricks
         |  {
-        |    hostname: 'this';
-        |    port: 'is';
-        |    protocol: 'not';
-        |    httpPath: 'required';
+        |    hostname: 'my';
+        |    port: 'name';
+        |    protocol: 'is';
+        |    httpPath: 'antoine';
         |  };
-        |  auth: DefaultH2;
+        |  auth: ApiToken
+        |  {
+        |    apiToken: 'foobar';
+        |  };
         |}
         |
         |###Relational

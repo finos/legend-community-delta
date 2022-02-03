@@ -1,0 +1,449 @@
+{
+  "classifierPath" : "meta::pure::mapping::Mapping",
+  "content" : {
+    "_type" : "mapping",
+    "associationMappings" : [ ],
+    "classMappings" : [ {
+      "_type" : "relational",
+      "class" : "databricks::employee",
+      "classSourceInformation" : {
+        "endColumn" : 23,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 4,
+        "startLine" : 4
+      },
+      "distinct" : false,
+      "groupBy" : [ ],
+      "mainTable" : {
+        "_type" : "Table",
+        "database" : "databricks::lakehouse::schema",
+        "mainTableDb" : "databricks::lakehouse::schema",
+        "schema" : "legend",
+        "sourceInformation" : {
+          "endColumn" : 61,
+          "endLine" : 10,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 47,
+          "startLine" : 10
+        },
+        "table" : "employee"
+      },
+      "primaryKey" : [ {
+        "_type" : "column",
+        "column" : "id",
+        "sourceInformation" : {
+          "endColumn" : 55,
+          "endLine" : 8,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 7,
+          "startLine" : 8
+        },
+        "table" : {
+          "_type" : "Table",
+          "database" : "databricks::lakehouse::schema",
+          "mainTableDb" : "databricks::lakehouse::schema",
+          "schema" : "legend",
+          "sourceInformation" : {
+            "endColumn" : 52,
+            "endLine" : 8,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 38,
+            "startLine" : 8
+          },
+          "table" : "employee"
+        },
+        "tableAlias" : "employee"
+      } ],
+      "propertyMappings" : [ {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "firstName",
+          "sourceInformation" : {
+            "endColumn" : 13,
+            "endLine" : 11,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 11
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "first_name",
+          "sourceInformation" : {
+            "endColumn" : 72,
+            "endLine" : 11,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 16,
+            "startLine" : 11
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 61,
+              "endLine" : 11,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 47,
+              "startLine" : 11
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 72,
+          "endLine" : 11,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 14,
+          "startLine" : 11
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "lastName",
+          "sourceInformation" : {
+            "endColumn" : 12,
+            "endLine" : 12,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 12
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "last_name",
+          "sourceInformation" : {
+            "endColumn" : 70,
+            "endLine" : 12,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 15,
+            "startLine" : 12
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 60,
+              "endLine" : 12,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 46,
+              "startLine" : 12
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 70,
+          "endLine" : 12,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 13,
+          "startLine" : 12
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "birthDate",
+          "sourceInformation" : {
+            "endColumn" : 13,
+            "endLine" : 13,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 13
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "birth_date",
+          "sourceInformation" : {
+            "endColumn" : 72,
+            "endLine" : 13,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 16,
+            "startLine" : 13
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 61,
+              "endLine" : 13,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 47,
+              "startLine" : 13
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 72,
+          "endLine" : 13,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 14,
+          "startLine" : 13
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "id",
+          "sourceInformation" : {
+            "endColumn" : 6,
+            "endLine" : 14,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 14
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "id",
+          "sourceInformation" : {
+            "endColumn" : 57,
+            "endLine" : 14,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 9,
+            "startLine" : 14
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 54,
+              "endLine" : 14,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 40,
+              "startLine" : 14
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 57,
+          "endLine" : 14,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 7,
+          "startLine" : 14
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "sme",
+          "sourceInformation" : {
+            "endColumn" : 7,
+            "endLine" : 15,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 15
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "sme",
+          "sourceInformation" : {
+            "endColumn" : 59,
+            "endLine" : 15,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 10,
+            "startLine" : 15
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 55,
+              "endLine" : 15,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 41,
+              "startLine" : 15
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 59,
+          "endLine" : 15,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 8,
+          "startLine" : 15
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "gender",
+          "sourceInformation" : {
+            "endColumn" : 10,
+            "endLine" : 16,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 16
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "gender",
+          "sourceInformation" : {
+            "endColumn" : 65,
+            "endLine" : 16,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 13,
+            "startLine" : 16
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 58,
+              "endLine" : 16,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 44,
+              "startLine" : 16
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 65,
+          "endLine" : 16,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 11,
+          "startLine" : 16
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "joinedDate",
+          "sourceInformation" : {
+            "endColumn" : 14,
+            "endLine" : 17,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 17
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "joined_date",
+          "sourceInformation" : {
+            "endColumn" : 74,
+            "endLine" : 17,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 17,
+            "startLine" : 17
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 62,
+              "endLine" : 17,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 48,
+              "startLine" : 17
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 74,
+          "endLine" : 17,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 15,
+          "startLine" : 17
+        }
+      }, {
+        "_type" : "relationalPropertyMapping",
+        "property" : {
+          "class" : "databricks::employee",
+          "property" : "highFives",
+          "sourceInformation" : {
+            "endColumn" : 13,
+            "endLine" : 18,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 5,
+            "startLine" : 18
+          }
+        },
+        "relationalOperation" : {
+          "_type" : "column",
+          "column" : "high_fives",
+          "sourceInformation" : {
+            "endColumn" : 72,
+            "endLine" : 18,
+            "sourceId" : "databricks::lakehouse::mapping",
+            "startColumn" : 16,
+            "startLine" : 18
+          },
+          "table" : {
+            "_type" : "Table",
+            "database" : "databricks::lakehouse::schema",
+            "mainTableDb" : "databricks::lakehouse::schema",
+            "schema" : "legend",
+            "sourceInformation" : {
+              "endColumn" : 61,
+              "endLine" : 18,
+              "sourceId" : "databricks::lakehouse::mapping",
+              "startColumn" : 47,
+              "startLine" : 18
+            },
+            "table" : "employee"
+          },
+          "tableAlias" : "employee"
+        },
+        "sourceInformation" : {
+          "endColumn" : 72,
+          "endLine" : 18,
+          "sourceId" : "databricks::lakehouse::mapping",
+          "startColumn" : 14,
+          "startLine" : 18
+        }
+      } ],
+      "root" : true,
+      "sourceInformation" : {
+        "endColumn" : 3,
+        "endLine" : 19,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 4
+      }
+    } ],
+    "enumerationMappings" : [ ],
+    "includedMappings" : [ ],
+    "name" : "mapping",
+    "package" : "databricks::lakehouse",
+    "sourceInformation" : {
+      "endColumn" : 1,
+      "endLine" : 20,
+      "sourceId" : "",
+      "startColumn" : 1,
+      "startLine" : 2
+    },
+    "tests" : [ ]
+  }
+}

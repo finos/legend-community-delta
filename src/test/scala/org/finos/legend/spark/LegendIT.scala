@@ -44,10 +44,10 @@ class LegendIT extends AnyFlatSpec {
 
     val legendStrategy = legend.buildStrategy(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta"
+      "databricks::lakehouse::mapping"
     )
 
-    val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load(dataPath)
+    val inputDF = spark.read.format("json").schema(legendStrategy.schema).load(dataPath)
     inputDF.show()
 
     val mappedDF = inputDF.legendTransform(legendStrategy.transformations)

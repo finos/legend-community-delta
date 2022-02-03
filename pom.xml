@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.finos.legend</groupId>
-    <artifactId>legend-delta</artifactId>
+    <groupId>org.finos.legend.spark</groupId>
+    <artifactId>legend-spark</artifactId>
     <version>0.1</version>
 
-    <name>legend-delta</name>
-    <description>Interpreting Legend schema definitions and constraints with Delta Lake</description>
+    <name>legend-spark</name>
+    <description>Interpreting Legend schema definitions and constraints with Spark</description>
     <inceptionYear>2021</inceptionYear>
 
     <developers>
@@ -50,9 +50,9 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.0</spark.version>
         <java.version>11</java.version>
-        <legend.engine.version>2.45.1-DELTA</legend.engine.version>
-        <legend.pure.version>1.38.1-DELTA</legend.pure.version>
-        <legend.sdlc.version>0.50.1-DELTA</legend.sdlc.version>
+        <legend.engine.version>1.0-DELTA</legend.engine.version>
+        <legend.sdlc.version>1.0-DELTA</legend.sdlc.version>
+        <legend.pure.version>1.0-DELTA</legend.pure.version>
     </properties>
 
     <dependencies>
@@ -87,7 +87,45 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- USER DEPENDENCIES -->
+        <!-- LEGEND DEPENDENCIES -->
+
+        <dependency>
+            <groupId>org.finos.legend.sdlc</groupId>
+            <artifactId>legend-sdlc-model</artifactId>
+            <version>${legend.sdlc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.legend.sdlc</groupId>
+            <artifactId>legend-sdlc-protocol-pure</artifactId>
+            <version>${legend.sdlc.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>javax.ws.rs-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>bson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.legend.sdlc</groupId>
+            <artifactId>legend-sdlc-protocol</artifactId>
+            <version>${legend.sdlc.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>javax.ws.rs-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.finos.legend.sdlc</groupId>
@@ -95,34 +133,28 @@
             <version>${legend.sdlc.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-executionPlan-execution</artifactId>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>javax.ws.rs-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-language-pure-dsl-service-execution</artifactId>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-language-pure-dsl-service-generation</artifactId>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.legend.pure</groupId>
+            <artifactId>legend-pure-m3-dsl-graph</artifactId>
+            <version>${legend.pure.version}</version>
         </dependency>
 
         <dependency>
@@ -134,30 +166,6 @@
                     <groupId>org.mongodb</groupId>
                     <artifactId>bson</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-protocol-pure</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.collections</groupId>
-                    <artifactId>eclipse-collections</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.collections</groupId>
-                    <artifactId>eclipse-collections-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -167,88 +175,16 @@
             <version>${legend.engine.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-m4</artifactId>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-m3-core</artifactId>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-dbcp</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-m3-platform</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-m2-dsl-mapping</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-m2-store-relational</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-runtime-java-extension-store-relational</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-runtime-java-engine-compiled</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.pure</groupId>
-                    <artifactId>legend-pure-code-java-compiled-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-shared-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-protocol-pure</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-language-pure-grammar</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-language-pure-compiler</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-protocol-relational</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-runtime</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.collections</groupId>
-                    <artifactId>eclipse-collections</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.collections</groupId>
-                    <artifactId>eclipse-collections-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -257,44 +193,21 @@
             <groupId>org.finos.legend.engine</groupId>
             <artifactId>legend-engine-executionPlan-execution-store-inMemory</artifactId>
             <version>${legend.engine.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.pac4j</groupId>
-                    <artifactId>pac4j-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.collections</groupId>
-                    <artifactId>eclipse-collections</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.collections</groupId>
-                    <artifactId>eclipse-collections-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-executionPlan-dependencies</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-executionPlan-execution</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-protocol-pure</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.finos.legend.engine</groupId>
-                    <artifactId>legend-engine-shared-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+
+        <!-- USER DEPENDENCIES -->
+
+<!--        Spark runtime comes with its own antlr version (4.5) and returns warning-->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.8-1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>4.8-1</version>
         </dependency>
 
         <dependency>
@@ -430,49 +343,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>shaded</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>2.3</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                                <!-- Invalid signature file digest for Manifest main attributes-->
-                                <configuration>
-                                    <filters>
-                                        <filter>
-                                            <artifact>*:*</artifact>
-                                            <excludes>
-                                                <exclude>META-INF/*.SF</exclude>
-                                                <exclude>META-INF/*.DSA</exclude>
-                                                <exclude>META-INF/*.RSA</exclude>
-                                            </excludes>
-                                        </filter>
-                                    </filters>
-                                    <transformers>
-                                        <transformer
-                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                        </transformer>
-                                    </transformers>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

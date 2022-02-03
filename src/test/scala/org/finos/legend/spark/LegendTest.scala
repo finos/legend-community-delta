@@ -56,7 +56,7 @@ class LegendTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     assert(legend.getEntityNames.contains("databricks::person"))
     val fields = legend.getEntitySchema("databricks::person").fields.map(_.name)
-    assert(fields.toSet == Set("first_name", "last_name", "birth_date"))
+    assert(fields.toSet == Set("firstName", "lastName", "birthDate", "gender"))
   }
 
   it should "support supertype entities" in {
@@ -64,14 +64,14 @@ class LegendTest extends AnyFlatSpec {
     assert(legend.getEntityNames.contains("databricks::employee"))
     val personFields = legend.getEntitySchema("databricks::person").fields.map(_.name)
     val employeeFields = legend.getEntitySchema("databricks::employee").fields.map(_.name)
-    assert(employeeFields.diff(personFields).toSet == Set("high_fives", "sme", "id", "joined_date"))
+    assert(employeeFields.diff(personFields).toSet == Set("highFives", "sme", "id", "joinedDate"))
   }
 
   "Expectations" should "be generated from a legend class" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val expectations = legend.getExpectations(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta"
+      "databricks::lakehouse::mapping"
     )
     assert(expectations.nonEmpty)
   }
@@ -80,34 +80,32 @@ class LegendTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val transform = legend.buildStrategy(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta"
+      "databricks::lakehouse::mapping"
     )
 
     assert(
       transform.expectations.map(_.sql) == Seq(
-        "firstname IS NOT NULL",
-        "lastname IS NOT NULL",
-        "birthdate IS NOT NULL",
+        "first_name IS NOT NULL",
+        "last_name IS NOT NULL",
+        "birth_date IS NOT NULL",
         "id IS NOT NULL",
-        "sme IS NOT NULL",
-        "joineddate IS NOT NULL",
-        "highfives IS NOT NULL",
-        "highfives < 300",
-        "year(joineddate) - year(birthdate) > 20"
+        "joined_date IS NOT NULL",
+        "high_fives IS NOT NULL",
+        "high_fives > 0",
+        "year(joined_date) - year(birth_date) > 20"
       )
     )
 
     assert(
       transform.expectations.map(_.lambda) == Seq(
-        "$this.first_name->isNotEmpty()",
-        "$this.last_name->isNotEmpty()",
-        "$this.birth_date->isNotEmpty()",
+        "$this.firstName->isNotEmpty()",
+        "$this.lastName->isNotEmpty()",
+        "$this.birthDate->isNotEmpty()",
         "$this.id->isNotEmpty()",
-        "$this.sme->isNotEmpty()",
-        "$this.joined_date->isNotEmpty()",
-        "$this.high_fives->isNotEmpty()",
-        "$this.high_fives < 300",
-        "$this.joined_date->dateDiff($this.birth_date,DurationUnit.YEARS) > 20"
+        "$this.joinedDate->isNotEmpty()",
+        "$this.highFives->isNotEmpty()",
+        "$this.highFives > 0",
+        "$this.joinedDate->dateDiff($this.birthDate,DurationUnit.YEARS) > 20"
       )
     )
   }
@@ -116,10 +114,10 @@ class LegendTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val transform = legend.buildStrategy(
       "databricks::employee",
-      "databricks::lakehouse::emp2delta"
+      "databricks::lakehouse::mapping"
     )
     val withColumns = transform.transformations
-    assert(withColumns.map(_.from).toSet == Set("id", "first_name", "last_name", "birth_date", "sme", "joined_date", "high_fives"))
-    assert(withColumns.map(_.to).toSet == Set("id", "firstname", "lastname", "birthdate", "sme", "joineddate", "highfives"))
+    assert(withColumns.map(_.from).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
+    assert(withColumns.map(_.to).toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
   }
 }
