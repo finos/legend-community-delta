@@ -3,7 +3,7 @@
   "content" : {
     "_type" : "Enumeration",
     "name" : "sme",
-    "package" : "databricks",
+    "package" : "databricks::entity",
     "sourceInformation" : {
       "endColumn" : 1,
       "endLine" : 9,

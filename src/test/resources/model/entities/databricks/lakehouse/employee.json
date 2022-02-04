@@ -30,9 +30,9 @@
           "startLine" : 6
         }
       },
-      "element" : "databricks::lakehouse::schema",
+      "element" : "databricks::table::employee",
       "elementSourceInformation" : {
-        "endColumn" : 38,
+        "endColumn" : 36,
         "endLine" : 4,
         "sourceId" : "",
         "startColumn" : 10,
@@ -48,7 +48,7 @@
       },
       "type" : "Databricks"
     },
-    "name" : "environment",
+    "name" : "employee",
     "package" : "databricks::lakehouse",
     "sourceInformation" : {
       "endColumn" : 1,

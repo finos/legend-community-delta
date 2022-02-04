@@ -1,0 +1,218 @@
+{
+  "classifierPath" : "meta::pure::metamodel::type::Class",
+  "content" : {
+    "_type" : "class",
+    "constraints" : [ ],
+    "name" : "developer",
+    "originalMilestonedProperties" : [ ],
+    "package" : "databricks::entity",
+    "properties" : [ {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "id",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 82,
+        "endLine" : 3,
+        "sourceId" : "",
+        "startColumn" : 76,
+        "startLine" : 3
+      },
+      "sourceInformation" : {
+        "endColumn" : 86,
+        "endLine" : 3,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 3
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 69,
+          "endLine" : 3,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 3
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 3,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 3
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 3,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 3
+          },
+          "value" : "doc"
+        },
+        "value" : "Unique identifier of a developer"
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "fullName",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 76,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 71,
+        "startLine" : 4
+      },
+      "sourceInformation" : {
+        "endColumn" : 80,
+        "endLine" : 4,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 4
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 58,
+          "endLine" : 4,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 4
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 4,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 4
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 4,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 4
+          },
+          "value" : "doc"
+        },
+        "value" : "Name of the developer"
+      } ],
+      "type" : "String"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "age",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 71,
+        "endLine" : 5,
+        "sourceId" : "",
+        "startColumn" : 65,
+        "startLine" : 5
+      },
+      "sourceInformation" : {
+        "endColumn" : 75,
+        "endLine" : 5,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 5
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 57,
+          "endLine" : 5,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 5
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 5,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 5
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 5,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 5
+          },
+          "value" : "doc"
+        },
+        "value" : "Age of the developer"
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "skills",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 33,
+        "endLine" : 6,
+        "sourceId" : "",
+        "startColumn" : 11,
+        "startLine" : 6
+      },
+      "sourceInformation" : {
+        "endColumn" : 40,
+        "endLine" : 6,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 6
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ ],
+      "type" : "databricks::entity::sme"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "highFives",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 20,
+        "endLine" : 7,
+        "sourceId" : "",
+        "startColumn" : 14,
+        "startLine" : 7
+      },
+      "sourceInformation" : {
+        "endColumn" : 27,
+        "endLine" : 7,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 7
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ ],
+      "type" : "Integer"
+    } ],
+    "qualifiedProperties" : [ ],
+    "sourceInformation" : {
+      "endColumn" : 1,
+      "endLine" : 8,
+      "sourceId" : "",
+      "startColumn" : 1,
+      "startLine" : 1
+    },
+    "stereotypes" : [ ],
+    "superTypes" : [ ],
+    "taggedValues" : [ ]
+  }
+}

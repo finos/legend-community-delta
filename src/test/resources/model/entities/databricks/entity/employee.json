@@ -178,7 +178,7 @@
     } ],
     "name" : "employee",
     "originalMilestonedProperties" : [ ],
-    "package" : "databricks",
+    "package" : "databricks::entity",
     "properties" : [ {
       "multiplicity" : {
         "lowerBound" : 1,
@@ -236,14 +236,14 @@
       },
       "name" : "sme",
       "propertyTypeSourceInformation" : {
-        "endColumn" : 102,
+        "endColumn" : 110,
         "endLine" : 11,
         "sourceId" : "",
         "startColumn" : 88,
         "startLine" : 11
       },
       "sourceInformation" : {
-        "endColumn" : 109,
+        "endColumn" : 117,
         "endLine" : 11,
         "sourceId" : "",
         "startColumn" : 3,
@@ -278,7 +278,7 @@
         },
         "value" : "Programming skill that person truly masters"
       } ],
-      "type" : "databricks::sme"
+      "type" : "databricks::entity::sme"
     }, {
       "multiplicity" : {
         "lowerBound" : 1,
@@ -508,7 +508,7 @@
       "startLine" : 1
     },
     "stereotypes" : [ ],
-    "superTypes" : [ "databricks::person" ],
+    "superTypes" : [ "databricks::entity::person" ],
     "taggedValues" : [ ]
   }
 }

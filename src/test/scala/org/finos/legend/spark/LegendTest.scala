@@ -55,24 +55,24 @@ class LegendTest extends AnyFlatSpec {
 
   it should "contain specifications for entity classes" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    assert(legend.getEntityNames.contains("databricks::person"))
-    val fields = legend.getEntitySchema("databricks::person").fields.map(_.name)
+    assert(legend.getEntityNames.contains("databricks::entity::person"))
+    val fields = legend.getEntitySchema("databricks::entity::person").fields.map(_.name)
     assert(fields.toSet == Set("firstName", "lastName", "birthDate", "gender"))
   }
 
   it should "support supertype entities" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    assert(legend.getEntityNames.contains("databricks::employee"))
-    val personFields = legend.getEntitySchema("databricks::person").fields.map(_.name)
-    val employeeFields = legend.getEntitySchema("databricks::employee").fields.map(_.name)
+    assert(legend.getEntityNames.contains("databricks::entity::employee"))
+    val personFields = legend.getEntitySchema("databricks::entity::person").fields.map(_.name)
+    val employeeFields = legend.getEntitySchema("databricks::entity::employee").fields.map(_.name)
     assert(employeeFields.diff(personFields).toSet == Set("highFives", "sme", "id", "joinedDate"))
   }
 
   "Expectations" should "be generated from a legend class" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val expectations = legend.getExpectations(
-      "databricks::employee",
-      "databricks::lakehouse::mapping"
+      "databricks::entity::employee",
+      "databricks::mapping::employee_delta"
     )
     assert(expectations.nonEmpty)
   }
@@ -80,8 +80,8 @@ class LegendTest extends AnyFlatSpec {
   it should "be generated in SQL" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val transform = legend.buildStrategy(
-      "databricks::employee",
-      "databricks::lakehouse::mapping"
+      "databricks::entity::employee",
+      "databricks::mapping::employee_delta"
     )
 
     assert(
@@ -114,8 +114,8 @@ class LegendTest extends AnyFlatSpec {
   "A relational mapping" should "capture transformations" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val transform = legend.buildStrategy(
-      "databricks::employee",
-      "databricks::lakehouse::mapping"
+      "databricks::entity::employee",
+      "databricks::mapping::employee_delta"
     )
     val withColumns = transform.transformations
     assert(withColumns.map(_.from).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
@@ -127,8 +127,8 @@ class LegendTest extends AnyFlatSpec {
       SparkSession.builder().appName("test").master("local[1]").getOrCreate()
       val legend = LegendClasspathLoader.loadResources("model")
       val legendStrategy = legend.buildStrategy(
-        "databricks::employee",
-        "databricks::lakehouse::mapping"
+        "databricks::entity::employee",
+        "databricks::mapping::employee_delta"
       )
       val outputFields = legendStrategy.targetSchema.fields.map(_.name).toSet
       assert(outputFields == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))

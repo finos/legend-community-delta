@@ -43,8 +43,8 @@ class LegendIT extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
 
     val legendStrategy = legend.buildStrategy(
-      "databricks::employee",
-      "databricks::lakehouse::mapping"
+      "databricks::entity::employee",
+      "databricks::mapping::employee_delta"
     )
 
     val inputDF = spark.read.format("json").schema(legendStrategy.inputSchema).load(dataPath)

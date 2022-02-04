@@ -1,0 +1,530 @@
+{
+  "classifierPath" : "meta::legend::service::metamodel::Service",
+  "content" : {
+    "_type" : "service",
+    "autoActivateUpdates" : false,
+    "documentation" : "Diversity metrics, how many female / male employee, with average high fives",
+    "execution" : {
+      "_type" : "pureSingleExecution",
+      "func" : {
+        "_type" : "lambda",
+        "body" : [ {
+          "_type" : "func",
+          "function" : "take",
+          "parameters" : [ {
+            "_type" : "func",
+            "function" : "sort",
+            "parameters" : [ {
+              "_type" : "func",
+              "function" : "groupBy",
+              "parameters" : [ {
+                "_type" : "func",
+                "function" : "filter",
+                "parameters" : [ {
+                  "_type" : "func",
+                  "function" : "getAll",
+                  "parameters" : [ {
+                    "_type" : "packageableElementPtr",
+                    "fullPath" : "databricks::entity::employee",
+                    "sourceInformation" : {
+                      "endColumn" : 40,
+                      "endLine" : 13,
+                      "sourceId" : "",
+                      "startColumn" : 13,
+                      "startLine" : 13
+                    }
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 46,
+                    "endLine" : 13,
+                    "sourceId" : "",
+                    "startColumn" : 41,
+                    "startLine" : 13
+                  }
+                }, {
+                  "_type" : "lambda",
+                  "body" : [ {
+                    "_type" : "func",
+                    "function" : "not",
+                    "parameters" : [ {
+                      "_type" : "func",
+                      "function" : "isEmpty",
+                      "parameters" : [ {
+                        "_type" : "property",
+                        "parameters" : [ {
+                          "_type" : "var",
+                          "name" : "x",
+                          "sourceInformation" : {
+                            "endColumn" : 8,
+                            "endLine" : 14,
+                            "sourceId" : "",
+                            "startColumn" : 7,
+                            "startLine" : 14
+                          }
+                        } ],
+                        "property" : "gender",
+                        "sourceInformation" : {
+                          "endColumn" : 15,
+                          "endLine" : 14,
+                          "sourceId" : "",
+                          "startColumn" : 10,
+                          "startLine" : 14
+                        }
+                      } ],
+                      "sourceInformation" : {
+                        "endColumn" : 24,
+                        "endLine" : 14,
+                        "sourceId" : "",
+                        "startColumn" : 18,
+                        "startLine" : 14
+                      }
+                    } ],
+                    "sourceInformation" : {
+                      "endColumn" : 27,
+                      "endLine" : 14,
+                      "sourceId" : "",
+                      "startColumn" : 5,
+                      "startLine" : 14
+                    }
+                  } ],
+                  "parameters" : [ {
+                    "_type" : "var",
+                    "name" : "x"
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 27,
+                    "endLine" : 14,
+                    "sourceId" : "",
+                    "startColumn" : 4,
+                    "startLine" : 14
+                  }
+                } ],
+                "sourceInformation" : {
+                  "endColumn" : 54,
+                  "endLine" : 13,
+                  "sourceId" : "",
+                  "startColumn" : 49,
+                  "startLine" : 13
+                }
+              }, {
+                "_type" : "collection",
+                "multiplicity" : {
+                  "lowerBound" : 1,
+                  "upperBound" : 1
+                },
+                "sourceInformation" : {
+                  "endColumn" : 3,
+                  "endLine" : 18,
+                  "sourceId" : "",
+                  "startColumn" : 3,
+                  "startLine" : 16
+                },
+                "values" : [ {
+                  "_type" : "lambda",
+                  "body" : [ {
+                    "_type" : "property",
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x",
+                      "sourceInformation" : {
+                        "endColumn" : 8,
+                        "endLine" : 17,
+                        "sourceId" : "",
+                        "startColumn" : 7,
+                        "startLine" : 17
+                      }
+                    } ],
+                    "property" : "gender",
+                    "sourceInformation" : {
+                      "endColumn" : 15,
+                      "endLine" : 17,
+                      "sourceId" : "",
+                      "startColumn" : 10,
+                      "startLine" : 17
+                    }
+                  } ],
+                  "parameters" : [ {
+                    "_type" : "var",
+                    "name" : "x"
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 15,
+                    "endLine" : 17,
+                    "sourceId" : "",
+                    "startColumn" : 6,
+                    "startLine" : 17
+                  }
+                } ]
+              }, {
+                "_type" : "collection",
+                "multiplicity" : {
+                  "lowerBound" : 2,
+                  "upperBound" : 2
+                },
+                "sourceInformation" : {
+                  "endColumn" : 3,
+                  "endLine" : 28,
+                  "sourceId" : "",
+                  "startColumn" : 3,
+                  "startLine" : 19
+                },
+                "values" : [ {
+                  "_type" : "func",
+                  "function" : "agg",
+                  "parameters" : [ {
+                    "_type" : "lambda",
+                    "body" : [ {
+                      "_type" : "property",
+                      "parameters" : [ {
+                        "_type" : "var",
+                        "name" : "x",
+                        "sourceInformation" : {
+                          "endColumn" : 10,
+                          "endLine" : 21,
+                          "sourceId" : "",
+                          "startColumn" : 9,
+                          "startLine" : 21
+                        }
+                      } ],
+                      "property" : "highFives",
+                      "sourceInformation" : {
+                        "endColumn" : 20,
+                        "endLine" : 21,
+                        "sourceId" : "",
+                        "startColumn" : 12,
+                        "startLine" : 21
+                      }
+                    } ],
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x"
+                    } ],
+                    "sourceInformation" : {
+                      "endColumn" : 20,
+                      "endLine" : 21,
+                      "sourceId" : "",
+                      "startColumn" : 8,
+                      "startLine" : 21
+                    }
+                  }, {
+                    "_type" : "lambda",
+                    "body" : [ {
+                      "_type" : "func",
+                      "function" : "average",
+                      "parameters" : [ {
+                        "_type" : "var",
+                        "name" : "x",
+                        "sourceInformation" : {
+                          "endColumn" : 10,
+                          "endLine" : 22,
+                          "sourceId" : "",
+                          "startColumn" : 9,
+                          "startLine" : 22
+                        }
+                      } ],
+                      "sourceInformation" : {
+                        "endColumn" : 19,
+                        "endLine" : 22,
+                        "sourceId" : "",
+                        "startColumn" : 13,
+                        "startLine" : 22
+                      }
+                    } ],
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x"
+                    } ],
+                    "sourceInformation" : {
+                      "endColumn" : 21,
+                      "endLine" : 22,
+                      "sourceId" : "",
+                      "startColumn" : 8,
+                      "startLine" : 22
+                    }
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 7,
+                    "endLine" : 20,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 20
+                  }
+                }, {
+                  "_type" : "func",
+                  "function" : "agg",
+                  "parameters" : [ {
+                    "_type" : "lambda",
+                    "body" : [ {
+                      "_type" : "property",
+                      "parameters" : [ {
+                        "_type" : "var",
+                        "name" : "x",
+                        "sourceInformation" : {
+                          "endColumn" : 10,
+                          "endLine" : 25,
+                          "sourceId" : "",
+                          "startColumn" : 9,
+                          "startLine" : 25
+                        }
+                      } ],
+                      "property" : "id",
+                      "sourceInformation" : {
+                        "endColumn" : 13,
+                        "endLine" : 25,
+                        "sourceId" : "",
+                        "startColumn" : 12,
+                        "startLine" : 25
+                      }
+                    } ],
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x"
+                    } ],
+                    "sourceInformation" : {
+                      "endColumn" : 13,
+                      "endLine" : 25,
+                      "sourceId" : "",
+                      "startColumn" : 8,
+                      "startLine" : 25
+                    }
+                  }, {
+                    "_type" : "lambda",
+                    "body" : [ {
+                      "_type" : "func",
+                      "function" : "count",
+                      "parameters" : [ {
+                        "_type" : "var",
+                        "name" : "x",
+                        "sourceInformation" : {
+                          "endColumn" : 10,
+                          "endLine" : 26,
+                          "sourceId" : "",
+                          "startColumn" : 9,
+                          "startLine" : 26
+                        }
+                      } ],
+                      "sourceInformation" : {
+                        "endColumn" : 17,
+                        "endLine" : 26,
+                        "sourceId" : "",
+                        "startColumn" : 13,
+                        "startLine" : 26
+                      }
+                    } ],
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x"
+                    } ],
+                    "sourceInformation" : {
+                      "endColumn" : 19,
+                      "endLine" : 26,
+                      "sourceId" : "",
+                      "startColumn" : 8,
+                      "startLine" : 26
+                    }
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 7,
+                    "endLine" : 24,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 24
+                  }
+                } ]
+              }, {
+                "_type" : "collection",
+                "multiplicity" : {
+                  "lowerBound" : 3,
+                  "upperBound" : 3
+                },
+                "sourceInformation" : {
+                  "endColumn" : 3,
+                  "endLine" : 33,
+                  "sourceId" : "",
+                  "startColumn" : 3,
+                  "startLine" : 29
+                },
+                "values" : [ {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 12,
+                    "endLine" : 30,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 30
+                  },
+                  "values" : [ "Gender" ]
+                }, {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 15,
+                    "endLine" : 31,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 31
+                  },
+                  "values" : [ "HighFives" ]
+                }, {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 15,
+                    "endLine" : 32,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 32
+                  },
+                  "values" : [ "Employees" ]
+                } ]
+              } ],
+              "sourceInformation" : {
+                "endColumn" : 10,
+                "endLine" : 15,
+                "sourceId" : "",
+                "startColumn" : 4,
+                "startLine" : 15
+              }
+            }, {
+              "_type" : "collection",
+              "multiplicity" : {
+                "lowerBound" : 1,
+                "upperBound" : 1
+              },
+              "sourceInformation" : {
+                "endColumn" : 3,
+                "endLine" : 37,
+                "sourceId" : "",
+                "startColumn" : 3,
+                "startLine" : 35
+              },
+              "values" : [ {
+                "_type" : "func",
+                "function" : "desc",
+                "parameters" : [ {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 20,
+                    "endLine" : 36,
+                    "sourceId" : "",
+                    "startColumn" : 10,
+                    "startLine" : 36
+                  },
+                  "values" : [ "HighFives" ]
+                } ],
+                "sourceInformation" : {
+                  "endColumn" : 8,
+                  "endLine" : 36,
+                  "sourceId" : "",
+                  "startColumn" : 5,
+                  "startLine" : 36
+                }
+              } ]
+            } ],
+            "sourceInformation" : {
+              "endColumn" : 7,
+              "endLine" : 34,
+              "sourceId" : "",
+              "startColumn" : 4,
+              "startLine" : 34
+            }
+          }, {
+            "_type" : "integer",
+            "multiplicity" : {
+              "lowerBound" : 1,
+              "upperBound" : 1
+            },
+            "sourceInformation" : {
+              "endColumn" : 10,
+              "endLine" : 38,
+              "sourceId" : "",
+              "startColumn" : 9,
+              "startLine" : 38
+            },
+            "values" : [ 10 ]
+          } ],
+          "sourceInformation" : {
+            "endColumn" : 7,
+            "endLine" : 38,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 38
+          }
+        } ],
+        "parameters" : [ ],
+        "sourceInformation" : {
+          "endColumn" : 11,
+          "endLine" : 38,
+          "sourceId" : "",
+          "startColumn" : 12,
+          "startLine" : 13
+        }
+      },
+      "mapping" : "databricks::mapping::employee_delta",
+      "mappingSourceInformation" : {
+        "endColumn" : 48,
+        "endLine" : 39,
+        "sourceId" : "",
+        "startColumn" : 14,
+        "startLine" : 39
+      },
+      "runtime" : {
+        "_type" : "runtimePointer",
+        "runtime" : "databricks::runtime::employee",
+        "sourceInformation" : {
+          "endColumn" : 42,
+          "endLine" : 40,
+          "sourceId" : "",
+          "startColumn" : 14,
+          "startLine" : 40
+        }
+      },
+      "sourceInformation" : {
+        "endColumn" : 3,
+        "endLine" : 41,
+        "sourceId" : "",
+        "startColumn" : 14,
+        "startLine" : 11
+      }
+    },
+    "name" : "skills",
+    "owners" : [ "Antoine Amend" ],
+    "package" : "databricks::service",
+    "pattern" : "/skills",
+    "sourceInformation" : {
+      "endColumn" : 1,
+      "endLine" : 49,
+      "sourceId" : "",
+      "startColumn" : 1,
+      "startLine" : 2
+    },
+    "stereotypes" : [ ],
+    "taggedValues" : [ ],
+    "test" : {
+      "_type" : "singleExecutionTest",
+      "asserts" : [ ],
+      "data" : "",
+      "sourceInformation" : {
+        "endColumn" : 3,
+        "endLine" : 48,
+        "sourceId" : "",
+        "startColumn" : 9,
+        "startLine" : 42
+      }
+    }
+  }
+}

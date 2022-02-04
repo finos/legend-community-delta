@@ -5,13 +5,13 @@
     "filters" : [ ],
     "includedStores" : [ ],
     "joins" : [ ],
-    "name" : "schema",
-    "package" : "databricks::lakehouse",
+    "name" : "employee",
+    "package" : "databricks::table",
     "schemas" : [ {
       "name" : "legend",
       "sourceInformation" : {
         "endColumn" : 3,
-        "endLine" : 18,
+        "endLine" : 17,
         "sourceId" : "",
         "startColumn" : 3,
         "startLine" : 4
@@ -100,28 +100,14 @@
             "size" : 255
           }
         }, {
-          "name" : "role",
-          "nullable" : true,
-          "sourceInformation" : {
-            "endColumn" : 23,
-            "endLine" : 14,
-            "sourceId" : "",
-            "startColumn" : 7,
-            "startLine" : 14
-          },
-          "type" : {
-            "_type" : "Varchar",
-            "size" : 255
-          }
-        }, {
           "name" : "joined_date",
           "nullable" : true,
           "sourceInformation" : {
             "endColumn" : 22,
-            "endLine" : 15,
+            "endLine" : 14,
             "sourceId" : "",
             "startColumn" : 7,
-            "startLine" : 15
+            "startLine" : 14
           },
           "type" : {
             "_type" : "Date"
@@ -131,10 +117,10 @@
           "nullable" : true,
           "sourceInformation" : {
             "endColumn" : 24,
-            "endLine" : 16,
+            "endLine" : 15,
             "sourceId" : "",
             "startColumn" : 7,
-            "startLine" : 16
+            "startLine" : 15
           },
           "type" : {
             "_type" : "Integer"
@@ -145,7 +131,7 @@
         "primaryKey" : [ "id" ],
         "sourceInformation" : {
           "endColumn" : 5,
-          "endLine" : 17,
+          "endLine" : 16,
           "sourceId" : "",
           "startColumn" : 5,
           "startLine" : 6
@@ -155,7 +141,7 @@
     } ],
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 19,
+      "endLine" : 18,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 2

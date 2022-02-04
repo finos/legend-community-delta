@@ -2,8 +2,8 @@
   "classifierPath" : "meta::pure::runtime::PackageableRuntime",
   "content" : {
     "_type" : "runtime",
-    "name" : "runtime",
-    "package" : "databricks::lakehouse",
+    "name" : "developer",
+    "package" : "databricks::runtime",
     "runtimeValue" : {
       "_type" : "engineRuntime",
       "connections" : [ {
@@ -15,9 +15,9 @@
           "startLine" : 10
         },
         "store" : {
-          "path" : "databricks::lakehouse::schema",
+          "path" : "databricks::table::developer",
           "sourceInformation" : {
-            "endColumn" : 33,
+            "endColumn" : 32,
             "endLine" : 10,
             "sourceId" : "",
             "startColumn" : 5,
@@ -28,9 +28,9 @@
         "storeConnections" : [ {
           "connection" : {
             "_type" : "connectionPointer",
-            "connection" : "databricks::lakehouse::environment",
+            "connection" : "databricks::lakehouse::developer",
             "sourceInformation" : {
-              "endColumn" : 53,
+              "endColumn" : 51,
               "endLine" : 12,
               "sourceId" : "",
               "startColumn" : 20,
@@ -39,7 +39,7 @@
           },
           "id" : "environment",
           "sourceInformation" : {
-            "endColumn" : 53,
+            "endColumn" : 51,
             "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 7,
@@ -48,9 +48,9 @@
         } ]
       } ],
       "mappings" : [ {
-        "path" : "databricks::lakehouse::mapping",
+        "path" : "databricks::mapping::developer_delta",
         "sourceInformation" : {
-          "endColumn" : 34,
+          "endColumn" : 40,
           "endLine" : 6,
           "sourceId" : "",
           "startColumn" : 5,

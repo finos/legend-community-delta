@@ -5,7 +5,7 @@
     "constraints" : [ ],
     "name" : "person",
     "originalMilestonedProperties" : [ ],
-    "package" : "databricks",
+    "package" : "databricks::entity",
     "properties" : [ {
       "multiplicity" : {
         "lowerBound" : 1,
