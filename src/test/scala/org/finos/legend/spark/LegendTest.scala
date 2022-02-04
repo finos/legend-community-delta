@@ -123,19 +123,18 @@ class LegendTest extends AnyFlatSpec {
   }
 
   it should "create a spark schema" in {
-    try {
-      SparkSession.builder().appName("test").master("local[1]").getOrCreate()
-      val legend = LegendClasspathLoader.loadResources("model")
-      val legendStrategy = legend.buildStrategy(
-        "databricks::entity::employee",
-        "databricks::mapping::employee_delta"
-      )
-      val outputFields = legendStrategy.targetSchema.fields.map(_.name).toSet
-      assert(outputFields == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
-      println(legendStrategy.targetSchema.toDDL)
-    } finally {
-      SparkSession.getActiveSession.map(_.stop())
+    SparkSession.getActiveSession match {
+      case Some(_) =>
+      case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
     }
+    val legend = LegendClasspathLoader.loadResources("model")
+    val legendStrategy = legend.buildStrategy(
+      "databricks::entity::employee",
+      "databricks::mapping::employee_delta"
+    )
+    val outputFields = legendStrategy.targetSchema.fields.map(_.name).toSet
+    assert(outputFields == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
+    println(legendStrategy.targetSchema.toDDL)
   }
 
 }

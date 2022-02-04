@@ -31,7 +31,6 @@ import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
-import org.finos.legend.pure.m3.coreinstance.meta.pure.store.Store
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
 import org.finos.legend.spark.LegendUtils._

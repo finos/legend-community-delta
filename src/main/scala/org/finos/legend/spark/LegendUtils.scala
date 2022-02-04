@@ -95,7 +95,6 @@ object LegendUtils {
 
   /**
    * Parse SQL to retrieve WHERE clause and table alias
-   * TODO: find a way not to generate the full SQL but only visit the lambda condition
    *
    * @param executionPlan generated SQL plan from legend engine
    * @return the WHERE clause of the generated SQL expression
