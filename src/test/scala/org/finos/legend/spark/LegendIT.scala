@@ -47,7 +47,7 @@ class LegendIT extends AnyFlatSpec {
       "databricks::lakehouse::mapping"
     )
 
-    val inputDF = spark.read.format("json").schema(legendStrategy.schema).load(dataPath)
+    val inputDF = spark.read.format("json").schema(legendStrategy.inputSchema).load(dataPath)
     inputDF.show()
 
     val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
@@ -57,7 +57,10 @@ class LegendIT extends AnyFlatSpec {
     cleanedDF.withColumn("legend", explode(col("legend"))).show()
     val test = cleanedDF.withColumn("legend", explode(col("legend"))).groupBy("legend").count()
     test.show()
-    assert(test.count() == 2)
+    assert(test.count() == 3)
+
+    val failed = test.rdd.map(r => r.getAs[String](("legend"))).collect().map(_.split(" ").head.trim).toSet
+    assert(failed == Set("[id]", "[sme]", "[age]"))
     assert(legendStrategy.targetTable == "legend.employee")
   }
 

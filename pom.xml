@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.finos.legend.spark</groupId>
-    <artifactId>legend-spark</artifactId>
+    <artifactId>legend-delta</artifactId>
     <version>0.1</version>
 
-    <name>legend-spark</name>
+    <name>legend-delta</name>
     <description>Interpreting Legend schema definitions and constraints with Spark</description>
     <inceptionYear>2021</inceptionYear>
 
@@ -41,14 +41,14 @@
     <scm>
         <url>https://github.com/finos-labs/legend-delta</url>
         <connection>scm:git:git@github.com:finos-labs/legend-delta.git</connection>
-        <tag>legend-delta</tag>
+        <tag>legend-spark</tag>
     </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.version>2.12.12</scala.version>
         <scala.binary.version>2.12</scala.binary.version>
-        <spark.version>3.2.0</spark.version>
+        <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
         <legend.engine.version>1.0-DELTA</legend.engine.version>
         <legend.sdlc.version>1.0-DELTA</legend.sdlc.version>
@@ -197,7 +197,7 @@
 
         <!-- USER DEPENDENCIES -->
 
-        <!--        Spark runtime comes with its own antlr version (4.5) and returns warning-->
+<!--        Spark runtime comes with its own antlr version (4.5) and returns warning-->
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>

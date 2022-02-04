@@ -65,11 +65,11 @@ class LegendPureTest extends AnyFlatSpec {
 
     assertThrows[EngineException] {
       val lambdaString = "foobar->getAll()->filter(x|$x.foo = 'bar')"
-      LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
+      LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     }
 
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.highFives > 20)"
-    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     assert(plan.rootExecutionNode.executionNodes.get(0).isInstanceOf[SQLExecutionNode])
   }
 
@@ -77,17 +77,28 @@ class LegendPureTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val mapping = legend.getMapping("databricks::lakehouse::mapping")
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.highFives > 20)"
-    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSql(sqlPlan)
-    assert(sql == "high_fives > 20")
+    assert(sql == "(high_fives IS NOT NULL AND high_fives > 20)")
+  }
+
+
+  it should "support IN functions" in {
+    val legend = LegendClasspathLoader.loadResources("model")
+    val mapping = legend.getMapping("databricks::lakehouse::mapping")
+    val lambdaString = "databricks::employee->getAll()->filter(x|$x.firstName->in(['antoine', 'junta']))"
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
+    val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+    val sql = LegendUtils.parseSql(sqlPlan)
+    assert(sql == "first_name IN ('antoine', 'junta')")
   }
 
   it should "support complex spark functions" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val mapping = legend.getMapping("databricks::lakehouse::mapping")
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.id->isEmpty())"
-    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSql(sqlPlan)
     assert(sql == "id IS NULL")
@@ -97,7 +108,7 @@ class LegendPureTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources("model")
     val mapping = legend.getMapping("databricks::lakehouse::mapping")
     val lambdaString = "databricks::employee->getAll()->filter(x|$x.joinedDate->dateDiff($x.birthDate, DurationUnit.YEARS) > 20)"
-    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.sparkRuntime, legend.pureModel)
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSql(sqlPlan)
     assert(sql == "year(joined_date) - year(birth_date) > 20")

@@ -19,6 +19,7 @@ package org.finos.legend.spark
 
 import java.io.File
 
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.slf4j.{Logger, LoggerFactory}
@@ -89,9 +90,9 @@ class LegendTest extends AnyFlatSpec {
         "last_name IS NOT NULL",
         "birth_date IS NOT NULL",
         "id IS NOT NULL",
+        "(sme IS NULL OR sme IN ('Scala', 'Python', 'C', 'Java', 'R', 'SQL'))",
         "joined_date IS NOT NULL",
-        "high_fives IS NOT NULL",
-        "high_fives > 0",
+        "(high_fives IS NOT NULL AND high_fives > 0)",
         "year(joined_date) - year(birth_date) > 20"
       )
     )
@@ -102,8 +103,8 @@ class LegendTest extends AnyFlatSpec {
         "$this.lastName->isNotEmpty()",
         "$this.birthDate->isNotEmpty()",
         "$this.id->isNotEmpty()",
+        "$this.sme->isEmpty() || $this.sme->in(['Scala', 'Python', 'C', 'Java', 'R', 'SQL'])",
         "$this.joinedDate->isNotEmpty()",
-        "$this.highFives->isNotEmpty()",
         "$this.highFives > 0",
         "$this.joinedDate->dateDiff($this.birthDate,DurationUnit.YEARS) > 20"
       )
@@ -120,4 +121,21 @@ class LegendTest extends AnyFlatSpec {
     assert(withColumns.map(_.from).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
     assert(withColumns.map(_.to).toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
   }
+
+  it should "create a spark schema" in {
+    try {
+      SparkSession.builder().appName("test").master("local[1]").getOrCreate()
+      val legend = LegendClasspathLoader.loadResources("model")
+      val legendStrategy = legend.buildStrategy(
+        "databricks::employee",
+        "databricks::lakehouse::mapping"
+      )
+      val outputFields = legendStrategy.targetSchema.fields.map(_.name).toSet
+      assert(outputFields == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
+      println(legendStrategy.targetSchema.toDDL)
+    } finally {
+      SparkSession.getActiveSession.map(_.stop())
+    }
+  }
+
 }

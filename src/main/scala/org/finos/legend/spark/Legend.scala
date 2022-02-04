@@ -31,6 +31,7 @@ import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
+import org.finos.legend.pure.m3.coreinstance.meta.pure.store.Store
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
 import org.finos.legend.spark.LegendUtils._
@@ -42,7 +43,7 @@ import scala.util.{Failure, Success, Try}
 class Legend(entities: Map[String, Entity]) {
 
   lazy val pureModel: PureModel = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build.getPureModel
-  lazy val sparkRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
+  lazy val pureRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   def getEntityNames: Seq[String] = entities.keys.toSeq
@@ -91,10 +92,13 @@ class Legend(entities: Map[String, Entity]) {
       val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation.lambda)
 
       // We generate an execution plan
-      val plan = LegendUtils.generateExecutionPlan(query, mapping, sparkRuntime, pureModel)
+      val plan = LegendUtils.generateExecutionPlan(query, mapping, pureRuntime, pureModel)
 
       // We retrieve the SQL where clause
       val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+
+      println(LegendUtils.parseSql(sqlExecPlan))
+
       expectation.copy(sql = LegendUtils.parseSql(sqlExecPlan))
     })
 
@@ -154,7 +158,7 @@ class Legend(entities: Map[String, Entity]) {
         case "enumeration" =>
           // We simply validate field against available enum values
           val values = nestedEntity.toLegendEnumeration.values.asScala.map(_.value)
-          val sql = "$this.%1$s->isEmpty() || $this.%1$s->in(%2$s)".format(nestedColumn, values.map(v => s"'$v'").mkString(", "))
+          val sql = "$this.%1$s->isEmpty() || $this.%1$s->in([%2$s])".format(nestedColumn, values.map(v => s"'$v'").mkString(", "))
           val allowedValues = LegendExpectation(s"[$nestedColumn] not allowed value", sql)
           defaultRules :+ allowedValues
 

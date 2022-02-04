@@ -236,14 +236,14 @@
       },
       "name" : "sme",
       "propertyTypeSourceInformation" : {
-        "endColumn" : 93,
+        "endColumn" : 102,
         "endLine" : 11,
         "sourceId" : "",
         "startColumn" : 88,
         "startLine" : 11
       },
       "sourceInformation" : {
-        "endColumn" : 100,
+        "endColumn" : 109,
         "endLine" : 11,
         "sourceId" : "",
         "startColumn" : 3,
@@ -278,7 +278,7 @@
         },
         "value" : "Programming skill that person truly masters"
       } ],
-      "type" : "String"
+      "type" : "databricks::sme"
     }, {
       "multiplicity" : {
         "lowerBound" : 1,
@@ -331,7 +331,7 @@
       "type" : "Date"
     }, {
       "multiplicity" : {
-        "lowerBound" : 1,
+        "lowerBound" : 0,
         "upperBound" : 1
       },
       "name" : "highFives",
@@ -343,7 +343,7 @@
         "startLine" : 13
       },
       "sourceInformation" : {
-        "endColumn" : 100,
+        "endColumn" : 103,
         "endLine" : 13,
         "sourceId" : "",
         "startColumn" : 3,

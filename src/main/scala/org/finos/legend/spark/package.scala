@@ -17,9 +17,10 @@
 
 package org.finos.legend
 
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 package object spark {
 
@@ -63,10 +64,21 @@ package object spark {
                                            )
 
   case class LegendRelationalStrategy(
-                                       schema: StructType,
+                                       inputSchema: StructType,
                                        transformations: Seq[LegendRelationalTransformation],
                                        expectations: Seq[LegendExpectation],
                                        targetTable: String
-                                     )
+                                     ) {
+
+    def targetSchema: StructType = {
+      SparkSession.getActiveSession match {
+        case Some(spark) =>
+          val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], inputSchema)
+          transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t.from, t.to)).schema
+        case _ => throw new IllegalArgumentException("There should be an active spark session")
+      }
+    }
+
+  }
 
 }

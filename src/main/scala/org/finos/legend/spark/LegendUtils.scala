@@ -132,6 +132,7 @@ object LegendUtils {
    */
   def buildLambda(lambdaString: String, pureModel: PureModel): LambdaFunction[_] = {
     val function = buildLambda(lambdaString)
+    println(lambdaString)
     val lambda = new Lambda()
     lambda.body = Collections.singletonList(function)
     HelperValueSpecificationBuilder.buildLambda(lambda, pureModel.getContext)

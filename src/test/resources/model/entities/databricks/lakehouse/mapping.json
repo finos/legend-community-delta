@@ -241,6 +241,7 @@
         }
       }, {
         "_type" : "relationalPropertyMapping",
+        "enumMappingId" : "databricks_sme",
         "property" : {
           "class" : "databricks::employee",
           "property" : "sme",
@@ -256,10 +257,10 @@
           "_type" : "column",
           "column" : "sme",
           "sourceInformation" : {
-            "endColumn" : 59,
+            "endColumn" : 94,
             "endLine" : 15,
             "sourceId" : "databricks::lakehouse::mapping",
-            "startColumn" : 10,
+            "startColumn" : 45,
             "startLine" : 15
           },
           "table" : {
@@ -268,10 +269,10 @@
             "mainTableDb" : "databricks::lakehouse::schema",
             "schema" : "legend",
             "sourceInformation" : {
-              "endColumn" : 55,
+              "endColumn" : 90,
               "endLine" : 15,
               "sourceId" : "databricks::lakehouse::mapping",
-              "startColumn" : 41,
+              "startColumn" : 76,
               "startLine" : 15
             },
             "table" : "employee"
@@ -279,7 +280,7 @@
           "tableAlias" : "employee"
         },
         "sourceInformation" : {
-          "endColumn" : 59,
+          "endColumn" : 94,
           "endLine" : 15,
           "sourceId" : "databricks::lakehouse::mapping",
           "startColumn" : 8,
@@ -433,13 +434,59 @@
         "startLine" : 4
       }
     } ],
-    "enumerationMappings" : [ ],
+    "enumerationMappings" : [ {
+      "enumValueMappings" : [ {
+        "enumValue" : "Scala",
+        "sourceValues" : [ {
+          "_type" : "stringSourceValue",
+          "value" : "Scala"
+        } ]
+      }, {
+        "enumValue" : "Python",
+        "sourceValues" : [ {
+          "_type" : "stringSourceValue",
+          "value" : "Python"
+        } ]
+      }, {
+        "enumValue" : "C",
+        "sourceValues" : [ {
+          "_type" : "stringSourceValue",
+          "value" : "C"
+        } ]
+      }, {
+        "enumValue" : "Java",
+        "sourceValues" : [ {
+          "_type" : "stringSourceValue",
+          "value" : "Java"
+        } ]
+      }, {
+        "enumValue" : "R",
+        "sourceValues" : [ {
+          "_type" : "stringSourceValue",
+          "value" : "R"
+        } ]
+      }, {
+        "enumValue" : "SQL",
+        "sourceValues" : [ {
+          "_type" : "stringSourceValue",
+          "value" : "SQL"
+        } ]
+      } ],
+      "enumeration" : "databricks::sme",
+      "sourceInformation" : {
+        "endColumn" : 3,
+        "endLine" : 29,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 21
+      }
+    } ],
     "includedMappings" : [ ],
     "name" : "mapping",
     "package" : "databricks::lakehouse",
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 20,
+      "endLine" : 30,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 2
