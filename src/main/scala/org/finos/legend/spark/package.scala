@@ -27,8 +27,7 @@ package object spark {
   implicit class DataframeImpl(df: DataFrame) {
 
     def legendTransform(transformations: Map[String, String]): DataFrame = {
-      transformations
-        .foldLeft(df)((d, w) => d.withColumnRenamed(w._1, w._2))
+      transformations.foldLeft(df)((d, w) => d.withColumnRenamed(w._1, w._2))
     }
 
     def legendValidate(expectations: Seq[LegendExpectation], colName: String = "legend"): DataFrame = {
