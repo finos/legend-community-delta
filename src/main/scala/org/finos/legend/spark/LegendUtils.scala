@@ -30,7 +30,16 @@ import scala.util.Try
 
 object LegendUtils {
 
-  implicit class MappingImpl(mapping: Mapping) {
+  @tailrec
+  private def getMappingEntityName(pack: org.finos.legend.pure.m3.coreinstance.Package, fqn: String): String = {
+    if (pack._package() == null || pack._package()._name() == "Root") {
+      pack._name() + "::" + fqn
+    } else {
+      getMappingEntityName(pack._package(), pack._name() + "::" + fqn)
+    }
+  }
+
+  implicit class MappingUtilsImpl(mapping: Mapping) {
 
     def getRelationalTransformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl = {
       val transformations = mapping._classMappings().asScala
@@ -55,21 +64,8 @@ object LegendUtils {
     }
   }
 
-  @tailrec
-  private def getMappingEntityName(pack: org.finos.legend.pure.m3.coreinstance.Package, fqn: String): String = {
-    if (pack._package() == null || pack._package()._name() == "Root") {
-      pack._name() + "::" + fqn
-    } else {
-      getMappingEntityName(pack._package(), pack._name() + "::" + fqn)
-    }
-  }
+  implicit class EntityUtilsImpl(entity: Entity) {
 
-  /**
-   * Utility class to manipulate Legend Entity object easily, deserializing Entity content as a Class or Enumeration
-   *
-   * @param entity the Legend entity
-   */
-  implicit class EntityImpl(entity: Entity) {
     def toLegendClass: Class = {
       val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
       require(entityType == "class",
@@ -147,6 +143,14 @@ object LegendUtils {
       Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),
       LegendPlanTransformers.transformers
     )
+  }
+
+  def getDocToMetadata(doc: Option[String]): Metadata = {
+    if (doc.isDefined) {
+      new MetadataBuilder().putString("comment", doc.get).build()
+    } else {
+      new MetadataBuilder().build()
+    }
   }
 
   /**

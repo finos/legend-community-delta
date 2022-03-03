@@ -18,9 +18,7 @@
 package org.finos.legend
 
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types._
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-
+import org.apache.spark.sql.{DataFrame, Row}
 
 package object spark {
 
@@ -30,7 +28,7 @@ package object spark {
       transformations.foldLeft(df)((d, w) => d.withColumnRenamed(w._1, w._2))
     }
 
-    def legendValidate(expectations: Seq[LegendExpectation], colName: String = "legend"): DataFrame = {
+    def legendValidate(expectations: Map[String, String], colName: String = "legend"): DataFrame = {
 
       val filter_constraints = udf((r: Row) => {
         val names = r.getAs[Seq[String]](0)
@@ -43,48 +41,11 @@ package object spark {
           colName,
           filter_constraints(
             struct(
-              array(expectations.map(_.name).map(lit): _*),
-              array(expectations.map(_.sql).map(expr): _*),
+              array(expectations.keys.toSeq.map(lit): _*),
+              array(expectations.values.toSeq.map(expr): _*),
             )
           )
         )
     }
   }
-
-  case class LegendExpectation(
-                                name: String,
-                                lambda: String,
-                                sql: String = "1=1"
-                              )
-
-  case class LegendMapping(
-                            schema: StructType,
-                            mapping: Map[String, String],
-                            expectations: Seq[LegendExpectation],
-                            table: String
-                                     ) {
-
-    def targetSchema: StructType = {
-      SparkSession.getActiveSession match {
-        case Some(spark) =>
-          val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], schema)
-          mapping.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
-        case _ => throw new IllegalArgumentException("There should be an active spark session")
-      }
-    }
-
-    def targetDDL(location: String = ""): String = {
-      val ddl = s"""
-        |CREATE DATABASE IF NOT EXISTS ${table.split("\\.").head};
-        |CREATE TABLE $table
-        |USING DELTA
-        |(
-        |\t${targetSchema.fields.map(_.toDDL).mkString(",\n\t")}
-        |)""".stripMargin
-
-      if (location != null && location.nonEmpty) s"$ddl\nLOCATION '${location}';" else s"$ddl;"
-    }
-
-  }
-
 }

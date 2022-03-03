@@ -20,19 +20,20 @@ package org.finos.legend.spark
 import java.net.URL
 import java.nio.file.{Files, Path, Paths}
 import java.util.Objects
-
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.scalatest.flatspec.AnyFlatSpec
 
+import scala.io.Source
+
 class LegendIT extends AnyFlatSpec {
 
-  val dataPath: String = {
+  val dataFile: String = {
     val url: URL = Objects.requireNonNull(this.getClass.getClassLoader.getResource("data"))
     val directory: Path = Paths.get(url.toURI)
     if (!Files.isDirectory(directory)) throw new IllegalAccessException("Not a directory: " + directory)
-    directory.toString
+    s"$directory/employee.json"
   }
 
   val spark: SparkSession = SparkSession.builder().appName("TEST").master("local[1]").getOrCreate()
@@ -42,26 +43,35 @@ class LegendIT extends AnyFlatSpec {
 
   "Raw files" should "be processed fully from a legend specs" in {
 
-    val legendModel = LegendClasspathLoader.loadResources("model")
-    val legend = legendModel.getMappingStrategy("databricks::mapping::employee_delta")
+    val legend = LegendClasspathLoader.loadResources("model")
+    val mapping = legend.getMapping("databricks::mapping::employee_delta")
+    val schema = legend.getMappingSchema(mapping)
+    val transformations = legend.getMappingTransformations(mapping)
+    val expectations = legend.getMappingExpectations(mapping)
+    val table = legend.getMappingTable(mapping, true)
 
-    val inputDF = spark.read.format("json").schema(legend.schema).load(dataPath)
-    inputDF.show()
+    expectations.foreach(s => {
+      println(s._1 + "\t" + s._2)
+    })
 
-    val mappedDF = inputDF.legendTransform(legend.mapping)
-    mappedDF.show()
+    val inputDF = spark.read.format("json").schema(schema).load(dataFile)
+    inputDF.show(truncate = false)
 
-    val cleanedDF = mappedDF.legendValidate(legend.expectations, "legend")
-    cleanedDF.show()
+    val mappedDF = inputDF.legendTransform(transformations)
+    mappedDF.show(truncate = false)
 
-    val test = cleanedDF.withColumn("legend", explode(col("legend"))).groupBy("legend").count()
-    test.show()
+    val cleanedDF = mappedDF.legendValidate(expectations, "legend").withColumn("legend", explode(col("legend")))
+    cleanedDF.show(truncate = false)
+
+    val test = cleanedDF.groupBy("legend").count()
+    test.show(truncate = false)
 
     assert(test.count() == 3)
-
     val failed = test.rdd.map(r => r.getAs[String](("legend"))).collect().map(_.split(" ").head.trim).toSet
     assert(failed == Set("[id]", "[sme]", "[age]"))
-    assert(legend.table == "legend.employee")
+
+    val expected = Source.fromInputStream(this.getClass.getResourceAsStream("/data/output_table.sql")).getLines().mkString("\n")
+    assert(expected == table)
 
   }
 

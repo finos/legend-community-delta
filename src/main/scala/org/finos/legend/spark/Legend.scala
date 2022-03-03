@@ -18,7 +18,6 @@
 package org.finos.legend.spark
 
 import java.util.UUID
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.spark.sql.types._
 import org.finos.legend.engine.language.pure.compiler.Compiler
@@ -40,7 +39,7 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
-import org.slf4j.LoggerFactory
+import org.apache.spark.sql.{Row, SparkSession}
 
 class Legend(entities: Map[String, Entity]) {
 
@@ -58,7 +57,7 @@ class Legend(entities: Map[String, Entity]) {
   def getMapping(mappingName: String): Mapping = {
     Try(pureModel.getMapping(mappingName)) match {
       case Success(mapping) =>
-        require(mapping.isRelational, s"mapping [${mappingName}] should be of type relational")
+        require(mapping.isRelational, s"mapping [${mappingName}] should be relational")
         mapping
       case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
     }
@@ -86,12 +85,12 @@ class Legend(entities: Map[String, Entity]) {
    * @param mappingName the mapping entity used to transform entity onto a table
    * @return the spark schema for the Legend mapping entity
    */
-  def getMappingInputSchema(mappingName: String): StructType = {
+  def getMappingSchema(mappingName: String): StructType = {
     val mapping = getMapping(mappingName)
-    getMappingInputSchema(mapping)
+    getMappingSchema(mapping)
   }
 
-  def getMappingInputSchema(mapping: Mapping): StructType = {
+  def getMappingSchema(mapping: Mapping): StructType = {
     val entityName = mapping.getEntityName
     getEntitySchema(entityName)
   }
@@ -104,17 +103,26 @@ class Legend(entities: Map[String, Entity]) {
    * @param mappingName the mapping entity used to transform entity onto a table
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
    */
-  def getMappingExpectations(mappingName: String): Seq[LegendExpectation] = {
+  def getMappingExpectations(mappingName: String): Map[String, String] = {
     val mapping = getMapping(mappingName)
     val entityName = mapping.getEntityName
     val entity = getEntity(entityName)
     getMappingExpectations(mapping, entity)
   }
 
-  def getMappingExpectations(mapping: Mapping, entity: Entity): Seq[LegendExpectation] = {
+  def getMappingExpectations(mapping: Mapping): Map[String, String] = {
+    val entityName = mapping.getEntityName
+    val entity = getEntity(entityName)
+    getMappingExpectations(mapping, entity)
+  }
+
+  def getMappingExpectations(mapping: Mapping, entity: Entity): Map[String, String] = {
     val expectations = getLegendClassExpectations(entity.toLegendClass)
     val entityName = mapping.getEntityName
-    expectations.map(expectation => compileExpectation(expectation, entityName, mapping))
+    expectations.map({ case (name, expectation) =>
+      // convert expectations from lambdas to SQL
+      (name, compileExpectation(expectation, entityName, mapping))
+    })
   }
 
   /**
@@ -123,29 +131,55 @@ class Legend(entities: Map[String, Entity]) {
    * @param mappingName the name of the mapping to transform entity into a table
    * @return the set of transformations required
    */
-  def getMappingStrategy(mappingName: String): LegendMapping = {
+  def getMappingTransformations(mappingName: String): Map[String, String] = {
     val mapping = getMapping(mappingName)
-    getMappingStrategy(mapping)
+    getMappingTransformations(mapping)
   }
 
-  def getMappingStrategy(mapping: Mapping): LegendMapping = {
+  def getMappingTransformations(mapping: Mapping): Map[String, String] = {
     val relational = mapping.getRelationalTransformation
-    val entityName = mapping.getEntityName
-    val entity = getEntity(entityName)
-    val inputSchema = getEntitySchema(entity)
-    val expectations = getMappingExpectations(mapping, entity)
-    LegendMapping(
-      inputSchema,
-      relational.getMappingFields,
-      expectations,
-      relational.getMappingTable
-    )
+    relational.getMappingFields
   }
 
-  private def compileExpectation(expectation: LegendExpectation, entityName: String, mapping: Mapping): LegendExpectation = {
+  /**
+   * Given a legend mapping, we generate all transformations required to persist an entity to a relational table
+   *
+   * @param mappingName the name of the mapping to transform entity into a table
+   * @return the set of transformations required
+   */
+  def getMappingTable(mappingName: String, ddl: Boolean): String = {
+    val mapping = getMapping(mappingName)
+    getMappingTable(mapping, ddl)
+  }
+
+  def getMappingTable(mapping: Mapping, ddl: Boolean): String = {
+    val relational = mapping.getRelationalTransformation
+    val tableName = relational.getMappingTable
+
+    if (ddl) {
+      SparkSession.getActiveSession match {
+        case Some(spark) =>
+          val srcSchema = getMappingSchema(mapping)
+          val transformations = getMappingTransformations(mapping)
+          val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], srcSchema)
+          val dstSchema = transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
+          s"""CREATE TABLE $tableName
+           |USING DELTA
+           |(
+           |${dstSchema.fields.map(_.toDDL).mkString(",\n")}
+           |)""".stripMargin
+
+        case _ => throw new IllegalArgumentException("a spark session must be active")
+      }
+    } else {
+      tableName
+    }
+  }
+
+  private def compileExpectation(expectation: String, entityName: String, mapping: Mapping): String = {
 
     // We generate code to query table with constraints as a WHERE clause
-    val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation.lambda)
+    val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation)
 
     // We generate an execution plan
     val plan = LegendUtils.generateExecutionPlan(query, mapping, pureRuntime, pureModel)
@@ -154,10 +188,9 @@ class Legend(entities: Map[String, Entity]) {
     val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
 
     // We update our expectations with actual SQL expressions
-    expectation.copy(sql = LegendUtils.parseSql(sqlExecPlan))
+    LegendUtils.parseSql(sqlExecPlan)
 
   }
-
 
   /**
    * We retrieve all rules from the Legend schema. This will create SQL expression to validate schema integrity (nullable, multiplicity)
@@ -167,10 +200,10 @@ class Legend(entities: Map[String, Entity]) {
    * @param parentField    empty if top level object, it contains parent field for nested structure
    * @return the list of rules expressed as SQL expressions. Unchecked yet, we'll test for syntax later
    */
-  private def getLegendPropertyExpectations(legendProperty: Property, parentField: String): Seq[LegendExpectation] = {
+  private def getLegendPropertyExpectations(legendProperty: Property, parentField: String): Map[String, String] = {
 
     // the first series of rules are simply derived from the nullability and multiplicity of each field
-    val defaultRules: Seq[LegendExpectation] = getFieldExpectations(legendProperty, parentField)
+    val defaultRules: Map[String, String] = getFieldExpectations(legendProperty, parentField)
 
     // we need to go through more complex structures, such as nested fields or enumerations
     if (legendProperty.`type`.contains("::")) {
@@ -184,15 +217,18 @@ class Legend(entities: Map[String, Entity]) {
           // We need to validate each underlying object if field is not optional
           // We simply recurse the same logic at a child level
           if (legendProperty.isCollection) defaultRules else {
-            val nestedRules: Seq[LegendExpectation] = getLegendClassExpectations(nestedEntity.toLegendClass, LegendUtils.childFieldName(legendProperty.name, parentField))
+            val nestedRules: Map[String, String] = getLegendClassExpectations(
+              nestedEntity.toLegendClass,
+              LegendUtils.childFieldName(legendProperty.name, parentField)
+            )
             defaultRules ++ nestedRules
           }
         case "enumeration" =>
           // We simply validate field against available enum values
           val values = nestedEntity.toLegendEnumeration.values.asScala.map(_.value)
-          val sql = "$this.%1$s->isEmpty() || $this.%1$s->in([%2$s])".format(nestedColumn, values.map(v => s"'$v'").mkString(", "))
-          val allowedValues = LegendExpectation(s"[$nestedColumn] not allowed value", sql)
-          defaultRules :+ allowedValues
+          val pure = "$this.%1$s->isEmpty() || $this.%1$s->in([%2$s])".format(nestedColumn, values.map(v => s"'$v'").mkString(", "))
+          val allowedValues = Map(s"[$nestedColumn] not allowed value" -> pure)
+          defaultRules ++ allowedValues
 
         case _ => throw new IllegalArgumentException(
           s"nested entities should be [enumeration] or [class], got [${nestedEntity.getContent.get("_type").toString}]")
@@ -208,9 +244,11 @@ class Legend(entities: Map[String, Entity]) {
    * @return the list of StructField objects
    */
   private def getLegendClassStructFields(clazz: Class): Seq[StructField] = {
-    clazz.superTypes.asScala.flatMap(superType => {
+    val structs = clazz.superTypes.asScala.flatMap(superType => {
       getLegendClassStructFields(getEntity(superType).toLegendClass)
     }) ++ clazz.properties.asScala.map(getLegendPropertyStructField)
+
+    structs.toSeq
   }
 
   /**
@@ -242,10 +280,9 @@ class Legend(entities: Map[String, Entity]) {
           // We need to capture nested objects recursively through the getEntityStructFields method
           val nestedSchema = StructType(getLegendClassStructFields(nestedObject))
           val dataType = if (property.isCollection) ArrayType(nestedSchema) else nestedSchema
-          val metadata = if (doc.isDefined) new MetadataBuilder().putString("comment", doc.get).build() else new MetadataBuilder().build()
 
           // We define this field as a StructField with nested entity of datatype StructType
-          StructField(property.name, dataType, property.isNullable, metadata)
+          StructField(property.name, dataType, property.isNullable, getDocToMetadata(doc))
 
         // Legend Entity is of type enumeration
         case "enumeration" =>
@@ -257,10 +294,9 @@ class Legend(entities: Map[String, Entity]) {
           // Even though entity is defined externally, it can be considered as type String instead of nested object
           // We do not have to go through each of its allowed value when defining schema (will do so when evaluating constraints)
           val dataType = if (property.isCollection) ArrayType(StringType) else StringType
-          val metadata = if (doc.isDefined) new MetadataBuilder().putString("comment", doc.get).build() else new MetadataBuilder().build()
 
           // We define this field as a StructField of type StringType
-          StructField(property.name, dataType, property.isNullable, metadata)
+          StructField(property.name, dataType, property.isNullable, getDocToMetadata(doc))
 
         // Neither an enumeration or a class object
         case _ => throw new IllegalArgumentException(
@@ -287,7 +323,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param parentField empty if top level object, it contains parent field for nested structure
    * @return the list of rules to evaluate dataframe against, as SQL expressions
    */
-  private def getLegendClassExpectations(legendClass: Class, parentField: String = ""): Seq[LegendExpectation] = {
+  private def getLegendClassExpectations(legendClass: Class, parentField: String = ""): Map[String, String] = {
 
     val supertypes = legendClass.superTypes.asScala.flatMap(superType => {
       getLegendClassExpectations(getEntity(superType).toLegendClass, parentField)
@@ -298,10 +334,10 @@ class Legend(entities: Map[String, Entity]) {
     })
 
     val constraints = legendClass.constraints.asScala.map(c => {
-      LegendExpectation(c.name, c.toLambda)
-    })
+      (c.name, c.toLambda)
+    }).toMap
 
-    supertypes ++ expectations ++ constraints
+    (supertypes ++ expectations ++ constraints).toMap
 
   }
 
@@ -313,30 +349,33 @@ class Legend(entities: Map[String, Entity]) {
    * @param parentField    empty if top level object, it contains parent field for nested structure
    * @return the list of rules checking for mandatory value and multiplicity
    */
-  private def getFieldExpectations(legendProperty: Property, parentField: String): Seq[LegendExpectation] = {
+  private def getFieldExpectations(legendProperty: Property, parentField: String): Map[String, String] = {
 
     // Ensure we have the right field name if this is a nested entity
     val fieldName = LegendUtils.childFieldName(legendProperty.name, parentField)
 
     // Checking for non optional fields
-    val mandatoryRule: Option[LegendExpectation] = if (!legendProperty.isNullable) {
-      Some(LegendExpectation(s"[$fieldName] is mandatory", "$this.%1$s->isNotEmpty()".format(fieldName)))
-    } else None: Option[LegendExpectation]
+    val mandatoryRule: Map[String, String] = if (!legendProperty.isNullable) {
+      Map(s"[$fieldName] is mandatory" -> "$this.%1$s->isNotEmpty()".format(fieldName))
+    } else Map.empty[String, String]
 
     // Checking legend multiplicity if more than 1 value is allowed
-    val multiplicityRule: Option[LegendExpectation] = if (legendProperty.isCollection) {
+    val multiplicityRule: Map[String, String] = if (legendProperty.isCollection) {
       if (legendProperty.multiplicity.isInfinite) {
-        val sql = "$this.%1$s->isEmpty() || $this.%1$s->size() >= %2$s".format(fieldName, legendProperty.multiplicity.lowerBound)
-        Some(LegendExpectation(s"[$fieldName] has invalid size", sql))
+        val pure = "$this.%1$s->isEmpty() || $this.%1$s->size() >= %2$s".format(
+          fieldName, legendProperty.multiplicity.lowerBound)
+        Map(s"[$fieldName] has invalid size" -> pure)
       } else {
-        val sql = "$this.%1$s->isEmpty() || ($this.%1$s->size() >= %2$s && $this.%1$s->size() <= %3$s)".format(fieldName, legendProperty.multiplicity.lowerBound, legendProperty.multiplicity.getUpperBound.toInt)
-        Some(LegendExpectation(s"[$fieldName] has invalid size", sql))
+        val pure = "$this.%1$s->isEmpty() || ($this.%1$s->size() >= %2$s && $this.%1$s->size() <= %3$s)".format(
+          fieldName, legendProperty.multiplicity.lowerBound, legendProperty.multiplicity.getUpperBound.toInt)
+        Map(s"[$fieldName] has invalid size" -> pure)
       }
-    } else None: Option[LegendExpectation]
+    } else Map.empty[String, String]
 
     // Aggregate both mandatory and multiplicity rules
-    Seq(mandatoryRule, multiplicityRule).flatten
+    mandatoryRule ++ multiplicityRule
   }
+
 }
 
 object Legend {

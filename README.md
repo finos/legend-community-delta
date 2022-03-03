@@ -176,8 +176,9 @@ within a `LegendRelationalStrategy` object as follows
 
 ```scala
 import org.finos.legend.spark.LegendClasspathLoader
+
 val legend = LegendClasspathLoader.loadResources("datamodel")
-val legendStrategy = legend.getMappingStrategy("databricks::lakehouse::mapping")
+val legendStrategy = legend.getMappingTransformations("databricks::lakehouse::mapping")
 
 val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load("/path/to/csv")
 val mappedDF = inputDF.legendTransform(legendStrategy.mapping)
@@ -189,8 +190,9 @@ cleanedDF.write.saveAsTable(legendStrategy.targetTable)
 
 ```scala
 import org.finos.legend.spark.LegendClasspathLoader
+
 val legend = LegendClasspathLoader.loadResources("datamodel")
-val legendStrategy = legend.getMappingStrategy("databricks::lakehouse::mapping")
+val legendStrategy = legend.getMappingTransformations("databricks::lakehouse::mapping")
 println(legendStrategy.targetDDL("/tmp/test"))
 ```
 

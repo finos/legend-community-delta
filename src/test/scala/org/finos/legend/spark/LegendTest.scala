@@ -80,10 +80,10 @@ class LegendTest extends AnyFlatSpec {
 
   it should "be generated in SQL" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val transform = legend.getMappingStrategy("databricks::mapping::employee_delta")
+    val transform = legend.getMappingExpectations("databricks::mapping::employee_delta")
 
     assert(
-      transform.expectations.map(_.sql) == Seq(
+      transform.values.toSet == Set(
         "first_name IS NOT NULL",
         "last_name IS NOT NULL",
         "birth_date IS NOT NULL",
@@ -94,27 +94,13 @@ class LegendTest extends AnyFlatSpec {
         "year(joined_date) - year(birth_date) > 20"
       )
     )
-
-    assert(
-      transform.expectations.map(_.lambda) == Seq(
-        "$this.firstName->isNotEmpty()",
-        "$this.lastName->isNotEmpty()",
-        "$this.birthDate->isNotEmpty()",
-        "$this.id->isNotEmpty()",
-        "$this.sme->isEmpty() || $this.sme->in(['Scala', 'Python', 'C', 'Java', 'R', 'SQL'])",
-        "$this.joinedDate->isNotEmpty()",
-        "$this.highFives > 0",
-        "$this.joinedDate->dateDiff($this.birthDate,DurationUnit.YEARS) > 20"
-      )
-    )
   }
 
   "A relational mapping" should "capture transformations" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val transform = legend.getMappingStrategy("databricks::mapping::employee_delta")
-    val withColumns = transform.mapping
-    assert(withColumns.keys.toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
-    assert(withColumns.values.toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
+    val transform = legend.getMappingTransformations("databricks::mapping::employee_delta")
+    assert(transform.keys.toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
+    assert(transform.values.toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
   }
 
   it should "create a spark schema" in {
@@ -123,11 +109,18 @@ class LegendTest extends AnyFlatSpec {
       case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
     }
     val legend = LegendClasspathLoader.loadResources("model")
-    val legendStrategy = legend.getMappingStrategy("databricks::mapping::employee_delta")
-    val outputFields = legendStrategy.targetSchema.fields.map(_.name).toSet
-    assert(outputFields == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
-    println(legendStrategy.targetSchema.toDDL)
-    println(legendStrategy.targetDDL("/tmp/test"))
+    val schema = legend.getMappingSchema("databricks::mapping::employee_delta")
+    assert(schema.fields.map(_.name).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
+  }
+
+  it should "generate a table DDL" in {
+    SparkSession.getActiveSession match {
+      case Some(_) =>
+      case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
+    }
+    val legend = LegendClasspathLoader.loadResources("model")
+    val table = legend.getMappingTable("databricks::mapping::employee_delta", ddl=true)
+    println(table)
   }
 
 }
