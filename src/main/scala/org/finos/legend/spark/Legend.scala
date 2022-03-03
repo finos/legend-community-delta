@@ -125,6 +125,10 @@ class Legend(entities: Map[String, Entity]) {
    */
   def getMappingStrategy(mappingName: String): LegendMapping = {
     val mapping = getMapping(mappingName)
+    getMappingStrategy(mapping)
+  }
+
+  def getMappingStrategy(mapping: Mapping): LegendMapping = {
     val relational = mapping.getRelationalTransformation
     val entityName = mapping.getEntityName
     val entity = getEntity(entityName)

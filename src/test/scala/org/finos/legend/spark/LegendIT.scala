@@ -44,6 +44,7 @@ class LegendIT extends AnyFlatSpec {
 
     val legendModel = LegendClasspathLoader.loadResources("model")
     val legend = legendModel.getMappingStrategy("databricks::mapping::employee_delta")
+    legendModel.getMappingStrategy()
 
     val inputDF = spark.read.format("json").schema(legend.schema).load(dataPath)
     inputDF.show()
