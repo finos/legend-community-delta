@@ -50,9 +50,9 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
-        <legend.engine.version>1.0-DELTA</legend.engine.version>
-        <legend.sdlc.version>1.0-DELTA</legend.sdlc.version>
-        <legend.pure.version>1.0-DELTA</legend.pure.version>
+        <legend.engine.version>2.58.0</legend.engine.version>
+        <legend.sdlc.version>0.70.0</legend.sdlc.version>
+        <legend.pure.version>1.51.0</legend.pure.version>
     </properties>
 
     <dependencies>

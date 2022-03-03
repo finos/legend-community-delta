@@ -29,6 +29,7 @@ import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextDa
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
+import org.finos.legend.engine.shared.core.api.grammar.RenderStyle
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
 import org.finos.legend.sdlc.domain.model.entity.Entity
@@ -309,7 +310,7 @@ class Legend(entities: Map[String, Entity]) {
 object Legend {
 
   lazy val objectMapper: ObjectMapper = ObjectMapperFactory.getNewStandardObjectMapperWithPureProtocolExtensionSupports
-  lazy val grammarComposer: DEPRECATED_PureGrammarComposerCore = DEPRECATED_PureGrammarComposerCore.Builder.newInstance.withRenderStyle(PureGrammarComposerContext.RenderStyle.PRETTY).build
+  lazy val grammarComposer: DEPRECATED_PureGrammarComposerCore = DEPRECATED_PureGrammarComposerCore.Builder.newInstance.withRenderStyle(RenderStyle.PRETTY).build
 
   /**
    * We generate a runtime that can be used to map entities using a spark backend. The key point here is to not force end user
