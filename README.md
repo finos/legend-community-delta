@@ -46,18 +46,21 @@ Legend project can be loaded by specifying a parent directory where `entities/${
 model definitions can be found. We load legend namespaces from a classpath or disk as follows
 
 ```scala
+import org.finos.legend.spark.LegendClasspathLoader
 val legend = LegendClasspathLoader.loadResources("datamodel")
 ```
 
 ```scala
 import org.finos.legend.spark.LegendFileLoader
-val legend = LegendFileLoader.loadResources(("/path/to/legend/datamodel"))
+val legend = LegendFileLoader.loadResources("/path/to/legend/datamodel")
 ```
 
 All legend entities available will be retrieved and can be listed as follows, 
 expressed in the form of `namespace::entity` and referencable as such.
 
 ```scala
+import org.finos.legend.spark.LegendClasspathLoader
+val legend = LegendClasspathLoader.loadResources("datamodel")
 legend.getEntityNames.foreach(println)
 ```
 
@@ -72,6 +75,8 @@ With our legend entities loaded, we can create the Delta schema for any entity o
 This process will recursively loop through each of its underlying fields, enums and possibly nested properties and supertypes.
 
 ```scala
+import org.finos.legend.spark.LegendClasspathLoader
+val legend = LegendClasspathLoader.loadResources("datamodel")
 val schema = legend.getEntitySchema("databricks::employee")
 schema.fields.foreach(s => println(s.toDDL))
 ```
@@ -80,13 +85,13 @@ Note that we do not only find fields and their data types, but also retrieve Leg
 as business metadata (field description). One can simply create a delta table using the following `schema.toDDL` syntax.
 
 ```
-`first_name` STRING NOT NULL COMMENT 'Person first name'
-`last_name` STRING NOT NULL COMMENT 'Person last name'
-`birth_date` DATE NOT NULL COMMENT 'Person birth date'
+`firstName` STRING NOT NULL COMMENT 'Person first name'
+`lastName` STRING NOT NULL COMMENT 'Person last name'
+`birthDate` DATE NOT NULL COMMENT 'Person birth date'
 `id` INT NOT NULL COMMENT 'Unique identifier of a databricks employee'
 `sme` STRING NOT NULL COMMENT 'Programming skill that person truly masters'
-`joined_date` DATE NOT NULL COMMENT 'When did that person join Databricks'
-`high_fives` INT NOT NULL COMMENT 'How many high fives did that person get'
+`joinedDate` DATE NOT NULL COMMENT 'When did that person join Databricks'
+`highFives` INT NOT NULL COMMENT 'How many high fives did that person get'
 ```
 
 Data can be schematized "on-the-fly" when reading raw records (see below an example reading JSON files).
@@ -119,10 +124,9 @@ we leverage the legend-engine framework to generate an execution plan compatible
 
 
 ```scala
-val expectations = legend.getExpectations(
-  entityName = "databricks::employee",
-  mappingName = "databricks::lakehouse::mapping"
-)
+import org.finos.legend.spark.LegendClasspathLoader
+val legend = LegendClasspathLoader.loadResources("datamodel")
+val expectations = legend.getMappingExpectations("databricks::lakehouse::mapping")
 expectations.foreach(println)
 ```
 
@@ -146,7 +150,8 @@ data enriched with an additional column. This column (column name can be specifi
 constraints. Hence, an empty array consists in a fully validated record 
 
 ```scala
-val validated = df.legendExpectations(expectations)
+import org.finos.legend.spark._
+val validated = df.legendValidate(expectations)
 ```
 
 In the example above, we simply explode our dataframe to easily access each and every failed expectation, 
@@ -170,18 +175,43 @@ and both technical and business expectations required to store clean data to a t
 within a `LegendRelationalStrategy` object as follows
 
 ```scala
-val legend = LegendClasspathLoader.loadResources("model")
-
-val legendStrategy = legend.buildStrategy(
-  "databricks::employee",
-  "databricks::lakehouse::emp2delta"
-)
+import org.finos.legend.spark.LegendClasspathLoader
+val legend = LegendClasspathLoader.loadResources("datamodel")
+val legendStrategy = legend.getMappingStrategy("databricks::lakehouse::mapping")
 
 val inputDF = spark.read.format("csv").schema(legendStrategy.schema).load("/path/to/csv")
-val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
+val mappedDF = inputDF.legendTransform(legendStrategy.mapping)
 val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
 cleanedDF.write.saveAsTable(legendStrategy.targetTable)
 ```
+
+### Target table
+
+```scala
+import org.finos.legend.spark.LegendClasspathLoader
+val legend = LegendClasspathLoader.loadResources("datamodel")
+val legendStrategy = legend.getMappingStrategy("databricks::lakehouse::mapping")
+println(legendStrategy.targetDDL("/tmp/test"))
+```
+
+```roomsql
+CREATE DATABASE IF NOT EXISTS legend;
+
+CREATE TABLE legend.employee
+USING DELTA
+(
+	`first_name` STRING NOT NULL COMMENT 'Person first name',
+	`last_name` STRING NOT NULL COMMENT 'Person last name',
+	`birth_date` DATE NOT NULL COMMENT 'Person birth date',
+	`id` INT NOT NULL COMMENT 'Unique identifier of a databricks employee',
+	`sme` STRING COMMENT 'Programming skill that person truly masters',
+	`joined_date` DATE NOT NULL COMMENT 'When did that person join Databricks',
+	`high_fives` INT COMMENT 'How many high fives did that person get'
+)
+LOCATION '/tmp/test';
+```
+
+
 
 ## Installation
 
