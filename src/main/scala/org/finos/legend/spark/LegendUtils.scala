@@ -21,13 +21,17 @@ import org.finos.legend.pure.generated.{Root_meta_relational_mapping_RelationalP
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
+import org.finos.legend.pure.m3.coreinstance.meta.relational.mapping.RootRelationalInstanceSetImplementation
 import org.finos.legend.sdlc.domain.model.entity.Entity
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 object LegendUtils {
 
   implicit class MappingImpl(mapping: Mapping) {
+
     def getRelationalTransformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl = {
       val transformations = mapping._classMappings().asScala
       require(transformations.nonEmpty)
@@ -36,6 +40,27 @@ object LegendUtils {
       require(transformation._mainTableAlias._relationalElement() != null)
       require(transformation._mainTableAlias._relationalElement().isInstanceOf[Root_meta_relational_metamodel_relation_Table_Impl])
       transformation
+    }
+
+    def isRelational: Boolean = {
+      Try(mapping.getRelationalTransformation).isSuccess
+    }
+
+    def getEntityName: String = {
+      val classMappings = mapping._classMappings().asScala.toList
+      getMappingEntityName(
+        classMappings.head._class()._package(),
+        classMappings.head._class()._name()
+      )
+    }
+  }
+
+  @tailrec
+  private def getMappingEntityName(pack: org.finos.legend.pure.m3.coreinstance.Package, fqn: String): String = {
+    if (pack._package() == null || pack._package()._name() == "Root") {
+      pack._name() + "::" + fqn
+    } else {
+      getMappingEntityName(pack._package(), pack._name() + "::" + fqn)
     }
   }
 
@@ -47,13 +72,15 @@ object LegendUtils {
   implicit class EntityImpl(entity: Entity) {
     def toLegendClass: Class = {
       val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
-      require(entityType == "class", s"Could only create a schema from an entity of type [class], got [${entityType}]")
+      require(entityType == "class",
+        s"Could only create a schema from an entity of type [class], got [${entityType}]")
       Legend.objectMapper.convertValue(entity.getContent, classOf[Class])
     }
 
     def toLegendEnumeration: Enumeration = {
       val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
-      require(entityType == "enumeration", s"Could only create a schema from an entity of type [enumeration], got [${entityType}]")
+      require(entityType == "enumeration",
+        s"Could only create a schema from an entity of type [enumeration], got [${entityType}]")
       Legend.objectMapper.convertValue(entity.getContent, classOf[Enumeration])
     }
 
@@ -131,7 +158,6 @@ object LegendUtils {
    */
   def buildLambda(lambdaString: String, pureModel: PureModel): LambdaFunction[_] = {
     val function = buildLambda(lambdaString)
-    println(lambdaString)
     val lambda = new Lambda()
     lambda.body = Collections.singletonList(function)
     HelperValueSpecificationBuilder.buildLambda(lambda, pureModel.getContext)
@@ -228,22 +254,23 @@ object LegendUtils {
 
   implicit class TransformationImpl(transformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl) {
 
-    def getTransformations: Seq[LegendRelationalTransformation] = {
+    def getMappingFields: Map[String, String] = {
+
       transformation._propertyMappings.asScala.flatMap({ o =>
         o match {
           case p: Root_meta_relational_mapping_RelationalPropertyMapping_Impl =>
             p._relationalOperationElement match {
               case e: Root_meta_relational_metamodel_TableAliasColumn_Impl =>
-                Some(LegendRelationalTransformation(p._property()._name(), e._columnName()))
+                Some((p._property()._name(), e._columnName()))
               case _ => None
             }
           case _ =>
             None
         }
-      }).toSeq
+      }).toMap
     }
 
-    def getTable: String = {
+    def getMappingTable: String = {
       val target = transformation._mainTableAlias._relationalElement().asInstanceOf[Root_meta_relational_metamodel_relation_Table_Impl]
       target._schema._name() + "." + target._name()
     }

@@ -19,14 +19,16 @@ package org.finos.legend.spark
 
 import java.io.File
 
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
-import org.slf4j.{Logger, LoggerFactory}
 
 class LegendTest extends AnyFlatSpec {
 
-  val logger: Logger = LoggerFactory.getLogger(this.getClass)
+  Logger.getLogger("Alloy Execution Server").setLevel(Level.OFF)
+  Logger.getLogger("org").setLevel(Level.OFF)
+  Logger.getLogger("akka").setLevel(Level.OFF)
 
   "A legend data type" should "be converted into spark data type" in {
     val returnTypes = Seq("String", "Boolean", "Binary", "Integer", "Number", "Float", "Decimal", "Date", "StrictDate", "DateTime")
@@ -70,8 +72,7 @@ class LegendTest extends AnyFlatSpec {
 
   "Expectations" should "be generated from a legend class" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val expectations = legend.getExpectations(
-      "databricks::entity::employee",
+    val expectations = legend.getMappingExpectations(
       "databricks::mapping::employee_delta"
     )
     assert(expectations.nonEmpty)
@@ -79,10 +80,7 @@ class LegendTest extends AnyFlatSpec {
 
   it should "be generated in SQL" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val transform = legend.buildStrategy(
-      "databricks::entity::employee",
-      "databricks::mapping::employee_delta"
-    )
+    val transform = legend.getMappingStrategy("databricks::mapping::employee_delta")
 
     assert(
       transform.expectations.map(_.sql) == Seq(
@@ -113,13 +111,10 @@ class LegendTest extends AnyFlatSpec {
 
   "A relational mapping" should "capture transformations" in {
     val legend = LegendClasspathLoader.loadResources("model")
-    val transform = legend.buildStrategy(
-      "databricks::entity::employee",
-      "databricks::mapping::employee_delta"
-    )
-    val withColumns = transform.transformations
-    assert(withColumns.map(_.from).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
-    assert(withColumns.map(_.to).toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
+    val transform = legend.getMappingStrategy("databricks::mapping::employee_delta")
+    val withColumns = transform.mapping
+    assert(withColumns.keys.toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
+    assert(withColumns.values.toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
   }
 
   it should "create a spark schema" in {
@@ -128,13 +123,11 @@ class LegendTest extends AnyFlatSpec {
       case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
     }
     val legend = LegendClasspathLoader.loadResources("model")
-    val legendStrategy = legend.buildStrategy(
-      "databricks::entity::employee",
-      "databricks::mapping::employee_delta"
-    )
+    val legendStrategy = legend.getMappingStrategy("databricks::mapping::employee_delta")
     val outputFields = legendStrategy.targetSchema.fields.map(_.name).toSet
     assert(outputFields == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
     println(legendStrategy.targetSchema.toDDL)
+    println(legendStrategy.targetDDL("/tmp/test"))
   }
 
 }

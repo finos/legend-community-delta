@@ -17,18 +17,18 @@
 
 package org.finos.legend
 
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+
 
 package object spark {
 
   implicit class DataframeImpl(df: DataFrame) {
 
-    def legendTransform(transformations: Seq[LegendRelationalTransformation]): DataFrame = {
+    def legendTransform(transformations: Map[String, String]): DataFrame = {
       transformations
-        .foldLeft(df)((d, w) => d.withColumnRenamed(w.from, w.to))
+        .foldLeft(df)((d, w) => d.withColumnRenamed(w._1, w._2))
     }
 
     def legendValidate(expectations: Seq[LegendExpectation], colName: String = "legend"): DataFrame = {
@@ -58,25 +58,32 @@ package object spark {
                                 sql: String = "1=1"
                               )
 
-  case class LegendRelationalTransformation(
-                                             from: String,
-                                             to: String
-                                           )
-
-  case class LegendRelationalStrategy(
-                                       inputSchema: StructType,
-                                       transformations: Seq[LegendRelationalTransformation],
-                                       expectations: Seq[LegendExpectation],
-                                       targetTable: String
+  case class LegendMapping(
+                            schema: StructType,
+                            mapping: Map[String, String],
+                            expectations: Seq[LegendExpectation],
+                            table: String
                                      ) {
 
     def targetSchema: StructType = {
       SparkSession.getActiveSession match {
         case Some(spark) =>
-          val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], inputSchema)
-          transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t.from, t.to)).schema
+          val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], schema)
+          mapping.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
         case _ => throw new IllegalArgumentException("There should be an active spark session")
       }
+    }
+
+    def targetDDL(location: String = ""): String = {
+      val ddl = s"""
+        |CREATE DATABASE IF NOT EXISTS ${table.split("\\.").head};
+        |CREATE TABLE $table
+        |USING DELTA
+        |(
+        |\t${targetSchema.fields.map(_.toDDL).mkString(",\n\t")}
+        |)""".stripMargin
+
+      if (location != null && location.nonEmpty) s"$ddl\nLOCATION '${location}';" else s"$ddl;"
     }
 
   }

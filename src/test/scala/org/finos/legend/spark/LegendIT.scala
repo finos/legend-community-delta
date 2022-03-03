@@ -21,10 +21,10 @@ import java.net.URL
 import java.nio.file.{Files, Path, Paths}
 import java.util.Objects
 
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.scalatest.flatspec.AnyFlatSpec
-import org.slf4j.{Logger, LoggerFactory}
 
 class LegendIT extends AnyFlatSpec {
 
@@ -36,32 +36,33 @@ class LegendIT extends AnyFlatSpec {
   }
 
   val spark: SparkSession = SparkSession.builder().appName("TEST").master("local[1]").getOrCreate()
-  val logger: Logger = LoggerFactory.getLogger(this.getClass)
+  Logger.getLogger("Alloy Execution Server").setLevel(Level.OFF)
+  Logger.getLogger("org").setLevel(Level.OFF)
+  Logger.getLogger("akka").setLevel(Level.OFF)
 
   "Raw files" should "be processed fully from a legend specs" in {
 
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legendModel = LegendClasspathLoader.loadResources("model")
+    val legend = legendModel.getMappingStrategy("databricks::mapping::employee_delta")
 
-    val legendStrategy = legend.buildStrategy(
-      "databricks::entity::employee",
-      "databricks::mapping::employee_delta"
-    )
-
-    val inputDF = spark.read.format("json").schema(legendStrategy.inputSchema).load(dataPath)
+    val inputDF = spark.read.format("json").schema(legend.schema).load(dataPath)
     inputDF.show()
 
-    val mappedDF = inputDF.legendTransform(legendStrategy.transformations)
+    val mappedDF = inputDF.legendTransform(legend.mapping)
     mappedDF.show()
 
-    val cleanedDF = mappedDF.legendValidate(legendStrategy.expectations, "legend")
-    cleanedDF.withColumn("legend", explode(col("legend"))).show()
+    val cleanedDF = mappedDF.legendValidate(legend.expectations, "legend")
+    cleanedDF.show()
+
     val test = cleanedDF.withColumn("legend", explode(col("legend"))).groupBy("legend").count()
     test.show()
+
     assert(test.count() == 3)
 
     val failed = test.rdd.map(r => r.getAs[String](("legend"))).collect().map(_.split(" ").head.trim).toSet
     assert(failed == Set("[id]", "[sme]", "[age]"))
-    assert(legendStrategy.targetTable == "legend.employee")
+    assert(legend.table == "legend.employee")
+
   }
 
 }

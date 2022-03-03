@@ -24,7 +24,7 @@ import org.apache.spark.sql.types._
 import org.finos.legend.engine.language.pure.compiler.Compiler
 import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
 import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
-import org.finos.legend.engine.language.pure.grammar.to.{DEPRECATED_PureGrammarComposerCore, PureGrammarComposerContext}
+import org.finos.legend.engine.language.pure.grammar.to.DEPRECATED_PureGrammarComposerCore
 import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextData
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
@@ -35,16 +35,18 @@ import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
 import org.finos.legend.spark.LegendUtils._
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+import org.slf4j.LoggerFactory
 
 class Legend(entities: Map[String, Entity]) {
 
   lazy val pureModel: PureModel = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build.getPureModel
   lazy val pureRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
-  val logger: Logger = LoggerFactory.getLogger(this.getClass)
+  Logger.getLogger("Alloy Execution Server").setLevel(Level.OFF)
 
   def getEntityNames: Seq[String] = entities.keys.toSeq
 
@@ -55,7 +57,9 @@ class Legend(entities: Map[String, Entity]) {
 
   def getMapping(mappingName: String): Mapping = {
     Try(pureModel.getMapping(mappingName)) match {
-      case Success(value) => value
+      case Success(mapping) =>
+        require(mapping.isRelational, s"mapping [${mappingName}] should be of type relational")
+        mapping
       case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
     }
   }
@@ -68,64 +72,88 @@ class Legend(entities: Map[String, Entity]) {
    */
   def getEntitySchema(entityName: String): StructType = {
     val entity = getEntity(entityName)
+    getEntitySchema(entity)
+  }
+
+  def getEntitySchema(entity: Entity): StructType = {
     StructType(getLegendClassStructFields(entity.toLegendClass))
   }
 
   /**
-   * Programmatically generate all SQL constraints as defined in a legend PURE language and schema for a given entity
-   * We extract pure domain constraints (e.g. `|this.score > 0`) as well as technical constraints (e.g. mandatory) that we convert into spark SQL
-   * We generate SQL plan given a mapping and a runtime
+   * Programmatically generate input spark schema for a relational mapping. Following mapping transformations and
+   * constraints, we will be able to transform this entity into its desired state.
    *
-   * @param entityName  the entity of type [Class] to extract constraints from
    * @param mappingName the mapping entity used to transform entity onto a table
-   * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
+   * @return the spark schema for the Legend mapping entity
    */
-  def getExpectations(entityName: String, mappingName: String): Seq[LegendExpectation] = {
-    val entity = getEntity(entityName)
-    val expectations = getLegendClassExpectations(entity.toLegendClass)
-
+  def getMappingInputSchema(mappingName: String): StructType = {
     val mapping = getMapping(mappingName)
+    getMappingInputSchema(mapping)
+  }
 
-    expectations.map(expectation => {
-
-      // We generate code to query table with constraints as a WHERE clause
-      val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation.lambda)
-
-      // We generate an execution plan
-      val plan = LegendUtils.generateExecutionPlan(query, mapping, pureRuntime, pureModel)
-
-      // We retrieve the SQL where clause
-      val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-
-      println(LegendUtils.parseSql(sqlExecPlan))
-
-      expectation.copy(sql = LegendUtils.parseSql(sqlExecPlan))
-    })
-
+  def getMappingInputSchema(mapping: Mapping): StructType = {
+    val entityName = mapping.getEntityName
+    getEntitySchema(entityName)
   }
 
   /**
-   * Given a legend mapping, we generate all transformations required to persist an entity to a relational table on delta lake
+   * Programmatically generate all SQL constraints as defined in a legend PURE language for a given relational mapping
+   * We extract pure domain constraints (e.g. `|this.score > 0`) as well as technical constraints (e.g. mandatory) that
+   * we convert into spark SQL
    *
-   * @param entityName  the name of the entity to process
+   * @param mappingName the mapping entity used to transform entity onto a table
+   * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
+   */
+  def getMappingExpectations(mappingName: String): Seq[LegendExpectation] = {
+    val mapping = getMapping(mappingName)
+    val entityName = mapping.getEntityName
+    val entity = getEntity(entityName)
+    getMappingExpectations(mapping, entity)
+  }
+
+  def getMappingExpectations(mapping: Mapping, entity: Entity): Seq[LegendExpectation] = {
+    val expectations = getLegendClassExpectations(entity.toLegendClass)
+    val entityName = mapping.getEntityName
+    expectations.map(expectation => compileExpectation(expectation, entityName, mapping))
+  }
+
+  /**
+   * Given a legend mapping, we generate all transformations required to persist an entity to a relational table
+   *
    * @param mappingName the name of the mapping to transform entity into a table
    * @return the set of transformations required
    */
-  def buildStrategy(entityName: String, mappingName: String): LegendRelationalStrategy = {
-
-    val relational = Try(pureModel.getMapping(mappingName)) match {
-      case Success(value) => value.getRelationalTransformation
-      case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
-    }
-
-    LegendRelationalStrategy(
-      getEntitySchema(entityName),
-      relational.getTransformations,
-      getExpectations(entityName, mappingName),
-      relational.getTable
+  def getMappingStrategy(mappingName: String): LegendMapping = {
+    val mapping = getMapping(mappingName)
+    val relational = mapping.getRelationalTransformation
+    val entityName = mapping.getEntityName
+    val entity = getEntity(entityName)
+    val inputSchema = getEntitySchema(entity)
+    val expectations = getMappingExpectations(mapping, entity)
+    LegendMapping(
+      inputSchema,
+      relational.getMappingFields,
+      expectations,
+      relational.getMappingTable
     )
+  }
+
+  private def compileExpectation(expectation: LegendExpectation, entityName: String, mapping: Mapping): LegendExpectation = {
+
+    // We generate code to query table with constraints as a WHERE clause
+    val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation.lambda)
+
+    // We generate an execution plan
+    val plan = LegendUtils.generateExecutionPlan(query, mapping, pureRuntime, pureModel)
+
+    // We retrieve the SQL where clause
+    val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+
+    // We update our expectations with actual SQL expressions
+    expectation.copy(sql = LegendUtils.parseSql(sqlExecPlan))
 
   }
+
 
   /**
    * We retrieve all rules from the Legend schema. This will create SQL expression to validate schema integrity (nullable, multiplicity)
@@ -311,6 +339,57 @@ object Legend {
 
   lazy val objectMapper: ObjectMapper = ObjectMapperFactory.getNewStandardObjectMapperWithPureProtocolExtensionSupports
   lazy val grammarComposer: DEPRECATED_PureGrammarComposerCore = DEPRECATED_PureGrammarComposerCore.Builder.newInstance.withRenderStyle(RenderStyle.PRETTY).build
+  lazy val pureModelString: String =
+    """
+      |###Connection
+      |RelationalDatabaseConnection %1$s::connection
+      |{
+      |  store: %1$s::store;
+      |  type: Databricks;
+      |  specification: Databricks
+      |  {
+      |    hostname: 'my';
+      |    port: 'name';
+      |    protocol: 'is';
+      |    httpPath: 'antoine';
+      |  };
+      |  auth: ApiToken
+      |  {
+      |    apiToken: 'foobar';
+      |  };
+      |}
+      |
+      |###Relational
+      |Database %1$s::store
+      |(
+      |  Schema foo
+      |  (
+      |    Table bar
+      |    (
+      |    )
+      |  )
+      |)
+      |
+      |###Mapping
+      |Mapping %1$s::mapping
+      |(
+      |  *%1$s::entity: Relational
+      |  {
+      |    ~mainTable [%1$s::store]foo.bar
+      |  }
+      |)
+      |
+      |###Pure
+      |Class %1$s::entity
+      |{
+      |}
+      |
+      |###Runtime
+      |Runtime %1$s::runtime
+      |{
+      |  mappings: [%1$s::mapping];
+      |  connections: [%1$s::store: [c: %1$s::connection]];
+      |}""".stripMargin
 
   /**
    * We generate a runtime that can be used to map entities using a spark backend. The key point here is to not force end user
@@ -323,61 +402,10 @@ object Legend {
    * @return a legend runtime of type Databricks that can be used to build SQL code
    */
   def buildRuntime(uuid: String): runtime.Runtime = {
-
     val uniqueIdentifier = uuid.replaceAll("-", "")
-    val pureModelString  =
-      """
-        |###Connection
-        |RelationalDatabaseConnection %1$s::connection
-        |{
-        |  store: %1$s::store;
-        |  type: Databricks;
-        |  specification: Databricks
-        |  {
-        |    hostname: 'my';
-        |    port: 'name';
-        |    protocol: 'is';
-        |    httpPath: 'antoine';
-        |  };
-        |  auth: ApiToken
-        |  {
-        |    apiToken: 'foobar';
-        |  };
-        |}
-        |
-        |###Relational
-        |Database %1$s::store
-        |(
-        |  Schema foo
-        |  (
-        |    Table bar
-        |    (
-        |    )
-        |  )
-        |)
-        |
-        |###Mapping
-        |Mapping %1$s::mapping
-        |(
-        |  *%1$s::entity: Relational
-        |  {
-        |    ~mainTable [%1$s::store]foo.bar
-        |  }
-        |)
-        |
-        |###Pure
-        |Class %1$s::entity
-        |{
-        |}
-        |
-        |###Runtime
-        |Runtime %1$s::runtime
-        |{
-        |  mappings: [%1$s::mapping];
-        |  connections: [%1$s::store: [c: %1$s::connection]];
-        |}""".stripMargin.format(uniqueIdentifier)
-
-    val contextData: PureModelContextData = PureGrammarParser.newInstance.parseModel(pureModelString)
+    val contextData: PureModelContextData = PureGrammarParser.newInstance.parseModel(
+      pureModelString.format(uniqueIdentifier)
+    )
     val additionalPure = Compiler.compile(contextData, null, null)
     additionalPure.getRuntime(s"${uniqueIdentifier}::runtime")
   }
