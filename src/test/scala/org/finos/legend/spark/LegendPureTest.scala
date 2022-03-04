@@ -48,12 +48,10 @@ class LegendPureTest extends AnyFlatSpec {
 
   it should "be validated against a pure model" in {
     val legend = LegendClasspathLoader.loadResources("model")
-
     assertThrows[EngineException] {
       val lambdaString = "test->getAll()->filter(x|$x.foo = 'bar')"
       LegendUtils.buildLambda(lambdaString, legend.pureModel)
     }
-
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.highFives > 20)"
     val function = LegendUtils.buildLambda(lambdaString, legend.pureModel)
     assert(function._expressionSequence().asScala.nonEmpty)
@@ -62,12 +60,10 @@ class LegendPureTest extends AnyFlatSpec {
   it should "generate a valid execution plan" in {
     val legend = LegendClasspathLoader.loadResources("model")
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
-
     assertThrows[EngineException] {
       val lambdaString = "foobar->getAll()->filter(x|$x.foo = 'bar')"
       LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     }
-
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.highFives > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     assert(plan.rootExecutionNode.executionNodes.get(0).isInstanceOf[SQLExecutionNode])
@@ -82,7 +78,6 @@ class LegendPureTest extends AnyFlatSpec {
     val sql = LegendUtils.parseSql(sqlPlan)
     assert(sql == "(high_fives IS NOT NULL AND high_fives > 20)")
   }
-
 
   it should "support IN functions" in {
     val legend = LegendClasspathLoader.loadResources("model")

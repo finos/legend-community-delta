@@ -27,7 +27,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 import scala.io.Source
 
-class LegendIT extends AnyFlatSpec {
+class LegendSparkTest extends AnyFlatSpec {
 
   val dataFile: String = {
     val url: URL = Objects.requireNonNull(this.getClass.getClassLoader.getResource("data"))
@@ -48,11 +48,7 @@ class LegendIT extends AnyFlatSpec {
     val schema = legend.getMappingSchema(mapping)
     val transformations = legend.getMappingTransformations(mapping)
     val expectations = legend.getMappingExpectations(mapping)
-    val table = legend.getMappingTable(mapping, true)
-
-    expectations.foreach(s => {
-      println(s._1 + "\t" + s._2)
-    })
+    val table = legend.getMappingTable(mapping, ddl = true)
 
     val inputDF = spark.read.format("json").schema(schema).load(dataFile)
     inputDF.show(truncate = false)
