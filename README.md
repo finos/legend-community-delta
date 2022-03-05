@@ -4,11 +4,11 @@
 
 # legend-delta
 
-In addition to the JDBC connectivity enabled to Delta Lake from the [legend-engine](https://github.com/finos/legend-engine/tree/master/docs/databricks) itself, 
+In addition to the JDBC connectivity enabled to Databricks from the [legend-engine](https://github.com/finos/legend-engine/tree/master/docs/databricks) itself, 
 this project helps organizations define data models that can be converted into efficient data pipelines, ensuring data being queried
 is of high quality and availability. Raw data can be ingested as stream or batch and processed in line with the business semantics 
 defined from the Legend interface. Domain specific language defined in Legend Studio can be interpreted as a series of Spark SQL operations,
-helping analysts create Delta table that not only guarantees schema definition but also complies
+helping analysts create [Delta Lake](https://delta.io/) tables that not only guarantees schema definition but also complies
 with expectations, derivations and constraints defined by business analysts.
 
 <img src="images/legend-delta-workflow.png" width="500">
@@ -49,16 +49,17 @@ databricks::entity::sme
 
 ### Convert pure entities to delta format
 
-With our legend entities loaded, we can create the Delta schema for any entity of type `Class`. 
+With our legend entities loaded, we can create the spark schema for any Legend entity of type `Class`. 
 This process will recursively loop through each of its underlying fields, enums and possibly nested properties and supertypes.
+Note that we do not only find fields and their data types, but also retrieve Legend `TaggedValues`
+as business metadata (field description).
 
 ```scala
-val schema = legend.getEntitySchema("databricks::entity::employee")
+val entityName = "databricks::entity::employee"
+val schema = legend.getEntitySchema(entityName)
 schema.fields.foreach(s => println(s.toDDL))
 ```
 
-Note that we do not only find fields and their data types, but also retrieve Legend `TaggedValues` 
-as business metadata (field description). 
 ```
 `firstName` STRING NOT NULL COMMENT 'Person first name'
 `lastName` STRING NOT NULL COMMENT 'Person last name'
@@ -69,12 +70,14 @@ as business metadata (field description).
 `highFives` INT NOT NULL COMMENT 'How many high fives did that person get'
 ```
 
+Even though some data formats may look structured (e.g. JSON files), enforcing a schema is not just a good engineering practice; 
+in enterprise settings, schema enforcement guarantees any missing field to be expected, unexpected fields to be 
+discarded and data types to be fully evaluated (e.g. a date should be treated as a date object and not a string)
 Data can be schematized "on-the-fly" when reading raw records (see below an example reading CSV files).
-Although JSON usually looks structured, imposing schema would guarantee missing fields are still expected
-and data types fully enforced (e.g. a date object will be processed as a `java.sql.Date` instead of string)
 
 ```scala
-val schema = legend.getEntitySchema("databricks::entity::employee")
+val entityName = "databricks::entity::employee"
+val schema = legend.getEntitySchema(entityName)
 
 val schematized = spark
     .read
@@ -84,11 +87,13 @@ val schematized = spark
 ```
 
 Similarly, one can enforce schema on an incoming stream of data. In the example below, we parse and enforce schema
-on raw JSON records from a Kafka queue.
+on stream of raw JSON records from a Kafka queue.
 
 ```scala
 import org.apache.spark.sql.functions._
-val schema = legend.getEntitySchema("databricks::entity::employee")
+
+val entityName = "databricks::entity::employee"
+val schema = legend.getEntitySchema(entityName)
 
 val schematized = spark
     .readStream
@@ -106,16 +111,15 @@ val schematized = spark
 
 Inferring the schema is one thing, enforcing its constraints is another. Given the `multiplicity` properties, we can 
 detect if a field is optional or not or list has the right number of elements. Given an `enumeration`, 
-we check for value consistency. These will be considered **technical expectations**.
+we check for value consistency. These will be considered **technical expectations** and converted into SQL constraints.
 
 ```scala
-val expectations = legend.getEntityExpectations("databricks::entity::employee")
+val entityName = "databricks::entity::employee"
+val expectations = legend.getEntityExpectations(entityName)
 expectations.foreach({ case (name, constraint) =>
   println(name + "\t" + constraint)
 })
-```
-
-These will be considered **technical expectations** and expressed in the form of SQL constraints
+````
 
 ````
 [birthDate] is mandatory    birthDate IS NOT NULL
@@ -132,19 +136,19 @@ studio interface.
 <img src="images/legend-constraints.png" width="500">
 
 This, however, is slightly more complex as we need to generate a legend
-execution plan from PURE to SQL against a Databricks runtime. In order to convert PURE constraints into spark SQL 
-equivalent, we need to indicate our framework the strategy to convert legend entities into relational table. 
-By specifying mapping of type relational, we leverage the legend-engine framework to generate an execution plan 
-compatible with a Spark backend.
+execution plan from PURE to SQL against a Databricks runtime, hence operating against relational tables mapping rather
+than plain entities. By specifying mapping of type relational, we leverage the legend-engine framework to generate an 
+execution plan compatible with a Delta Lake backend.
 
 ```scala
-val expectations = legend.getMappingExpectations("databricks::mapping::employee_delta")
+val mappingName = "databricks::mapping::employee_delta"
+val expectations = legend.getMappingExpectations(mappingName)
 expectations.foreach({ case (name, constraint) =>
   println(name + "\t" + constraint)
 })
 ```
 
-The corresponding expectations will cover all previous technical constraints in addition to the PURE business logic defined
+The corresponding expectations will cover all previous technical constraints earlier in addition to the PURE business logic defined
 in the studio interface. For example, constraint `$this.joined_date->dateDiff($this.birth_date,DurationUnit.YEARS) > 20`
 (employee must be at least 20 years old) will be converted into the following SQL
 
@@ -165,7 +169,10 @@ constraints. Hence, an empty array consists in a fully validated record
 
 ```scala
 import org.finos.legend.spark._
-val validated = df.legendValidate(expectations)
+val validated = df.legendValidate(
+  expectations, 
+  colName="legend"
+)
 ```
 
 In the example above, we simply explode our dataframe to easily access each and every failed expectation, 
@@ -184,9 +191,9 @@ being schema specific or business defined.
 
 ### Transform strategy
 
-In addition to business expectations, leveraging Mapping object of legend also help us transform raw entities into their
+In addition to business expectations, leveraging `Mapping` object of legend also help us transform raw entities into their
 desired states and target tables. Note that relational transformations on legend only support direct mapping 
-(no PURE operations or derived properties) and therefore enforced here as `.withColumnRenamed` operations.
+(no PURE operations or derived properties) and therefore easily enforced through `.withColumnRenamed` syntax.
 
 ```scala
 val transformations = legend.getMappingTransformations("databricks::mapping::employee_delta")
@@ -195,15 +202,14 @@ val transformed_df = df.legendTransform(transformations)
 
 ### Target table
 
-Finally, we can retrieve our target schema and target database to write data to. 
+Finally, we can retrieve our target schema and target database to write data to.
+The target DDL will contain all necessary fields (with metadata) to populate our delta table
+the legend studio expects.
 
 ```scala
 val table_ddl = legend.getMappingTable("databricks::mapping::employee_delta", ddl = true)
 println(table_ddl)
 ```
-
-The target DDL will contain all necessary fields (with metadata) to populate our delta table 
-the legend studio expects.
 
 ```roomsql
 CREATE TABLE legend.employee
@@ -219,54 +225,11 @@ USING DELTA
 )
 ```
 
-In the example below, we chain all of our operations to 
-
-1. acquire data
-2. schematize records
-3. validate constraints
-4. store valid information
-
-```scala
-
-import org.apache.spark.sql.SparkSession
-import org.finos.legend.spark._
-
-val spark = SparkSession.active
-
-val legend = LegendClasspathLoader.loadResources("datamodel")
-val mapping = legend.getMapping("databricks::mapping::employee_delta")
-val inputSchema = legend.getMappingSchema(mapping)
-val transformations = legend.getMappingTransformations(mapping)
-val constraints = legend.getMappingExpectations(mapping)
-val outputTable = legend.getMappingTable(mapping, ddl = false)
-
-val input_df = spark
-  .read
-  .format("csv")
-  .schema(inputSchema)
-  .load("/path/to/csv")
-
-val transformed_df = input_df.legendTransform(transformations)
-val validated_df = input_df.legendValidate(constraints)
-
-validated_df
-  .write
-  .format("delta")
-  .mode("append")
-  .saveAsTable(outputTable)
-
-```
-
 ## Installation
 
 ```
 mvn clean install
 ```
-
-## Dependencies
-
-The entire project depends on latest changes from legend-engine, legend-sdlc and legend-pure that supports 
-Databricks data source. 
 
 ## Author
 
