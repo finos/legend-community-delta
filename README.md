@@ -26,7 +26,7 @@ model definitions can be found. We load legend namespaces from a classpath or di
 
 ```scala
 import org.finos.legend.spark.LegendClasspathLoader
-val legend = LegendClasspathLoader.loadResources("datamodel")
+val legend = LegendClasspathLoader.loadResources()
 ```
 
 ```scala
@@ -84,27 +84,6 @@ val schematized = spark
     .format("csv")
     .schema(schema)
     .load("/path/to/data/csv")
-```
-
-Similarly, one can enforce schema on an incoming stream of data. In the example below, we parse and enforce schema
-on stream of raw JSON records from a Kafka queue.
-
-```scala
-import org.apache.spark.sql.functions._
-
-val entityName = "databricks::entity::employee"
-val schema = legend.getEntitySchema(entityName)
-
-val schematized = spark
-    .readStream
-    .format("kafka")
-    .load()
-    .select(
-      from_json(
-        col("value").cast("string"), 
-        schema,
-      ).alias("parsed_value")
-    )
 ```
 
 ### Retrieve expectations

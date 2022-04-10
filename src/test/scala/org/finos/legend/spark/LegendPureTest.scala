@@ -30,7 +30,7 @@ class LegendPureTest extends AnyFlatSpec {
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   "Pure model" should "be generated from SDLC entities" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val pureModel = legend.pureModel
     assertThrows[EngineException] {
       pureModel.getMapping("foo:bar")
@@ -47,7 +47,7 @@ class LegendPureTest extends AnyFlatSpec {
   }
 
   it should "be validated against a pure model" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     assertThrows[EngineException] {
       val lambdaString = "test->getAll()->filter(x|$x.foo = 'bar')"
       LegendUtils.buildLambda(lambdaString, legend.pureModel)
@@ -58,7 +58,7 @@ class LegendPureTest extends AnyFlatSpec {
   }
 
   it should "generate a valid execution plan" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     assertThrows[EngineException] {
       val lambdaString = "foobar->getAll()->filter(x|$x.foo = 'bar')"
@@ -70,7 +70,7 @@ class LegendPureTest extends AnyFlatSpec {
   }
 
   it should "support NULL functions" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.highFives > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
@@ -80,7 +80,7 @@ class LegendPureTest extends AnyFlatSpec {
   }
 
   it should "support IN functions" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.firstName->in(['antoine', 'junta']))"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
@@ -90,7 +90,7 @@ class LegendPureTest extends AnyFlatSpec {
   }
 
   it should "support complex spark functions" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.id->isEmpty())"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
@@ -100,7 +100,7 @@ class LegendPureTest extends AnyFlatSpec {
   }
 
   "A more complex function" should "be converted as SQL clause" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.joinedDate->dateDiff($x.birthDate, DurationUnit.YEARS) > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)

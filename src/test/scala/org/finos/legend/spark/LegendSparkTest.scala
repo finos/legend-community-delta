@@ -43,7 +43,7 @@ class LegendSparkTest extends AnyFlatSpec {
 
   "Raw files" should "be processed fully from a legend specs" in {
 
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     val schema = legend.getMappingSchema(mapping)
     val transformations = legend.getMappingTransformations(mapping)

@@ -90,6 +90,13 @@
         <!-- LEGEND DEPENDENCIES -->
 
         <dependency>
+            <!-- DBR comes with its own PAC version -->
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-core</artifactId>
+            <version>3.9.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.finos.legend.sdlc</groupId>
             <artifactId>legend-sdlc-model</artifactId>
             <version>${legend.sdlc.version}</version>
@@ -197,7 +204,7 @@
 
         <!-- USER DEPENDENCIES -->
 
-<!--        Spark runtime comes with its own antlr version (4.5) and returns warning-->
+        <!-- Spark runtime comes with its own antlr version (4.5) and returns warning-->
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
