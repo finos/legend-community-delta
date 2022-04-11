@@ -43,6 +43,8 @@ import org.apache.log4j.Level
 import org.apache.spark.sql.functions.{array, expr, lit, struct, udf}
 import org.apache.spark.sql.{Row, SparkSession}
 import org.slf4j.LoggerFactory
+import org.json4s.jackson.Json
+import org.json4s.DefaultFormats
 
 class Legend(entities: Map[String, Entity]) {
 
@@ -72,6 +74,10 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
+  def getTransformationsJson(mappingName: String): String = {
+    Json(DefaultFormats).write(getTransformations(mappingName))
+  }
+
   def getExpectations(entityName: String): Map[String, String] = {
     val entity = getEntity(entityName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
@@ -80,6 +86,10 @@ class Legend(entities: Map[String, Entity]) {
       case "mapping" => getMappingExpectations(entityName)
       case _ => throw new IllegalArgumentException(s"Only supporting classes and mapping, got $entityType")
     }
+  }
+
+  def getExpectationsJson(entityName: String): String = {
+    Json(DefaultFormats).write(getExpectations(entityName))
   }
 
   def getTable(mappingName: String): String = {
