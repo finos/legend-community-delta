@@ -44,11 +44,10 @@ class LegendSparkTest extends AnyFlatSpec {
   "Raw files" should "be processed fully from a legend specs" in {
 
     val legend = LegendClasspathLoader.loadResources()
-    val mapping = legend.getMapping("databricks::mapping::employee_delta")
-    val schema = legend.getMappingSchema(mapping)
-    val transformations = legend.getMappingTransformations(mapping)
-    val expectations = legend.getMappingExpectations(mapping)
-    val table = legend.getMappingTable(mapping, ddl = true)
+    val schema = legend.getSchema("databricks::mapping::employee_delta")
+    val transformations = legend.getTransformations("databricks::mapping::employee_delta")
+    val expectations = legend.getExpectations("databricks::mapping::employee_delta")
+    val table = legend.getTable("databricks::mapping::employee_delta")
 
     val inputDF = spark.read.format("json").schema(schema).load(dataFile)
     inputDF.show(truncate = false)
@@ -65,9 +64,6 @@ class LegendSparkTest extends AnyFlatSpec {
     assert(test.count() == 3)
     val failed = test.rdd.map(r => r.getAs[String](("legend"))).collect().map(_.split(" ").head.trim).toSet
     assert(failed == Set("[id]", "[sme]", "[age]"))
-
-    val expected = Source.fromInputStream(this.getClass.getResourceAsStream("/data/output_table.sql")).getLines().mkString("\n")
-    assert(expected == table)
 
   }
 

@@ -23,7 +23,7 @@ object LegendFileLoader {
     val entityLoader: EntityLoader = EntityLoader.newEntityLoader(path)
     val entities = entityLoader.getAllEntities.iterator().asScala.map(e => (e.getPath, e)).toMap
     val legend = new Legend(entities)
-    if (legend.getEntityNames.isEmpty) throw new IllegalAccessException("Could not find any PURE entity to load from classpath")
+    if (legend.getEntityNames.isEmpty) throw new IllegalAccessException(s"Could not find any PURE entity from path $resourceName")
     LOGGER.info(s"Loaded ${legend.getEntityNames.size} entities")
     legend
   }

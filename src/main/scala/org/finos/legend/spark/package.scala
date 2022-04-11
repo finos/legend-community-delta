@@ -18,9 +18,22 @@
 package org.finos.legend
 
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.{DataFrame, DataFrameReader, Row}
 
 package object spark {
+
+  final val VIOLATION_COLUMN: String = "legend"
+
+  implicit class DataframeReaderImpl(dfr: DataFrameReader) {
+    def legendSchema(entityName: String, path: Option[String] = None): DataFrameReader = {
+      val legend = if (path.isDefined) {
+        LegendFileLoader.loadResources(path.get)
+      } else {
+        LegendClasspathLoader.loadResources()
+      }
+      dfr.schema(legend.getSchema(entityName))
+    }
+  }
 
   implicit class DataframeImpl(df: DataFrame) {
 
@@ -28,7 +41,7 @@ package object spark {
       transformations.foldLeft(df)((d, w) => d.withColumnRenamed(w._1, w._2))
     }
 
-    def legendValidate(expectations: Map[String, String], colName: String = "legend"): DataFrame = {
+    def legendValidate(expectations: Map[String, String], colName: String = VIOLATION_COLUMN): DataFrame = {
 
       val filter_constraints = udf((r: Row) => {
         val names = r.getAs[Seq[String]](0)

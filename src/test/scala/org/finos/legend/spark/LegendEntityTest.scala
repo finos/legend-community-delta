@@ -17,12 +17,12 @@
 
 package org.finos.legend.spark
 
-import java.io.File
-
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
+
+import java.nio.file.Paths
 
 class LegendEntityTest extends AnyFlatSpec {
 
@@ -60,14 +60,19 @@ class LegendEntityTest extends AnyFlatSpec {
   }
 
   it should "be loaded from external directory" in {
-    val classLoader = getClass.getClassLoader
-    val file = new File(classLoader.getResource("model").getFile)
-    assert(LegendFileLoader.loadResources(file.toString).getEntityNames.nonEmpty)
+    val path = Paths.get("src","test", "resources")
+    val absolutePath = path.toFile.getAbsolutePath
+    assert(LegendFileLoader.loadResources(absolutePath).getEntityNames.nonEmpty)
   }
 
   "A legend entity" should "be loaded from pure model" in {
     val legend = LegendClasspathLoader.loadResources()
     assert(legend.getEntityNames.contains("databricks::entity::person"))
+  }
+
+  "A pure entity" should "be loaded from pure model" in {
+    val legend = LegendClasspathLoader.loadResources()
+    legend.getSchema("databricks::mapping::employee_delta")
   }
 
   it should "be converted as a spark schema" in {
@@ -109,8 +114,7 @@ class LegendEntityTest extends AnyFlatSpec {
 
   it should "include a source schema" in {
     val legend = LegendClasspathLoader.loadResources()
-    val mapping = legend.getMapping("databricks::mapping::employee_delta")
-    val fields = legend.getMappingSchema(mapping).fields.map(_.name).toSet
+    val fields = legend.getMappingSchema("databricks::mapping::employee_delta").fields.map(_.name).toSet
     assert(fields == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
   }
 
@@ -135,16 +139,6 @@ class LegendEntityTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources()
     val schema = legend.getMappingSchema("databricks::mapping::employee_delta")
     assert(schema.fields.map(_.name).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
-  }
-
-  it should "support table DDL" in {
-    SparkSession.getActiveSession match {
-      case Some(_) =>
-      case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
-    }
-    val legend = LegendClasspathLoader.loadResources()
-    val table = legend.getMappingTable("databricks::mapping::employee_delta", ddl=true)
-    println(table)
   }
 
 }
