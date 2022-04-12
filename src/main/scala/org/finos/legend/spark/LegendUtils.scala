@@ -137,7 +137,7 @@ object LegendUtils {
       legendRuntime,
       null,
       pureModel,
-      "vX_X_X",
+      "vX_X_X", //TODO: Replace by PureVersion.production when https://github.com/finos/legend-pure/pull/507
       PlanPlatform.JAVA,
       "1.0",
       Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),

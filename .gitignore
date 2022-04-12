@@ -4,3 +4,6 @@ dependency-reduced-pom.xml
 .idea
 target
 .DS_Store
+venv
+dist
+.coverage

@@ -17,12 +17,12 @@
 
 package org.finos.legend.spark
 
-import java.io.File
-
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
+
+import java.nio.file.Paths
 
 class LegendEntityTest extends AnyFlatSpec {
 
@@ -56,29 +56,34 @@ class LegendEntityTest extends AnyFlatSpec {
   }
 
   "A legend model" should "be loaded from classpath" in {
-    assert(LegendClasspathLoader.loadResources("model").getEntityNames.nonEmpty)
+    assert(LegendClasspathLoader.loadResources().getEntityNames.nonEmpty)
   }
 
   it should "be loaded from external directory" in {
-    val classLoader = getClass.getClassLoader
-    val file = new File(classLoader.getResource("model").getFile)
-    assert(LegendFileLoader.loadResources(file.toString).getEntityNames.nonEmpty)
+    val path = Paths.get("src","test", "resources")
+    val absolutePath = path.toFile.getAbsolutePath
+    assert(LegendFileLoader.loadResources(absolutePath).getEntityNames.nonEmpty)
   }
 
   "A legend entity" should "be loaded from pure model" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     assert(legend.getEntityNames.contains("databricks::entity::person"))
   }
 
+  "A pure entity" should "be loaded from pure model" in {
+    val legend = LegendClasspathLoader.loadResources()
+    legend.getSchema("databricks::mapping::employee_delta")
+  }
+
   it should "be converted as a spark schema" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     assert(legend.getEntityNames.contains("databricks::entity::person"))
     val fields = legend.getEntitySchema("databricks::entity::person").fields.map(_.name)
     assert(fields.toSet == Set("firstName", "lastName", "birthDate", "gender"))
   }
 
   it should "support supertype entities" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     assert(legend.getEntityNames.contains("databricks::entity::employee"))
     val personFields = legend.getEntitySchema("databricks::entity::person").fields.map(_.name)
     val employeeFields = legend.getEntitySchema("databricks::entity::employee").fields.map(_.name)
@@ -86,7 +91,7 @@ class LegendEntityTest extends AnyFlatSpec {
   }
 
   it should "include valid expectations" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val expectations = legend.getEntityExpectations(
       "databricks::entity::employee"
     )
@@ -103,25 +108,24 @@ class LegendEntityTest extends AnyFlatSpec {
   }
 
   "A legend mapping" should "be loaded from pure model" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     legend.getMapping("databricks::mapping::employee_delta")
   }
 
   it should "include a source schema" in {
-    val legend = LegendClasspathLoader.loadResources("model")
-    val mapping = legend.getMapping("databricks::mapping::employee_delta")
-    val fields = legend.getMappingSchema(mapping).fields.map(_.name).toSet
+    val legend = LegendClasspathLoader.loadResources()
+    val fields = legend.getMappingSchema("databricks::mapping::employee_delta").fields.map(_.name).toSet
     assert(fields == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
   }
 
   it should "compile PURE expectations to SQL" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val transform = legend.getMappingExpectations("databricks::mapping::employee_delta")
     assert(transform.values.toSet.contains("year(joined_date) - year(birth_date) > 20"))
   }
 
   it should "capture transformations" in {
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val transform = legend.getMappingTransformations("databricks::mapping::employee_delta")
     assert(transform.keys.toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
     assert(transform.values.toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
@@ -132,19 +136,9 @@ class LegendEntityTest extends AnyFlatSpec {
       case Some(_) =>
       case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
     }
-    val legend = LegendClasspathLoader.loadResources("model")
+    val legend = LegendClasspathLoader.loadResources()
     val schema = legend.getMappingSchema("databricks::mapping::employee_delta")
     assert(schema.fields.map(_.name).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
-  }
-
-  it should "support table DDL" in {
-    SparkSession.getActiveSession match {
-      case Some(_) =>
-      case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
-    }
-    val legend = LegendClasspathLoader.loadResources("model")
-    val table = legend.getMappingTable("databricks::mapping::employee_delta", ddl=true)
-    println(table)
   }
 
 }

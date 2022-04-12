@@ -1,18 +1,20 @@
 package org.finos.legend.spark
 
-import java.net.{URISyntaxException, URL}
-import java.nio.file.{Files, Path, Paths}
-import java.util.Objects
+import org.finos.legend.sdlc.serialization.EntityLoader
+import org.slf4j.{Logger, LoggerFactory}
 
-object LegendClasspathLoader extends LegendLoader {
+import scala.collection.JavaConverters.asScalaIteratorConverter
 
-  @throws[URISyntaxException]
-  @Override
-  def getPath(resourceName: String): Path = {
-    val url: URL = Objects.requireNonNull(this.getClass.getClassLoader.getResource(resourceName))
-    val directory: Path = Paths.get(url.toURI)
-    if (!Files.isDirectory(directory)) throw new IllegalAccessException("Not a directory: " + directory)
-    directory
+object LegendClasspathLoader {
+
+  private final val LOGGER: Logger = LoggerFactory.getLogger(this.getClass)
+
+  def loadResources(): Legend = {
+    val entityLoader = EntityLoader.newEntityLoader(this.getClass.getClassLoader)
+    val entities = entityLoader.getAllEntities.iterator().asScala.map(e => (e.getPath, e)).toMap
+    val legend = new Legend(entities)
+    if (legend.getEntityNames.isEmpty) throw new IllegalAccessException("Could not find any PURE entity to load from classpath")
+    LOGGER.info(s"Loaded ${legend.getEntityNames.size} entities")
+    legend
   }
-
 }

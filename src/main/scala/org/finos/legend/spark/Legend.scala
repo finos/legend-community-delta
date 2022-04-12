@@ -19,6 +19,7 @@ package org.finos.legend.spark
 
 import java.util.UUID
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.delta.tables.DeltaTable
 import org.apache.spark.sql.types._
 import org.finos.legend.engine.language.pure.compiler.Compiler
 import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
@@ -39,20 +40,140 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
+import org.apache.spark.sql.functions.{array, expr, lit, struct, udf}
 import org.apache.spark.sql.{Row, SparkSession}
+import org.slf4j.LoggerFactory
+import org.json4s.jackson.Json
+import org.json4s.DefaultFormats
 
 class Legend(entities: Map[String, Entity]) {
 
   lazy val pureModel: PureModel = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build.getPureModel
   lazy val pureRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
+
+  final val LOGGER = LoggerFactory.getLogger(this.getClass)
+
   Logger.getLogger("Alloy Execution Server").setLevel(Level.OFF)
+
+  def getSchema(entityName: String): StructType = {
+    val entity = getEntity(entityName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "class" => getEntitySchema(entityName)
+      case "mapping" => getMappingSchema(entityName)
+      case _ => throw new IllegalArgumentException(s"Only supporting classes and mapping, got $entityType")
+    }
+  }
+
+  def getTransformations(mappingName: String): Map[String, String] = {
+    val entity = getEntity(mappingName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "mapping" => getMappingTransformations(mappingName)
+      case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
+    }
+  }
+
+  def getTransformationsJson(mappingName: String): String = {
+    Json(DefaultFormats).write(getTransformations(mappingName))
+  }
+
+  def getExpectations(entityName: String): Map[String, String] = {
+    val entity = getEntity(entityName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "class" => getEntityExpectations(entityName)
+      case "mapping" => getMappingExpectations(entityName)
+      case _ => throw new IllegalArgumentException(s"Only supporting classes and mapping, got $entityType")
+    }
+  }
+
+  def getExpectationsJson(entityName: String): String = {
+    Json(DefaultFormats).write(getExpectations(entityName))
+  }
+
+  def getTable(mappingName: String): String = {
+    val entity = getEntity(mappingName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "mapping" => getMappingTable(mappingName)
+      case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
+    }
+  }
+
+  def createTable(mappingName: String, path: Option[String] = None, colName: Option[String] = None): String = {
+
+    val mapping = getMapping(mappingName)
+    val tableName = mapping.getRelationalTransformation.getMappingTable
+    val entityName = mapping.getEntityName
+    val violationColumn = colName.getOrElse(VIOLATION_COLUMN)
+
+    require(SparkSession.getActiveSession.isDefined, "a spark session must be active")
+    val spark = SparkSession.active
+
+    val srcSchema = getMappingSchema(mappingName)
+    val transformations = getMappingTransformations(mappingName)
+
+    LOGGER.info(s"Generating output schema for legend mapping [$mappingName]")
+    val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], srcSchema)
+    val dstSchema = transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
+
+    val dstSchemaUpdated = if (dstSchema.fields.map(_.name).contains(violationColumn)) {
+      if (dstSchema.fields.filter(_.name == violationColumn).head.dataType == ArrayType(StringType)) {
+        LOGGER.info(s"Target table already contains legend validation field [$violationColumn]")
+        dstSchema
+      } else {
+        throw new IllegalArgumentException(s"output schema already contains column [$violationColumn] of different type")
+      }
+    } else {
+      val dstUpdatedMetadata = new MetadataBuilder().putString("comment", "LEGEND VIOLATION FIELD").build()
+      val dstUpdatedField = StructField(violationColumn, ArrayType(StringType), nullable = true, dstUpdatedMetadata)
+      // We want to validate field optionality, but this will be enforced by our PURE generated constraints
+      // We would not want to fail an entire ETL because of a missing field. Instead, we want to capture invalid records
+      val dstFields = (dstSchema.fields :+ dstUpdatedField).map(_.copy(nullable = true))
+      StructType(dstFields)
+    }
+
+    LOGGER.info(s"Creating delta table for legend table [$tableName]")
+    val delta = DeltaTable
+      .createIfNotExists()
+      .tableName(tableName)
+      .comment(s"<Auto Generated> by Legend-Delta from PURE entity [$entityName]")
+      .addColumns(dstSchemaUpdated)
+
+    if(path.isDefined) delta.location(path.get).execute() else delta.execute()
+    tableName
+
+  }
+
+  def validateTable(mappingName: String, colName: Option[String] = None): DeltaTable = {
+
+    val mapping = getMapping(mappingName)
+    val expectations = getMappingExpectations(mappingName)
+    val tableName = mapping.getRelationalTransformation.getMappingTable
+
+    require(Try(DeltaTable.forName(tableName)).isSuccess, "Delta table should have been created")
+
+    val getViolation = udf((r: Row) => {
+      val names = r.getAs[Seq[String]](0)
+      val exprs = r.getAs[Seq[Boolean]](1)
+      names.zip(exprs).filter(!_._2).map(_._1)
+    })
+
+    val violationExpr = getViolation(
+      struct(array(expectations.keys.toSeq.map(lit): _*), array(expectations.values.toSeq.map(expr): _*)))
+
+    LOGGER.info(s"Validating delta table [$tableName] against ${expectations.size} constraint(s)")
+    val delta = DeltaTable.forName(tableName)
+    delta.update(Map(colName.getOrElse(VIOLATION_COLUMN) -> violationExpr))
+    delta
+
+  }
 
   /**
    * @return all entities extracted from the supplied PURE model
    */
-  def getEntityNames: Seq[String] = {
-    entities.keys.toSeq
-  }
+  def getEntityNames: Set[String] = entities.keys.toSet
 
   /**
    * Retrieve entity from the supplied PURE model
@@ -61,23 +182,9 @@ class Legend(entities: Map[String, Entity]) {
    * @return the legend entity object
    */
   def getEntity(entityName: String): Entity = {
+    LOGGER.info(s"Retrieving legend entity [$entityName]")
     require(entities.contains(entityName), s"could not find entity [$entityName]")
     entities(entityName)
-  }
-
-  /**
-   * Retrieve mapping from the supplied PURE model. For now, only relational models are supported
-   *
-   * @param mappingName the mapping name (fully qualified name) to retrieve
-   * @return the legend mapping object
-   */
-  def getMapping(mappingName: String): Mapping = {
-    Try(pureModel.getMapping(mappingName)) match {
-      case Success(mapping) =>
-        require(mapping.isRelational, s"mapping [$mappingName] should be relational")
-        mapping
-      case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
-    }
   }
 
   /**
@@ -87,11 +194,8 @@ class Legend(entities: Map[String, Entity]) {
    * @return the corresponding Spark schema for the provided entity name
    */
   def getEntitySchema(entityName: String): StructType = {
+    LOGGER.info(s"Retrieving schema for legend class [$entityName]")
     val entity = getEntity(entityName)
-    getEntitySchema(entity)
-  }
-
-  def getEntitySchema(entity: Entity): StructType = {
     StructType(getLegendClassStructFields(entity.toLegendClass))
   }
 
@@ -105,12 +209,25 @@ class Legend(entities: Map[String, Entity]) {
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
    */
   def getEntityExpectations(entityName: String): Map[String, String] = {
+    LOGGER.info(s"Retrieving expectations for legend class [$entityName]")
     val entity = getEntity(entityName)
-    getEntityExpectations(entity)
+    getLegendClassExpectations(entity.toLegendClass, pure = false)
   }
 
-  def getEntityExpectations(entity: Entity): Map[String, String] = {
-    getLegendClassExpectations(entity.toLegendClass, pure = false)
+  /**
+   * Retrieve mapping from the supplied PURE model. For now, only relational models are supported
+   *
+   * @param mappingName the mapping name (fully qualified name) to retrieve
+   * @return the legend mapping object
+   */
+  def getMapping(mappingName: String): Mapping = {
+    LOGGER.info(s"Retrieving legend mapping [$mappingName]")
+    Try(pureModel.getMapping(mappingName)) match {
+      case Success(mapping) =>
+        require(mapping.isRelational, s"mapping [$mappingName] should be relational")
+        mapping
+      case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
+    }
   }
 
   /**
@@ -121,11 +238,8 @@ class Legend(entities: Map[String, Entity]) {
    * @return the spark schema for the Legend mapping entity
    */
   def getMappingSchema(mappingName: String): StructType = {
+    LOGGER.info(s"Retrieving schema for legend mapping [$mappingName]")
     val mapping = getMapping(mappingName)
-    getMappingSchema(mapping)
-  }
-
-  def getMappingSchema(mapping: Mapping): StructType = {
     val entityName = mapping.getEntityName
     getEntitySchema(entityName)
   }
@@ -139,21 +253,11 @@ class Legend(entities: Map[String, Entity]) {
    * @return the list of rules as ruleName + ruleSQL code to maintain consistency with Legend definitions
    */
   def getMappingExpectations(mappingName: String): Map[String, String] = {
+    LOGGER.info(s"Retrieving expectations for legend mapping [$mappingName]")
     val mapping = getMapping(mappingName)
     val entityName = mapping.getEntityName
     val entity = getEntity(entityName)
-    getMappingExpectations(mapping, entity)
-  }
-
-  def getMappingExpectations(mapping: Mapping): Map[String, String] = {
-    val entityName = mapping.getEntityName
-    val entity = getEntity(entityName)
-    getMappingExpectations(mapping, entity)
-  }
-
-  def getMappingExpectations(mapping: Mapping, entity: Entity): Map[String, String] = {
-    val expectations = getLegendClassExpectations(entity.toLegendClass, pure = true)
-    val entityName = mapping.getEntityName
+    val expectations = getLegendClassExpectations(entity.toLegendClass)
     expectations.map({ case (name, expectation) =>
       (name, compileExpectation(expectation, entityName, mapping))
     })
@@ -166,50 +270,22 @@ class Legend(entities: Map[String, Entity]) {
    * @return the set of transformations required
    */
   def getMappingTransformations(mappingName: String): Map[String, String] = {
+    LOGGER.info(s"Retrieving transformations for legend mapping [$mappingName]")
     val mapping = getMapping(mappingName)
-    getMappingTransformations(mapping)
-  }
-
-  def getMappingTransformations(mapping: Mapping): Map[String, String] = {
     val relational = mapping.getRelationalTransformation
     relational.getMappingFields
   }
 
   /**
-   * Given a legend mapping, we retrieve definition of our target table. We can retrieve the name of the table or
-   * generate the full DDL required (with columns description)
-   *
+   * Given a legend mapping, we retrieve definition of our target table.
    * @param mappingName the name of the mapping to transform entity into a table
-   * @param ddl whether we want to generate the full table DDL or just return the table name
-   * @return the set of transformations required
+   * @return the name of our target table
    */
-  def getMappingTable(mappingName: String, ddl: Boolean): String = {
+  def getMappingTable(mappingName: String): String = {
+    LOGGER.info(s"Retrieving target table for legend mapping [$mappingName]")
     val mapping = getMapping(mappingName)
-    getMappingTable(mapping, ddl)
-  }
-
-  def getMappingTable(mapping: Mapping, ddl: Boolean): String = {
     val relational = mapping.getRelationalTransformation
-    val tableName = relational.getMappingTable
-
-    if (ddl) {
-      SparkSession.getActiveSession match {
-        case Some(spark) =>
-          val srcSchema = getMappingSchema(mapping)
-          val transformations = getMappingTransformations(mapping)
-          val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], srcSchema)
-          val dstSchema = transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
-          s"""CREATE TABLE $tableName
-           |USING DELTA
-           |(
-           |${dstSchema.fields.map(_.toDDL).mkString(",\n")}
-           |)""".stripMargin
-
-        case _ => throw new IllegalArgumentException("a spark session must be active")
-      }
-    } else {
-      tableName
-    }
+    relational.getMappingTable
   }
 
   /**
@@ -299,11 +375,9 @@ class Legend(entities: Map[String, Entity]) {
    * @return the list of StructField objects
    */
   private def getLegendClassStructFields(clazz: Class): Seq[StructField] = {
-    val structs = clazz.superTypes.asScala.flatMap(superType => {
+    clazz.superTypes.asScala.flatMap(superType => {
       getLegendClassStructFields(getEntity(superType).toLegendClass)
     }) ++ clazz.properties.asScala.map(getLegendPropertyStructField)
-
-    structs.toSeq
   }
 
   /**
