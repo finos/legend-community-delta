@@ -20,20 +20,13 @@ Make sure to have the jar file of `legend-delta` and its dependencies available 
 We show you below how to extract schema, retrieve and enforce expectations.
 
 See example notebook in scala [here](databricks-scala.ipynb). 
-A wrapper object was created (with limited functionalities) to offer similar experience to pyspark users. 
+For convenience, a python wrapper module was created (with limited functionalities) to offer similar experience to pyspark users. 
 See example notebook [here](databricks-python.ipynb).
 
 ## Installation
 
 ```
 mvn clean package
-```
-
-Python wrapper can be manually installed as follows
-
-```
-cd python
-python3 setup.py bdist_wheel
 ```
 
 ## Author
