@@ -74,6 +74,7 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
+  // Pyspark wrapper, not supporting HashMap
   def getTransformationsJson(mappingName: String): String = {
     Json(DefaultFormats).write(getTransformations(mappingName))
   }
@@ -88,6 +89,7 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
+  // Pyspark wrapper, not supporting HashMap
   def getExpectationsJson(entityName: String): String = {
     Json(DefaultFormats).write(getExpectations(entityName))
   }
@@ -146,6 +148,11 @@ class Legend(entities: Map[String, Entity]) {
 
   }
 
+  // Pyspark wrapper, not supporting Options
+  def createTable(mappingName: String, path: String, colName: String): String = {
+    createTable(mappingName, Some(path), Some(colName))
+  }
+
   def validateTable(mappingName: String, colName: Option[String] = None): DeltaTable = {
 
     val mapping = getMapping(mappingName)
@@ -168,6 +175,11 @@ class Legend(entities: Map[String, Entity]) {
     delta.update(Map(colName.getOrElse(VIOLATION_COLUMN) -> violationExpr))
     delta
 
+  }
+
+  // Pyspark wrapper, not supporting Options
+  def validateTable(mappingName: String, colName: String): DeltaTable = {
+    validateTable(mappingName, Some(colName))
   }
 
   /**
