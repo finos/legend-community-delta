@@ -19,12 +19,14 @@ Make sure to have the jar file of `legend-delta` and its dependencies available 
 (version controlled on gitlab) previously synchronized on disk or packaged as jar and available in your classpath.
 We show you below how to extract schema, retrieve and enforce expectations.
 
-See [example notebook](databricks-scala.ipynb) in Scala. We plan to support Python in a future release.
+See example notebook in scala [here](databricks-scala.ipynb). 
+For convenience, a python wrapper module was created (with limited functionalities) to offer similar experience to pyspark users. 
+See example notebook [here](databricks-python.ipynb).
 
 ## Installation
 
 ```
-mvn clean install
+mvn clean package
 ```
 
 ## Author
