@@ -7,3 +7,5 @@ target
 venv
 dist
 .coverage
+build
+*.egg-info
