@@ -139,12 +139,15 @@ class Legend(entities: Map[String, Entity]) {
     val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], srcSchema)
     val dstSchema = transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
 
+    // We do not want to enforced nullable constraints at write
+    val schema = StructType(dstSchema.fields.map(_.copy(nullable = true)))
+
     LOGGER.info(s"Creating delta table for legend table [$tableName]")
     DeltaTable
       .createIfNotExists()
       .tableName(tableName)
       .comment(s"<Auto Generated> by Legend-Delta from PURE entity [$entityName]")
-      .addColumns(dstSchema)
+      .addColumns(schema)
       .location(path)
       .execute()
 
