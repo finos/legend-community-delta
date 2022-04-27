@@ -46,6 +46,12 @@ class LegendTest(unittest.TestCase):
         self.assertTrue(len(transformations) == 8)
         print(transformations)
 
+    def test_derivations(self):
+        legend = LegendFileLoader().loadResources(self.legend_path)
+        derivations = legend.get_derivations('databricks::mapping::employee_delta')
+        self.assertTrue(len(derivations) == 1)
+        print(derivations)
+
     def test_table(self):
         legend = LegendFileLoader().loadResources(self.legend_path)
         table = legend.get_table('databricks::mapping::employee_delta')

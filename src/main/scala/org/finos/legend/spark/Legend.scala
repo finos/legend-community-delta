@@ -65,23 +65,6 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
-  def getDerivations(entityName: String): Map[String, String] = {
-    val entity = getEntity(entityName)
-    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
-    entityType match {
-      case "mapping" => getMappingDerivations(getMapping(entityName))
-      case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
-    }
-  }
-
-  def getMappingDerivations(mapping: Mapping): Map[String, String] = {
-    val entity = getEntity(mapping.getEntityName).toLegendClass
-    val qualifiedProperties = entity.qualifiedProperties.asScala
-    qualifiedProperties.map(qp => {
-      (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
-    }).toMap
-  }
-
   def getTransformations(mappingName: String): Map[String, String] = {
     val entity = getEntity(mappingName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
@@ -111,6 +94,26 @@ class Legend(entities: Map[String, Entity]) {
     Json(DefaultFormats).write(getExpectations(entityName))
   }
 
+  def getDerivations(entityName: String): Map[String, String] = {
+    val entity = getEntity(entityName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "mapping" =>
+        val mapping = getMapping(entityName)
+        val entity = getEntity(mapping.getEntityName).toLegendClass
+        val qualifiedProperties = entity.qualifiedProperties.asScala
+        qualifiedProperties.map(qp => {
+          (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
+        }).toMap
+      case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
+    }
+  }
+
+  // Pyspark wrapper, not supporting HashMap
+  def getDerivationsJson(mappingName: String): String = {
+    Json(DefaultFormats).write(getDerivations(mappingName))
+  }
+
   def getTable(mappingName: String): String = {
     val entity = getEntity(mappingName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
@@ -120,12 +123,11 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
-  def createTable(mappingName: String, path: Option[String] = None, colName: Option[String] = None): String = {
+  def createTable(mappingName: String, path: String): String = {
 
     val mapping = getMapping(mappingName)
     val tableName = mapping.getRelationalTransformation.getMappingTable
     val entityName = mapping.getEntityName
-    val violationColumn = colName.getOrElse(VIOLATION_COLUMN)
 
     require(SparkSession.getActiveSession.isDefined, "a spark session must be active")
     val spark = SparkSession.active
@@ -137,66 +139,16 @@ class Legend(entities: Map[String, Entity]) {
     val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], srcSchema)
     val dstSchema = transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
 
-    val dstSchemaUpdated = if (dstSchema.fields.map(_.name).contains(violationColumn)) {
-      if (dstSchema.fields.filter(_.name == violationColumn).head.dataType == ArrayType(StringType)) {
-        LOGGER.info(s"Target table already contains legend validation field [$violationColumn]")
-        dstSchema
-      } else {
-        throw new IllegalArgumentException(s"output schema already contains column [$violationColumn] of different type")
-      }
-    } else {
-      val dstUpdatedMetadata = new MetadataBuilder().putString("comment", "LEGEND VIOLATION FIELD").build()
-      val dstUpdatedField = StructField(violationColumn, ArrayType(StringType), nullable = true, dstUpdatedMetadata)
-      // We want to validate field optionality, but this will be enforced by our PURE generated constraints
-      // We would not want to fail an entire ETL because of a missing field. Instead, we want to capture invalid records
-      val dstFields = (dstSchema.fields :+ dstUpdatedField).map(_.copy(nullable = true))
-      StructType(dstFields)
-    }
-
     LOGGER.info(s"Creating delta table for legend table [$tableName]")
-    val delta = DeltaTable
+    DeltaTable
       .createIfNotExists()
       .tableName(tableName)
       .comment(s"<Auto Generated> by Legend-Delta from PURE entity [$entityName]")
-      .addColumns(dstSchemaUpdated)
+      .addColumns(dstSchema)
+      .location(path)
+      .execute()
 
-    if(path.isDefined) delta.location(path.get).execute() else delta.execute()
     tableName
-
-  }
-
-  // Pyspark wrapper, not supporting Options
-  def createTable(mappingName: String, path: String, colName: String): String = {
-    createTable(mappingName, Some(path), Some(colName))
-  }
-
-  def validateTable(mappingName: String, colName: Option[String] = None): DeltaTable = {
-
-    val mapping = getMapping(mappingName)
-    val expectations = getMappingExpectations(mappingName)
-    val tableName = mapping.getRelationalTransformation.getMappingTable
-
-    require(Try(DeltaTable.forName(tableName)).isSuccess, "Delta table should have been created")
-
-    val getViolation = udf((r: Row) => {
-      val names = r.getAs[Seq[String]](0)
-      val exprs = r.getAs[Seq[Boolean]](1)
-      names.zip(exprs).filter(!_._2).map(_._1)
-    })
-
-    val violationExpr = getViolation(
-      struct(array(expectations.keys.toSeq.map(lit): _*), array(expectations.values.toSeq.map(expr): _*)))
-
-    LOGGER.info(s"Validating delta table [$tableName] against ${expectations.size} constraint(s)")
-    val delta = DeltaTable.forName(tableName)
-    delta.update(Map(colName.getOrElse(VIOLATION_COLUMN) -> violationExpr))
-    delta
-
-  }
-
-  // Pyspark wrapper, not supporting Options
-  def validateTable(mappingName: String, colName: String): DeltaTable = {
-    validateTable(mappingName, Some(colName))
   }
 
   /**

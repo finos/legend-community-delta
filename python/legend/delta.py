@@ -56,13 +56,14 @@ class Legend():
         transformations_str = self.legend.getTransformationsJson(mapping_name)
         return json.loads(transformations_str)
 
+    def get_derivations(self, mapping_name):
+        derivations_str = self.legend.getDerivationsJson(mapping_name)
+        return json.loads(derivations_str)
+
     def get_table(self, mapping_name):
         table = self.legend.getTable(mapping_name)
         return table
 
-    def create_table(self, mapping_name, path, col_name):
-        table = self.legend.createTable(mapping_name, path, col_name)
+    def create_table(self, mapping_name, path):
+        table = self.legend.createTable(mapping_name, path)
         return table
-
-    def validate_table(self, mapping_name, col_name):
-        self.legend.validateTable(mapping_name, col_name)

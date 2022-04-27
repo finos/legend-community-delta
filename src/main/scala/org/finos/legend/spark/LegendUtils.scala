@@ -21,7 +21,6 @@ import org.finos.legend.pure.generated.{Root_meta_relational_mapping_RelationalP
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
-import org.finos.legend.pure.m3.coreinstance.meta.relational.mapping.RootRelationalInstanceSetImplementation
 import org.finos.legend.sdlc.domain.model.entity.Entity
 
 import scala.annotation.tailrec
