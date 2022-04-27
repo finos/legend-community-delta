@@ -65,6 +65,23 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
+  def getDerivations(entityName: String): Map[String, String] = {
+    val entity = getEntity(entityName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "mapping" => getMappingDerivations(getMapping(entityName))
+      case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
+    }
+  }
+
+  def getMappingDerivations(mapping: Mapping): Map[String, String] = {
+    val entity = getEntity(mapping.getEntityName).toLegendClass
+    val qualifiedProperties = entity.qualifiedProperties.asScala
+    qualifiedProperties.map(qp => {
+      (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
+    }).toMap
+  }
+
   def getTransformations(mappingName: String): Map[String, String] = {
     val entity = getEntity(mappingName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
@@ -322,7 +339,23 @@ class Legend(entities: Map[String, Entity]) {
     val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
 
     // We update our expectations with actual SQL expressions
-    LegendUtils.parseSql(sqlExecPlan)
+    LegendUtils.parseSqlWhere(sqlExecPlan)
+
+  }
+
+  private def compileDerivation(derivation: String, entityName: String, mapping: Mapping): String = {
+
+    // Build our query plan in pure
+    val query = "%1$s.all()->project([x|$x.%2$s],['%2$s'])".format(entityName, derivation)
+
+    // We generate an execution plan
+    val plan = LegendUtils.generateExecutionPlan(query, mapping, pureRuntime, pureModel)
+
+    // We retrieve the SQL where clause
+    val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+
+    // We update our expectations with actual SQL expressions
+    LegendUtils.parseSqlSelect(sqlExecPlan)
 
   }
 

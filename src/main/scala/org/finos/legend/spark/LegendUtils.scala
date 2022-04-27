@@ -122,12 +122,25 @@ object LegendUtils {
    * @param executionPlan generated SQL plan from legend engine
    * @return the WHERE clause of the generated SQL expression
    */
-  def parseSql(executionPlan: SQLExecutionNode): String = {
+  def parseSqlWhere(executionPlan: SQLExecutionNode): String = {
     val parserRealSql = new CCJSqlParserManager()
     val select = parserRealSql.parse(new StringReader(executionPlan.sqlQuery)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
     val alias = s"${select.getFromItem.getAlias.getName}."
     val where = select.getWhere
     where.toString.replaceAll(alias, "")
+  }
+
+  /**
+   * Parse SQL to retrieve SELECT clause
+   *
+   * @param executionPlan generated SQL plan from legend engine
+   * @return the selected field for the generated SQL expression
+   */
+  def parseSqlSelect(executionPlan: SQLExecutionNode): String = {
+    val parserRealSql = new CCJSqlParserManager()
+    val select = parserRealSql.parse(new StringReader(executionPlan.sqlQuery)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
+    val alias = s"${select.getFromItem.getAlias.getName}."
+    select.getSelectItems.get(0).toString.replaceAll(alias, "")
   }
 
   def generateExecutionPlan(query: String, legendMapping: Mapping, legendRuntime: runtime.Runtime, pureModel: PureModel): SingleExecutionPlan = {
@@ -254,7 +267,6 @@ object LegendUtils {
         .replaceAll("\\\\n\\s*", "")
     }
   }
-
 
   implicit class TransformationImpl(transformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl) {
 
