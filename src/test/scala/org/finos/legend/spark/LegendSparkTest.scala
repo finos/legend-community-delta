@@ -47,7 +47,9 @@ class LegendSparkTest extends AnyFlatSpec {
     val schema = legend.getSchema("databricks::mapping::employee_delta")
     val transformations = legend.getTransformations("databricks::mapping::employee_delta")
     val expectations = legend.getExpectations("databricks::mapping::employee_delta")
+    val derivations = legend.getDerivations("databricks::mapping::employee_delta")
     val table = legend.getTable("databricks::mapping::employee_delta")
+    assert(table == "legend.employee")
 
     val inputDF = spark.read.format("json").schema(schema).load(dataFile)
     inputDF.show(truncate = false)
@@ -57,6 +59,10 @@ class LegendSparkTest extends AnyFlatSpec {
 
     val cleanedDF = mappedDF.legendValidate(expectations, "legend").withColumn("legend", explode(col("legend")))
     cleanedDF.show(truncate = false)
+
+    val df1 = derivations.foldLeft(mappedDF)((d, w) => d.withColumn(w._1, expr(w._2)))
+    val df2 = transformations.foldLeft(df1)((d, w) => d.withColumnRenamed(w._2, w._1))
+    df2.show(truncate = false)
 
     val test = cleanedDF.groupBy("legend").count()
     test.show(truncate = false)
