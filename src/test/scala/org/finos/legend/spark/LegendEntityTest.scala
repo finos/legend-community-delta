@@ -17,11 +17,14 @@
 
 package org.finos.legend.spark
 
+import net.sf.jsqlparser.parser.CCJSqlParserManager
+import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
 
+import java.io.StringReader
 import java.nio.file.Paths
 
 class LegendEntityTest extends AnyFlatSpec {
@@ -121,7 +124,8 @@ class LegendEntityTest extends AnyFlatSpec {
   it should "compile PURE expectations to SQL" in {
     val legend = LegendClasspathLoader.loadResources()
     val transform = legend.getMappingExpectations("databricks::mapping::employee_delta")
-    assert(transform.values.toSet.contains("year(joined_date) - year(birth_date) > 20"))
+    assert(transform.values.toSet.contains("year(joined_date) - year(birth_date) > 18"))
+    assert(transform.values.toSet.contains("(high_fives IS NOT NULL AND high_fives > 0)"))
   }
 
   it should "capture transformations" in {
@@ -139,6 +143,24 @@ class LegendEntityTest extends AnyFlatSpec {
     val legend = LegendClasspathLoader.loadResources()
     val schema = legend.getMappingSchema("databricks::mapping::employee_delta")
     assert(schema.fields.map(_.name).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
+  }
+
+  it should "yield derivations" in {
+    val legend = LegendClasspathLoader.loadResources()
+    val derivations = legend.getDerivations("databricks::mapping::employee_delta")
+    assert(derivations.keySet == Set("hiringAge", "age"))
+    assert(derivations.values.toSet == Set(
+      "year(joined_date) - year(birth_date) AS `hiringAge`",
+      "year(current_date) - year(birth_date) AS `age`")
+    )
+  }
+
+  "A legend service" should "be compiled as SQL query" in {
+    val legend = LegendClasspathLoader.loadResources()
+    val sql = legend.generateSql("databricks::mapping::employee_delta")
+    val parserRealSql = new CCJSqlParserManager()
+    val select = parserRealSql.parse(new StringReader(sql)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
+    assert(select.getFromItem.getAlias.getName == "`root`")
   }
 
 }

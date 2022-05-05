@@ -18,43 +18,11 @@
 package org.finos.legend
 
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter, Row}
+import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter, Row, SparkSession}
 
 package object spark {
 
   final val VIOLATION_COLUMN: String = "legend"
-
-  implicit class DataframeReaderImpl(dfr: DataFrameReader) {
-
-    def legend(mappingName: String, path: Option[String] = None, colName: String = VIOLATION_COLUMN): DataFrame = {
-      val legend = if (path.isDefined) {
-        LegendFileLoader.loadResources(path.get)
-      } else {
-        LegendClasspathLoader.loadResources()
-      }
-
-      // Read table as-is
-      // Data should be available as a delta table
-      val legendDf = dfr.table(legend.getTable(mappingName))
-
-      // Apply derived properties
-      // We generate SQL code as spark expression
-      val derivations = legend.getDerivations(mappingName)
-      val derivationsDf = derivations.foldLeft(legendDf)((df, w) => df.withColumn(w._1, expr(w._2)))
-
-      // Apply constraints
-      // We generate SQL code as spark expression
-      val expectations = legend.getExpectations(mappingName)
-      val expectationsDf = derivationsDf.legendValidate(expectations, colName)
-
-      // Reverse mapping transformations from SQL to Pure entities
-      val transformations = legend.getTransformations(mappingName)
-      val transformationsDf = transformations.foldLeft(expectationsDf)((df, w) => df.withColumnRenamed(w._2, w._1))
-
-      transformationsDf
-
-    }
-  }
 
   implicit class DataframeImpl(df: DataFrame) {
 

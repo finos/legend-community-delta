@@ -64,6 +64,13 @@ class Legend():
         table = self.legend.getTable(mapping_name)
         return table
 
-    def create_table(self, mapping_name, path):
-        table = self.legend.createTable(mapping_name, path)
+    def create_table(self, mapping_name, path=None):
+        if path:
+            table = self.legend.createTable(mapping_name, path)
+        else:
+            table = self.legend.createTable(mapping_name)
         return table
+
+    def query(self, entity_name):
+        sql = self.legend.generateSql(entity_name)
+        return SparkSession.getActiveSession().sql(sql)

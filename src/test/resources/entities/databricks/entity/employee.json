@@ -69,77 +69,24 @@
           "_type" : "func",
           "function" : "greaterThan",
           "parameters" : [ {
-            "_type" : "func",
-            "function" : "dateDiff",
+            "_type" : "property",
             "parameters" : [ {
-              "_type" : "property",
-              "parameters" : [ {
-                "_type" : "var",
-                "name" : "this",
-                "sourceInformation" : {
-                  "endColumn" : 31,
-                  "endLine" : 4,
-                  "sourceId" : "",
-                  "startColumn" : 27,
-                  "startLine" : 4
-                }
-              } ],
-              "property" : "joinedDate",
+              "_type" : "var",
+              "name" : "this",
               "sourceInformation" : {
-                "endColumn" : 42,
+                "endColumn" : 37,
                 "endLine" : 4,
                 "sourceId" : "",
                 "startColumn" : 33,
                 "startLine" : 4
               }
-            }, {
-              "_type" : "property",
-              "parameters" : [ {
-                "_type" : "var",
-                "name" : "this",
-                "sourceInformation" : {
-                  "endColumn" : 7,
-                  "endLine" : 5,
-                  "sourceId" : "",
-                  "startColumn" : 3,
-                  "startLine" : 5
-                }
-              } ],
-              "property" : "birthDate",
-              "sourceInformation" : {
-                "endColumn" : 17,
-                "endLine" : 5,
-                "sourceId" : "",
-                "startColumn" : 9,
-                "startLine" : 5
-              }
-            }, {
-              "_type" : "property",
-              "parameters" : [ {
-                "_type" : "packageableElementPtr",
-                "fullPath" : "DurationUnit",
-                "sourceInformation" : {
-                  "endColumn" : 14,
-                  "endLine" : 6,
-                  "sourceId" : "",
-                  "startColumn" : 3,
-                  "startLine" : 6
-                }
-              } ],
-              "property" : "YEARS",
-              "sourceInformation" : {
-                "endColumn" : 20,
-                "endLine" : 6,
-                "sourceId" : "",
-                "startColumn" : 16,
-                "startLine" : 6
-              }
             } ],
+            "property" : "hiringAge",
             "sourceInformation" : {
-              "endColumn" : 52,
+              "endColumn" : 47,
               "endLine" : 4,
               "sourceId" : "",
-              "startColumn" : 45,
+              "startColumn" : 39,
               "startLine" : 4
             }
           }, {
@@ -149,28 +96,28 @@
               "upperBound" : 1
             },
             "sourceInformation" : {
-              "endColumn" : 6,
-              "endLine" : 7,
+              "endColumn" : 52,
+              "endLine" : 4,
               "sourceId" : "",
-              "startColumn" : 5,
-              "startLine" : 7
+              "startColumn" : 51,
+              "startLine" : 4
             },
-            "values" : [ 20 ]
+            "values" : [ 18 ]
           } ],
           "sourceInformation" : {
-            "endColumn" : 6,
-            "endLine" : 7,
+            "endColumn" : 52,
+            "endLine" : 4,
             "sourceId" : "",
-            "startColumn" : 3,
-            "startLine" : 7
+            "startColumn" : 49,
+            "startLine" : 4
           }
         } ],
         "parameters" : [ ]
       },
-      "name" : "[age] should be > 20",
+      "name" : "[hiringAge] should be > 18",
       "sourceInformation" : {
-        "endColumn" : 6,
-        "endLine" : 7,
+        "endColumn" : 52,
+        "endLine" : 4,
         "sourceId" : "",
         "startColumn" : 3,
         "startLine" : 4
@@ -187,13 +134,163 @@
       "name" : "id",
       "propertyTypeSourceInformation" : {
         "endColumn" : 92,
-        "endLine" : 10,
+        "endLine" : 7,
         "sourceId" : "",
         "startColumn" : 86,
-        "startLine" : 10
+        "startLine" : 7
       },
       "sourceInformation" : {
         "endColumn" : 96,
+        "endLine" : 7,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 7
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 79,
+          "endLine" : 7,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 7
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 7,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 7
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 7,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 7
+          },
+          "value" : "doc"
+        },
+        "value" : "Unique identifier of a databricks employee"
+      } ],
+      "type" : "Integer"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "sme",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 110,
+        "endLine" : 8,
+        "sourceId" : "",
+        "startColumn" : 88,
+        "startLine" : 8
+      },
+      "sourceInformation" : {
+        "endColumn" : 117,
+        "endLine" : 8,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 8
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 80,
+          "endLine" : 8,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 8
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 8,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 8
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 8,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 8
+          },
+          "value" : "doc"
+        },
+        "value" : "Programming skill that person truly masters"
+      } ],
+      "type" : "databricks::entity::sme"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "name" : "joinedDate",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 91,
+        "endLine" : 9,
+        "sourceId" : "",
+        "startColumn" : 88,
+        "startLine" : 9
+      },
+      "sourceInformation" : {
+        "endColumn" : 95,
+        "endLine" : 9,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 9
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 73,
+          "endLine" : 9,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 9
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 9,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 9
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 9,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 9
+          },
+          "value" : "doc"
+        },
+        "value" : "When did that person join Databricks"
+      } ],
+      "type" : "Date"
+    }, {
+      "multiplicity" : {
+        "lowerBound" : 0,
+        "upperBound" : 1
+      },
+      "name" : "highFives",
+      "propertyTypeSourceInformation" : {
+        "endColumn" : 96,
+        "endLine" : 10,
+        "sourceId" : "",
+        "startColumn" : 90,
+        "startLine" : 10
+      },
+      "sourceInformation" : {
+        "endColumn" : 103,
         "endLine" : 10,
         "sourceId" : "",
         "startColumn" : 3,
@@ -202,7 +299,7 @@
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
-          "endColumn" : 79,
+          "endColumn" : 76,
           "endLine" : 10,
           "sourceId" : "",
           "startColumn" : 4,
@@ -226,25 +323,96 @@
           },
           "value" : "doc"
         },
-        "value" : "Unique identifier of a databricks employee"
+        "value" : "How many high fives did that person get"
       } ],
       "type" : "Integer"
-    }, {
-      "multiplicity" : {
-        "lowerBound" : 0,
+    } ],
+    "qualifiedProperties" : [ {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "dateDiff",
+        "parameters" : [ {
+          "_type" : "property",
+          "parameters" : [ {
+            "_type" : "var",
+            "name" : "this",
+            "sourceInformation" : {
+              "endColumn" : 93,
+              "endLine" : 11,
+              "sourceId" : "",
+              "startColumn" : 89,
+              "startLine" : 11
+            }
+          } ],
+          "property" : "joinedDate",
+          "sourceInformation" : {
+            "endColumn" : 104,
+            "endLine" : 11,
+            "sourceId" : "",
+            "startColumn" : 95,
+            "startLine" : 11
+          }
+        }, {
+          "_type" : "property",
+          "parameters" : [ {
+            "_type" : "var",
+            "name" : "this",
+            "sourceInformation" : {
+              "endColumn" : 7,
+              "endLine" : 12,
+              "sourceId" : "",
+              "startColumn" : 3,
+              "startLine" : 12
+            }
+          } ],
+          "property" : "birthDate",
+          "sourceInformation" : {
+            "endColumn" : 17,
+            "endLine" : 12,
+            "sourceId" : "",
+            "startColumn" : 9,
+            "startLine" : 12
+          }
+        }, {
+          "_type" : "property",
+          "parameters" : [ {
+            "_type" : "packageableElementPtr",
+            "fullPath" : "DurationUnit",
+            "sourceInformation" : {
+              "endColumn" : 14,
+              "endLine" : 13,
+              "sourceId" : "",
+              "startColumn" : 3,
+              "startLine" : 13
+            }
+          } ],
+          "property" : "YEARS",
+          "sourceInformation" : {
+            "endColumn" : 20,
+            "endLine" : 13,
+            "sourceId" : "",
+            "startColumn" : 16,
+            "startLine" : 13
+          }
+        } ],
+        "sourceInformation" : {
+          "endColumn" : 114,
+          "endLine" : 11,
+          "sourceId" : "",
+          "startColumn" : 107,
+          "startLine" : 11
+        }
+      } ],
+      "name" : "hiringAge",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 1,
         "upperBound" : 1
       },
-      "name" : "sme",
-      "propertyTypeSourceInformation" : {
-        "endColumn" : 110,
-        "endLine" : 11,
-        "sourceId" : "",
-        "startColumn" : 88,
-        "startLine" : 11
-      },
+      "returnType" : "Integer",
       "sourceInformation" : {
-        "endColumn" : 117,
-        "endLine" : 11,
+        "endColumn" : 15,
+        "endLine" : 14,
         "sourceId" : "",
         "startColumn" : 3,
         "startLine" : 11
@@ -252,7 +420,7 @@
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
-          "endColumn" : 80,
+          "endColumn" : 73,
           "endLine" : 11,
           "sourceId" : "",
           "startColumn" : 4,
@@ -276,134 +444,22 @@
           },
           "value" : "doc"
         },
-        "value" : "Programming skill that person truly masters"
-      } ],
-      "type" : "databricks::entity::sme"
+        "value" : "Employee age when joining databricks"
+      } ]
     }, {
-      "multiplicity" : {
-        "lowerBound" : 1,
-        "upperBound" : 1
-      },
-      "name" : "joinedDate",
-      "propertyTypeSourceInformation" : {
-        "endColumn" : 91,
-        "endLine" : 12,
-        "sourceId" : "",
-        "startColumn" : 88,
-        "startLine" : 12
-      },
-      "sourceInformation" : {
-        "endColumn" : 95,
-        "endLine" : 12,
-        "sourceId" : "",
-        "startColumn" : 3,
-        "startLine" : 12
-      },
-      "stereotypes" : [ ],
-      "taggedValues" : [ {
-        "sourceInformation" : {
-          "endColumn" : 73,
-          "endLine" : 12,
-          "sourceId" : "",
-          "startColumn" : 4,
-          "startLine" : 12
-        },
-        "tag" : {
-          "profile" : "meta::pure::profiles::doc",
-          "profileSourceInformation" : {
-            "endColumn" : 28,
-            "endLine" : 12,
-            "sourceId" : "",
-            "startColumn" : 4,
-            "startLine" : 12
-          },
-          "sourceInformation" : {
-            "endColumn" : 32,
-            "endLine" : 12,
-            "sourceId" : "",
-            "startColumn" : 30,
-            "startLine" : 12
-          },
-          "value" : "doc"
-        },
-        "value" : "When did that person join Databricks"
-      } ],
-      "type" : "Date"
-    }, {
-      "multiplicity" : {
-        "lowerBound" : 0,
-        "upperBound" : 1
-      },
-      "name" : "highFives",
-      "propertyTypeSourceInformation" : {
-        "endColumn" : 96,
-        "endLine" : 13,
-        "sourceId" : "",
-        "startColumn" : 90,
-        "startLine" : 13
-      },
-      "sourceInformation" : {
-        "endColumn" : 103,
-        "endLine" : 13,
-        "sourceId" : "",
-        "startColumn" : 3,
-        "startLine" : 13
-      },
-      "stereotypes" : [ ],
-      "taggedValues" : [ {
-        "sourceInformation" : {
-          "endColumn" : 76,
-          "endLine" : 13,
-          "sourceId" : "",
-          "startColumn" : 4,
-          "startLine" : 13
-        },
-        "tag" : {
-          "profile" : "meta::pure::profiles::doc",
-          "profileSourceInformation" : {
-            "endColumn" : 28,
-            "endLine" : 13,
-            "sourceId" : "",
-            "startColumn" : 4,
-            "startLine" : 13
-          },
-          "sourceInformation" : {
-            "endColumn" : 32,
-            "endLine" : 13,
-            "sourceId" : "",
-            "startColumn" : 30,
-            "startLine" : 13
-          },
-          "value" : "doc"
-        },
-        "value" : "How many high fives did that person get"
-      } ],
-      "type" : "Integer"
-    } ],
-    "qualifiedProperties" : [ {
       "body" : [ {
         "_type" : "func",
         "function" : "dateDiff",
         "parameters" : [ {
-          "_type" : "property",
-          "parameters" : [ {
-            "_type" : "var",
-            "name" : "this",
-            "sourceInformation" : {
-              "endColumn" : 87,
-              "endLine" : 14,
-              "sourceId" : "",
-              "startColumn" : 83,
-              "startLine" : 14
-            }
-          } ],
-          "property" : "joinedDate",
+          "_type" : "func",
+          "function" : "today",
+          "parameters" : [ ],
           "sourceInformation" : {
-            "endColumn" : 98,
-            "endLine" : 14,
+            "endColumn" : 69,
+            "endLine" : 15,
             "sourceId" : "",
-            "startColumn" : 89,
-            "startLine" : 14
+            "startColumn" : 65,
+            "startLine" : 15
           }
         }, {
           "_type" : "property",
@@ -412,19 +468,19 @@
             "name" : "this",
             "sourceInformation" : {
               "endColumn" : 7,
-              "endLine" : 15,
+              "endLine" : 16,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 15
+              "startLine" : 16
             }
           } ],
           "property" : "birthDate",
           "sourceInformation" : {
             "endColumn" : 17,
-            "endLine" : 15,
+            "endLine" : 16,
             "sourceId" : "",
             "startColumn" : 9,
-            "startLine" : 15
+            "startLine" : 16
           }
         }, {
           "_type" : "property",
@@ -433,27 +489,27 @@
             "fullPath" : "DurationUnit",
             "sourceInformation" : {
               "endColumn" : 14,
-              "endLine" : 16,
+              "endLine" : 17,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 16
+              "startLine" : 17
             }
           } ],
           "property" : "YEARS",
           "sourceInformation" : {
             "endColumn" : 20,
-            "endLine" : 16,
+            "endLine" : 17,
             "sourceId" : "",
             "startColumn" : 16,
-            "startLine" : 16
+            "startLine" : 17
           }
         } ],
         "sourceInformation" : {
-          "endColumn" : 108,
-          "endLine" : 14,
+          "endColumn" : 81,
+          "endLine" : 15,
           "sourceId" : "",
-          "startColumn" : 101,
-          "startLine" : 14
+          "startColumn" : 74,
+          "startLine" : 15
         }
       } ],
       "name" : "age",
@@ -465,44 +521,44 @@
       "returnType" : "Integer",
       "sourceInformation" : {
         "endColumn" : 15,
-        "endLine" : 17,
+        "endLine" : 18,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 14
+        "startLine" : 15
       },
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
-          "endColumn" : 73,
-          "endLine" : 14,
+          "endColumn" : 55,
+          "endLine" : 15,
           "sourceId" : "",
           "startColumn" : 4,
-          "startLine" : 14
+          "startLine" : 15
         },
         "tag" : {
           "profile" : "meta::pure::profiles::doc",
           "profileSourceInformation" : {
             "endColumn" : 28,
-            "endLine" : 14,
+            "endLine" : 15,
             "sourceId" : "",
             "startColumn" : 4,
-            "startLine" : 14
+            "startLine" : 15
           },
           "sourceInformation" : {
             "endColumn" : 32,
-            "endLine" : 14,
+            "endLine" : 15,
             "sourceId" : "",
             "startColumn" : 30,
-            "startLine" : 14
+            "startLine" : 15
           },
           "value" : "doc"
         },
-        "value" : "Employee age when joining databricks"
+        "value" : "Employee age today"
       } ]
     } ],
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 18,
+      "endLine" : 19,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 1

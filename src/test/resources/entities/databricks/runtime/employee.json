@@ -28,9 +28,9 @@
         "storeConnections" : [ {
           "connection" : {
             "_type" : "connectionPointer",
-            "connection" : "databricks::lakehouse::employee",
+            "connection" : "databricks::lakehouse::test",
             "sourceInformation" : {
-              "endColumn" : 50,
+              "endColumn" : 46,
               "endLine" : 12,
               "sourceId" : "",
               "startColumn" : 20,
@@ -39,7 +39,7 @@
           },
           "id" : "environment",
           "sourceInformation" : {
-            "endColumn" : 50,
+            "endColumn" : 46,
             "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 7,

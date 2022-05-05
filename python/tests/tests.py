@@ -49,7 +49,7 @@ class LegendTest(unittest.TestCase):
     def test_derivations(self):
         legend = LegendFileLoader().loadResources(self.legend_path)
         derivations = legend.get_derivations('databricks::mapping::employee_delta')
-        self.assertTrue(len(derivations) == 1)
+        self.assertTrue(len(derivations) == 2)
         print(derivations)
 
     def test_table(self):
