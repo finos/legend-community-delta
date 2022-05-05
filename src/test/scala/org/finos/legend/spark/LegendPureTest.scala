@@ -109,14 +109,23 @@ class LegendPureTest extends AnyFlatSpec {
     assert(sql == "year(joined_date) - year(birth_date) > 20")
   }
 
-  "A qualified property" should "be converted as SQL clause" in {
+  "A qualified property" should "be use native spark operations" in {
     val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
     val lambdaString = "databricks::entity::employee.all()->project([x|$x.age], ['age'])"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSqlSelect(sqlPlan)
-    assert(sql == "year(joined_date) - year(birth_date) AS `age`")
+    assert(sql == "year(current_date) - year(birth_date) AS `age`")
   }
 
+  it should "be converted as SQL clause" in {
+    val legend = LegendClasspathLoader.loadResources()
+    val mapping = legend.getMapping("databricks::mapping::employee_delta")
+    val lambdaString = "databricks::entity::employee.all()->project([x|$x.hiringAge], ['hiringAge'])"
+    val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
+    val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
+    val sql = LegendUtils.parseSqlSelect(sqlPlan)
+    assert(sql == "year(joined_date) - year(birth_date) AS `hiringAge`")
+  }
 }

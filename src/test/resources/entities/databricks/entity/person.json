@@ -163,14 +163,14 @@
       },
       "name" : "gender",
       "propertyTypeSourceInformation" : {
-        "endColumn" : 69,
+        "endColumn" : 66,
         "endLine" : 6,
         "sourceId" : "",
-        "startColumn" : 64,
+        "startColumn" : 61,
         "startLine" : 6
       },
       "sourceInformation" : {
-        "endColumn" : 76,
+        "endColumn" : 73,
         "endLine" : 6,
         "sourceId" : "",
         "startColumn" : 3,
@@ -179,7 +179,7 @@
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
-          "endColumn" : 53,
+          "endColumn" : 50,
           "endLine" : 6,
           "sourceId" : "",
           "startColumn" : 4,
@@ -207,10 +207,295 @@
       } ],
       "type" : "String"
     } ],
-    "qualifiedProperties" : [ ],
+    "qualifiedProperties" : [ {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "joinStrings",
+        "parameters" : [ {
+          "_type" : "func",
+          "function" : "substring",
+          "parameters" : [ {
+            "_type" : "property",
+            "parameters" : [ {
+              "_type" : "var",
+              "name" : "this",
+              "sourceInformation" : {
+                "endColumn" : 71,
+                "endLine" : 7,
+                "sourceId" : "",
+                "startColumn" : 67,
+                "startLine" : 7
+              }
+            } ],
+            "property" : "firstName",
+            "sourceInformation" : {
+              "endColumn" : 81,
+              "endLine" : 7,
+              "sourceId" : "",
+              "startColumn" : 73,
+              "startLine" : 7
+            }
+          }, {
+            "_type" : "integer",
+            "multiplicity" : {
+              "lowerBound" : 1,
+              "upperBound" : 1
+            },
+            "sourceInformation" : {
+              "endColumn" : 3,
+              "endLine" : 8,
+              "sourceId" : "",
+              "startColumn" : 3,
+              "startLine" : 8
+            },
+            "values" : [ 0 ]
+          }, {
+            "_type" : "integer",
+            "multiplicity" : {
+              "lowerBound" : 1,
+              "upperBound" : 1
+            },
+            "sourceInformation" : {
+              "endColumn" : 3,
+              "endLine" : 9,
+              "sourceId" : "",
+              "startColumn" : 3,
+              "startLine" : 9
+            },
+            "values" : [ 1 ]
+          } ],
+          "sourceInformation" : {
+            "endColumn" : 92,
+            "endLine" : 7,
+            "sourceId" : "",
+            "startColumn" : 84,
+            "startLine" : 7
+          }
+        }, {
+          "_type" : "func",
+          "function" : "substring",
+          "parameters" : [ {
+            "_type" : "property",
+            "parameters" : [ {
+              "_type" : "var",
+              "name" : "this",
+              "sourceInformation" : {
+                "endColumn" : 7,
+                "endLine" : 11,
+                "sourceId" : "",
+                "startColumn" : 3,
+                "startLine" : 11
+              }
+            } ],
+            "property" : "lastName",
+            "sourceInformation" : {
+              "endColumn" : 16,
+              "endLine" : 11,
+              "sourceId" : "",
+              "startColumn" : 9,
+              "startLine" : 11
+            }
+          }, {
+            "_type" : "integer",
+            "multiplicity" : {
+              "lowerBound" : 1,
+              "upperBound" : 1
+            },
+            "sourceInformation" : {
+              "endColumn" : 5,
+              "endLine" : 12,
+              "sourceId" : "",
+              "startColumn" : 5,
+              "startLine" : 12
+            },
+            "values" : [ 0 ]
+          }, {
+            "_type" : "integer",
+            "multiplicity" : {
+              "lowerBound" : 1,
+              "upperBound" : 1
+            },
+            "sourceInformation" : {
+              "endColumn" : 5,
+              "endLine" : 13,
+              "sourceId" : "",
+              "startColumn" : 5,
+              "startLine" : 13
+            },
+            "values" : [ 1 ]
+          } ],
+          "sourceInformation" : {
+            "endColumn" : 27,
+            "endLine" : 11,
+            "sourceId" : "",
+            "startColumn" : 19,
+            "startLine" : 11
+          }
+        } ],
+        "sourceInformation" : {
+          "endColumn" : 14,
+          "endLine" : 10,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 10
+        }
+      } ],
+      "name" : "initials",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "returnType" : "String",
+      "sourceInformation" : {
+        "endColumn" : 14,
+        "endLine" : 15,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 7
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 52,
+          "endLine" : 7,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 7
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 7,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 7
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 7,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 7
+          },
+          "value" : "doc"
+        },
+        "value" : "Person initials"
+      } ]
+    }, {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "dateDiff",
+        "parameters" : [ {
+          "_type" : "func",
+          "function" : "today",
+          "parameters" : [ ],
+          "sourceInformation" : {
+            "endColumn" : 61,
+            "endLine" : 16,
+            "sourceId" : "",
+            "startColumn" : 57,
+            "startLine" : 16
+          }
+        }, {
+          "_type" : "property",
+          "parameters" : [ {
+            "_type" : "var",
+            "name" : "this",
+            "sourceInformation" : {
+              "endColumn" : 7,
+              "endLine" : 17,
+              "sourceId" : "",
+              "startColumn" : 3,
+              "startLine" : 17
+            }
+          } ],
+          "property" : "birthDate",
+          "sourceInformation" : {
+            "endColumn" : 17,
+            "endLine" : 17,
+            "sourceId" : "",
+            "startColumn" : 9,
+            "startLine" : 17
+          }
+        }, {
+          "_type" : "property",
+          "parameters" : [ {
+            "_type" : "packageableElementPtr",
+            "fullPath" : "DurationUnit",
+            "sourceInformation" : {
+              "endColumn" : 14,
+              "endLine" : 18,
+              "sourceId" : "",
+              "startColumn" : 3,
+              "startLine" : 18
+            }
+          } ],
+          "property" : "YEARS",
+          "sourceInformation" : {
+            "endColumn" : 20,
+            "endLine" : 18,
+            "sourceId" : "",
+            "startColumn" : 16,
+            "startLine" : 18
+          }
+        } ],
+        "sourceInformation" : {
+          "endColumn" : 73,
+          "endLine" : 16,
+          "sourceId" : "",
+          "startColumn" : 66,
+          "startLine" : 16
+        }
+      } ],
+      "name" : "age",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "returnType" : "Integer",
+      "sourceInformation" : {
+        "endColumn" : 15,
+        "endLine" : 19,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 16
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 47,
+          "endLine" : 16,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 16
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 16,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 16
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 16,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 16
+          },
+          "value" : "doc"
+        },
+        "value" : "Person age"
+      } ]
+    } ],
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 7,
+      "endLine" : 20,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 1

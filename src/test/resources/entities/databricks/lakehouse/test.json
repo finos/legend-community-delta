@@ -5,26 +5,24 @@
     "connectionValue" : {
       "_type" : "RelationalDatabaseConnection",
       "authenticationStrategy" : {
-        "_type" : "apiToken",
-        "apiToken" : "com.databricks.cloud.e2-demo-west",
+        "_type" : "h2Default",
         "sourceInformation" : {
-          "endColumn" : 4,
-          "endLine" : 16,
+          "endColumn" : 18,
+          "endLine" : 12,
           "sourceId" : "",
           "startColumn" : 3,
-          "startLine" : 13
+          "startLine" : 12
         }
       },
-      "databaseType" : "Databricks",
+      "databaseType" : "H2",
       "datasourceSpecification" : {
-        "_type" : "databricks",
-        "hostname" : "e2-demo-west.cloud.databricks.com",
-        "httpPath" : "sql/protocolv1/o/2556758628403379/0730-172948-runts698",
-        "port" : "443",
-        "protocol" : "https",
+        "_type" : "static",
+        "databaseName" : "myDb",
+        "host" : "dummyHost",
+        "port" : 80,
         "sourceInformation" : {
           "endColumn" : 4,
-          "endLine" : 12,
+          "endLine" : 11,
           "sourceId" : "",
           "startColumn" : 3,
           "startLine" : 6
@@ -41,18 +39,18 @@
       "postProcessorWithParameter" : [ ],
       "sourceInformation" : {
         "endColumn" : 1,
-        "endLine" : 17,
+        "endLine" : 13,
         "sourceId" : "",
         "startColumn" : 1,
         "startLine" : 2
       },
-      "type" : "Databricks"
+      "type" : "H2"
     },
-    "name" : "employee",
+    "name" : "test",
     "package" : "databricks::lakehouse",
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 17,
+      "endLine" : 13,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 2

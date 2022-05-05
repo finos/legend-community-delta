@@ -69,7 +69,7 @@ class LegendSparkTest extends AnyFlatSpec {
 
     assert(test.count() == 3)
     val failed = test.rdd.map(r => r.getAs[String](("legend"))).collect().map(_.split(" ").head.trim).toSet
-    assert(failed == Set("[id]", "[sme]", "[age]"))
+    assert(failed == Set("[id]", "[sme]", "[hiringAge]"))
 
   }
 

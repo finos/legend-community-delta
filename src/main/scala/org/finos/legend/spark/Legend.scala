@@ -40,15 +40,17 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
-import org.apache.spark.sql.functions.{array, expr, lit, struct, udf}
-import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.{PureSingleExecution, Service}
 import org.slf4j.LoggerFactory
 import org.json4s.jackson.Json
 import org.json4s.DefaultFormats
 
 class Legend(entities: Map[String, Entity]) {
 
-  lazy val pureModel: PureModel = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build.getPureModel
+  lazy val pureModelBuilder: PureModelBuilder.PureModelWithContextData = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build
+  lazy val pureModel: PureModel = pureModelBuilder.getPureModel
+  lazy val pureModelContext: PureModelContextData = pureModelBuilder.getPureModelContextData
   lazy val pureRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
@@ -100,11 +102,8 @@ class Legend(entities: Map[String, Entity]) {
     entityType match {
       case "mapping" =>
         val mapping = getMapping(entityName)
-        val entity = getEntity(mapping.getEntityName).toLegendClass
-        val qualifiedProperties = entity.qualifiedProperties.asScala
-        qualifiedProperties.map(qp => {
-          (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
-        }).toMap
+        val entity = getEntity(mapping.getEntityName)
+        getEntityDerivations(entity, mapping).toMap
       case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
     }
   }
@@ -112,6 +111,42 @@ class Legend(entities: Map[String, Entity]) {
   // Pyspark wrapper, not supporting HashMap
   def getDerivationsJson(mappingName: String): String = {
     Json(DefaultFormats).write(getDerivations(mappingName))
+  }
+
+  def query(entityName: String): DataFrame = {
+    assert(SparkSession.getActiveSession.isDefined, "A spark session should be defined")
+    SparkSession.active.sql(generateSql(entityName))
+  }
+
+  def generateSql(entityName: String): String = {
+    val entity = getEntity(entityName)
+    val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+    entityType match {
+      case "mapping" =>
+        val mapping = getMapping(entityName)
+        val transformations = getTransformations(entityName).keys.toSeq
+        val derivations = getEntity(mapping.getEntityName).toLegendClass.qualifiedProperties.asScala.map(_.name)
+        val keys = (transformations ++ derivations).map(k => "x|$x." + k).mkString(",")
+        val values = (transformations ++ derivations).map(k => s"'$k'").mkString(",")
+        val lambda = s"${mapping.getEntityName}.all()->project([$keys],[$values])"
+        val plan = LegendUtils.generateExecutionPlan(lambda, mapping, pureRuntime, pureModel)
+        val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode].sqlQuery
+        //TODO: apply constraints
+        sqlExecPlan
+      case "service" =>
+        val service = getEntity(entityName).toLegendService
+        service.execution match {
+          case execution: PureSingleExecution =>
+            val mapping = getMapping(execution.mapping)
+            val lambda = execution.func.toLambda
+            val plan = LegendUtils.generateExecutionPlan(lambda, mapping, pureRuntime, pureModel)
+            val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode].sqlQuery
+            //TODO: apply constraints
+            sqlExecPlan
+          case _ => throw new IllegalAccessException(s"Service ${entityName} should have a single execution, got ${service.execution.getClass}")
+        }
+      case _ => throw new IllegalArgumentException(s"Only supporting mapping or service, got $entityType")
+    }
   }
 
   def getTable(mappingName: String): String = {
@@ -124,6 +159,14 @@ class Legend(entities: Map[String, Entity]) {
   }
 
   def createTable(mappingName: String, path: String): String = {
+    createTable(mappingName, Some(path))
+  }
+
+  def createTable(mappingName: String): String = {
+    createTable(mappingName, None: Option[String])
+  }
+
+  def createTable(mappingName: String, path: Option[String] = None): String = {
 
     val mapping = getMapping(mappingName)
     val tableName = mapping.getRelationalTransformation.getMappingTable
@@ -143,13 +186,17 @@ class Legend(entities: Map[String, Entity]) {
     val schema = StructType(dstSchema.fields.map(_.copy(nullable = true)))
 
     LOGGER.info(s"Creating delta table for legend table [$tableName]")
-    DeltaTable
+    val dt = DeltaTable
       .createIfNotExists()
       .tableName(tableName)
       .comment(s"<Auto Generated> by Legend-Delta from PURE entity [$entityName]")
       .addColumns(schema)
-      .location(path)
-      .execute()
+
+    if(path.isDefined) {
+      dt.location(path.get).execute()
+    } else {
+      dt.execute()
+    }
 
     tableName
   }
@@ -212,6 +259,19 @@ class Legend(entities: Map[String, Entity]) {
         mapping
       case Failure(e) => throw new IllegalArgumentException(s"could not load mapping [$mappingName]", e)
     }
+  }
+
+  /**
+   * Retrieve all qualified properties for a given entity, compile as SQL
+   * @param entity the entity to compile qualified properties from
+   * @param mapping the relational mapping to compile qualified properties against
+   * @return a map of each derived property field with corresponding SQL
+   */
+  def getEntityDerivations(entity: Entity, mapping: Mapping): Seq[(String, String)] = {
+    val entityClass = entity.toLegendClass
+    entityClass.qualifiedProperties.asScala.map(qp => {
+      (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
+    })
   }
 
   /**

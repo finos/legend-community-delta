@@ -2,7 +2,6 @@ package org.finos.legend.spark
 
 import java.io.StringReader
 import java.util.Collections
-
 import net.sf.jsqlparser.parser.CCJSqlParserManager
 import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.spark.sql.types._
@@ -14,6 +13,7 @@ import org.finos.legend.engine.plan.platform.PlanPlatform
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.SingleExecutionPlan
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.Service
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.ValueSpecification
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.raw.Lambda
 import org.finos.legend.pure.generated.core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_
@@ -65,17 +65,27 @@ object LegendUtils {
 
   implicit class EntityUtilsImpl(entity: Entity) {
 
+    def toLegendMapping: Mapping = {
+      val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+      require(entityType == "mapping", s"Entity should be of type [mapping], got [${entityType}]")
+      Legend.objectMapper.convertValue(entity.getContent, classOf[Mapping])
+    }
+
+    def toLegendService: Service = {
+      val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
+      require(entityType == "service", s"Entity should be of type [service], got [${entityType}]")
+      Legend.objectMapper.convertValue(entity.getContent, classOf[Service])
+    }
+
     def toLegendClass: Class = {
       val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
-      require(entityType == "class",
-        s"Could only create a schema from an entity of type [class], got [${entityType}]")
+      require(entityType == "class", s"Entity should be of type [class], got [${entityType}]")
       Legend.objectMapper.convertValue(entity.getContent, classOf[Class])
     }
 
     def toLegendEnumeration: Enumeration = {
       val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
-      require(entityType == "enumeration",
-        s"Could only create a schema from an entity of type [enumeration], got [${entityType}]")
+      require(entityType == "enumeration", s"Entity should be of type [enumeration], got [${entityType}]")
       Legend.objectMapper.convertValue(entity.getContent, classOf[Enumeration])
     }
 
@@ -261,6 +271,23 @@ object LegendUtils {
       Legend
         .objectMapper
         .writeValueAsString(constraint.functionDefinition.accept(Legend.grammarComposer))
+        .dropRight(1)
+        .drop(2)
+        .replaceAll("\\\\n\\s*", "")
+    }
+  }
+
+  implicit class LambdaImpl(lambda: Lambda) {
+    /**
+     * Convert a JSON constraint into its lambda definition
+     * Constraints are defined as anonymous lambda function incompatible with Pure execution plan
+     *
+     * @return the Lambda representation of a constraint
+     */
+    def toLambda: String = {
+      Legend
+        .objectMapper
+        .writeValueAsString(lambda.accept(Legend.grammarComposer))
         .dropRight(1)
         .drop(2)
         .replaceAll("\\\\n\\s*", "")
