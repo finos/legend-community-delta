@@ -1,6 +1,6 @@
 [![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Incubating)
 
-<img width="20%" src="images/legend-delta.png">
+<img width="20%" src="https://github.com/finos/legend-delta/blob/main/images/legend-delta.png?raw=true.png">
 
 # legend-delta
 
@@ -11,7 +11,7 @@ defined from the Legend interface. Domain specific language defined in Legend St
 helping analysts create [Delta Lake](https://delta.io/) tables that not only guarantees schema definition but also complies
 with expectations, derivations and constraints defined by business analysts.
 
-<img src="images/legend-delta-workflow.png" width="500">
+<img src="https://github.com/finos/legend-delta/blob/main/images/legend-delta-workflow.png?raw=true" width="500">
 
 ## Usage
 
@@ -19,15 +19,9 @@ Make sure to have the jar file of `legend-delta` and its dependencies available 
 (version controlled on gitlab) previously synchronized on disk or packaged as jar and available in your classpath.
 We show you below how to extract schema, retrieve and enforce expectations.
 
-See example notebook in scala [here](databricks-scala.ipynb). 
-For convenience, a python wrapper module was created (with limited functionalities) to offer similar experience to pyspark users. 
-See example notebook [here](databricks-python.ipynb).
-
-## Installation
-
-```
-mvn clean package
-```
+See example notebook in scala [here](https://github.com/finos/legend-delta/blob/main/databricks-scala.ipynb). 
+For convenience, a python wrapper module was created to offer similar experience to pyspark users. 
+See example notebook [here](https://github.com/finos/legend-delta/blob/main/databricks-python.ipynb).
 
 ## Author
 
