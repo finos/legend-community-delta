@@ -1,5 +1,3 @@
-[![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Incubating)
-
 <img width="20%" src="https://github.com/finos/legend-delta/blob/main/images/legend-delta.png?raw=true.png">
 
 # legend-delta
