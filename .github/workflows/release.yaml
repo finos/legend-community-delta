@@ -18,7 +18,7 @@ env:
   CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
   CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
   CI_GPG_PASSPHRASE: ${{ secrets.CI_GPG_PASSPHRASE }}
-#  CI_DEPLOY_PYPI_TOKEN: ${{ secrets.CI_DEPLOY_PYPI_TOKEN }}
+  CI_DEPLOY_PYPI_TOKEN: ${{ secrets.CI_DEPLOY_PYPI_TOKEN }}
   MAVEN_OPTS: -Xmx4g
 
 on:
@@ -91,9 +91,9 @@ jobs:
         working-directory: ./python
         run: python setup.py clean bdist_wheel
 
-#    - name: Publish a Python distribution to PyPI
-#      uses: pypa/gh-action-pypi-publish@release/v1
-#      with:
-#        user: __token__
-#        password: CI_DEPLOY_PYPI_TOKEN
-#        packages_dir: dist/
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: CI_DEPLOY_PYPI_TOKEN
+          packages_dir: dist/
