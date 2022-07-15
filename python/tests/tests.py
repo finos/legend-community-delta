@@ -10,18 +10,20 @@ class LegendTest(unittest.TestCase):
 
     def setUp(self):
 
-        # retrieve all jar files required for test
-        path = Path(os.getcwd())
-        dep_path = os.path.join(path, 'dist', 'dependencies')
-        dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
-
         # retrieve legend model for test
         path = Path(os.getcwd()).parent.absolute()
         self.legend_path = os.path.join(path, 'src', 'test', 'resources')
 
+        # retrieve all jar files required for test
+        path = Path(os.getcwd())
+        dep_path = os.path.join(path, 'build', 'dependencies')
+        dep_file = [os.path.join(dep_path, f) for f in os.listdir(dep_path)]
+        spark_conf = ':'.join(dep_file)
+        self.spark_conf = spark_conf
+
         # inject scala classes
-        self.spark = SparkSession.builder.appName("legend-delta") \
-            .config("spark.driver.extraClassPath", ':'.join(dep_file)) \
+        self.spark = SparkSession.builder.appName("geoscan") \
+            .config("spark.driver.extraClassPath", spark_conf) \
             .master("local") \
             .getOrCreate()
 
