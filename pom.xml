@@ -8,7 +8,7 @@
         <version>4</version>
     </parent>
 
-    <groupId>org.finos.legend</groupId>
+    <groupId>org.finos.legend-community</groupId>
     <artifactId>legend-delta</artifactId>
     <version>0.1.2-SNAPSHOT</version>
 
@@ -334,12 +334,12 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>package</phase>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/python/dist/dependencies</outputDirectory>
+                            <outputDirectory>${project.basedir}/python/build/dependencies</outputDirectory>
                             <overWriteReleases>true</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
@@ -357,12 +357,12 @@
                 <executions>
                     <execution>
                         <id>copy-files-on-build</id>
-                        <phase>package</phase>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/python/dist/dependencies</outputDirectory>
+                            <outputDirectory>${project.basedir}/python/build/dependencies</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}</directory>
@@ -384,7 +384,7 @@
                 <executions>
                     <execution>
                         <id>python-prepare</id>
-                        <phase>package</phase>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -398,17 +398,9 @@
                             </arguments>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
                     <execution>
                         <id>python-test</id>
-                        <phase>package</phase>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>

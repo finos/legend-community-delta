@@ -49,6 +49,7 @@ setup(
     extras_require=dict(tests=["pytest"]),
     classifiers=[
         'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
     ],
 )
