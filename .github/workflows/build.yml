@@ -28,5 +28,5 @@ jobs:
           java-version: 11
       - name: Print out mvn version
         run: mvn -v
-      - name: Build + Test
-        run: mvn clean test
+      - name: Test both Scala and Python
+        run: mvn clean verify

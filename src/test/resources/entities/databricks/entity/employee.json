@@ -128,7 +128,7 @@
     "package" : "databricks::entity",
     "properties" : [ {
       "multiplicity" : {
-        "lowerBound" : 0,
+        "lowerBound" : 1,
         "upperBound" : 1
       },
       "name" : "id",
@@ -326,30 +326,7 @@
         "value" : "How many high fives did that person get"
       } ],
       "type" : "Integer"
-    }, {
-      "multiplicity" : {
-        "lowerBound" : 1,
-        "upperBound" : 1
-      },
-      "name" : "isMvp",
-      "propertyTypeSourceInformation" : {
-        "endColumn" : 16,
-        "endLine" : 11,
-        "sourceId" : "",
-        "startColumn" : 10,
-        "startLine" : 11
-      },
-      "sourceInformation" : {
-        "endColumn" : 20,
-        "endLine" : 11,
-        "sourceId" : "",
-        "startColumn" : 3,
-        "startLine" : 11
-      },
-      "stereotypes" : [ ],
-      "taggedValues" : [ ],
-      "type" : "Boolean"
-    } ],
+    }],
     "qualifiedProperties" : [ {
       "body" : [ {
         "_type" : "func",

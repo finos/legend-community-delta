@@ -125,19 +125,6 @@
           "type" : {
             "_type" : "Integer"
           }
-        }, {
-          "name" : "is_mvp",
-          "nullable" : true,
-          "sourceInformation" : {
-            "endColumn" : 20,
-            "endLine" : 16,
-            "sourceId" : "",
-            "startColumn" : 7,
-            "startLine" : 16
-          },
-          "type" : {
-            "_type" : "Integer"
-          }
         } ],
         "milestoning" : [ ],
         "name" : "employee",
