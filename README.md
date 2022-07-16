@@ -18,7 +18,7 @@ interpreted as a series of Spark SQL operations, helping analysts create [Delta 
 not only guarantees schema definition but also complies with expectations, derivations and constraints defined by 
 business analysts.
 
-<img src="https://github.com/finos/legend-delta/blob/main/images/legend-delta-workflow.png?raw=true" width="500">
+<img src="https://raw.githubusercontent.com/finos/legend-community-delta/main/images/legend-delta-workflow.png" width="500">
 
 ## Usage
 
