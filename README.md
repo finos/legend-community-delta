@@ -22,12 +22,13 @@ business analysts.
 
 ## Usage
 
-Make sure to have the jar file of `org.finos.legend-community:legend-delta:X.Y.Z` and all its dependencies available in 
-your spark classpath and a legend data model (version controlled on gitlab) previously compiled to disk or packaged 
-as a jar file and available in your classpath. 
+Make sure to have the jar file of `org.finos.legend-community:legend-delta:X.Y.Z` and all its dependencies available in
+your spark classpath and a legend data model (version controlled on gitlab) previously compiled to disk or packaged
+as a jar file and available in your classpath. For python support, please add the corresponding library from pypi
+[repo](https://pypi.org/project/legend-delta/).
 
 ```shell
-pip install legend-delta
+pip install legend-delta==X.Y.Z
 ```
 
 We show you how to extract schema, retrieve and enforce expectations and create delta tables in both
