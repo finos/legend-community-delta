@@ -22,10 +22,20 @@ import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
+import org.finos.legend.engine.language.pure.compiler.Compiler
+import org.finos.legend.engine.language.pure.compiler.toPureGraph.{CompileContext, HelperValueSpecificationBuilder, PureModel}
+import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
+import org.finos.legend.engine.plan.generation.PlanGenerator
+import org.finos.legend.engine.plan.platform.PlanPlatform
+import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextData
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.Function
+import org.finos.legend.spark.LegendUtils.buildLambda
 import org.scalatest.flatspec.AnyFlatSpec
 
-import java.io.StringReader
+import java.io.{BufferedReader, InputStreamReader, StringReader}
 import java.nio.file.Paths
+import java.util.Objects
+import java.util.stream.Collectors
 
 class LegendEntityTest extends AnyFlatSpec {
 
@@ -152,6 +162,29 @@ class LegendEntityTest extends AnyFlatSpec {
     assert(derivations.values.toSet == Set(
       "year(joined_date) - year(birth_date) AS `hiringAge`",
       "year(current_date) - year(birth_date) AS `age`")
+    )
+  }
+
+  "A dummy test" should "remain dummy" in {
+
+    val inputStreamReader = new InputStreamReader(Objects.requireNonNull(this.getClass.getResourceAsStream("/pure/databricks.pure")))
+    val bufferedReader = new BufferedReader(inputStreamReader)
+    val contextData = PureGrammarParser.newInstance.parseModel(bufferedReader.lines.collect(Collectors.joining("\n")))
+    val pureModel = Compiler.compile(contextData, null, null)
+
+    val fetchFunction = contextData.getElementsOfType(classOf[Function]).stream.filter((x: Function) => "test::fetch" == x._package + "::" + x.name).findFirst.orElseThrow(() => new IllegalArgumentException("Unknown function"))
+
+    PlanGenerator.generateExecutionPlan(
+      HelperValueSpecificationBuilder.buildLambda(fetchFunction.body, fetchFunction.parameters, new CompileContext.Builder(pureModel).build),
+      pureModel.getMapping("test::Map"),
+      pureModel.getRuntime("test::Runtime"),
+      null,
+      pureModel,
+      "vX_X_X", //TODO: Replace by PureVersion.production when https://github.com/finos/legend-pure/pull/507
+      PlanPlatform.JAVA,
+      null,
+      null,
+      null
     )
   }
 

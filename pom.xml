@@ -53,9 +53,9 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
-        <legend.engine.version>2.58.0</legend.engine.version>
-        <legend.sdlc.version>0.70.0</legend.sdlc.version>
-        <legend.pure.version>1.51.0</legend.pure.version>
+        <legend.engine.version>3.1.0</legend.engine.version>
+        <legend.sdlc.version>0.75.0</legend.sdlc.version>
+        <legend.pure.version>2.1.1</legend.pure.version>
     </properties>
 
     <dependencies>
@@ -101,13 +101,6 @@
         <!-- LEGEND DEPENDENCIES -->
 
         <dependency>
-            <!-- DBR comes with its own PAC version -->
-            <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-core</artifactId>
-            <version>3.9.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.finos.legend.sdlc</groupId>
             <artifactId>legend-sdlc-model</artifactId>
             <version>${legend.sdlc.version}</version>
@@ -117,56 +110,18 @@
             <groupId>org.finos.legend.sdlc</groupId>
             <artifactId>legend-sdlc-protocol-pure</artifactId>
             <version>${legend.sdlc.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.ws.rs</groupId>
-                    <artifactId>javax.ws.rs-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongo-java-driver</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>bson</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.finos.legend.sdlc</groupId>
             <artifactId>legend-sdlc-protocol</artifactId>
             <version>${legend.sdlc.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.ws.rs</groupId>
-                    <artifactId>javax.ws.rs-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.finos.legend.sdlc</groupId>
             <artifactId>legend-sdlc-generation-service</artifactId>
             <version>${legend.sdlc.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.ws.rs</groupId>
-                    <artifactId>javax.ws.rs-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongo-java-driver</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.zaxxer</groupId>
-                    <artifactId>HikariCP</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -177,43 +132,36 @@
 
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-protocol-relational</artifactId>
+            <artifactId>legend-engine-xt-relationalStore-protocol</artifactId>
             <version>${legend.engine.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>bson</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-language-pure-store-relational</artifactId>
+            <artifactId>legend-engine-xt-relationalStore-pure</artifactId>
             <version>${legend.engine.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.tomcat</groupId>
-                    <artifactId>tomcat-dbcp</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-executionPlan-execution-store-inMemory</artifactId>
+            <artifactId>legend-engine-xt-relationalStore-grammar</artifactId>
+            <version>${legend.engine.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.legend.engine</groupId>
+            <artifactId>legend-engine-xt-relationalStore-executionPlan</artifactId>
             <version>${legend.engine.version}</version>
         </dependency>
 
         <!-- USER DEPENDENCIES -->
+
+        <!-- Databricks runtime comes with its own PAC version -->
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-core</artifactId>
+            <version>3.9.0</version>
+        </dependency>
 
         <!-- Spark runtime comes with its own antlr version (4.5) and returns warning-->
         <dependency>
@@ -222,6 +170,7 @@
             <version>4.8-1</version>
         </dependency>
 
+        <!-- Spark runtime comes with its own antlr version (4.5) and returns warning-->
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>

@@ -41,7 +41,7 @@ import scala.util.{Failure, Success, Try}
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.{PureSingleExecution, Service}
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.PureSingleExecution
 import org.slf4j.LoggerFactory
 import org.json4s.jackson.Json
 import org.json4s.DefaultFormats
