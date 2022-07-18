@@ -44,11 +44,7 @@ jobs:
           distribution: "zulu"
           java-version: "11"
 
-        # Running all unit tests
-      - name: Run Scala tests
-        run: mvn clean test
-
         # Pyspark test are integration-tests and requires packaging all dependencies first before
         # invoking a pyspark context. This logic is included in pom.xml and triggered on mvn verify goal
-      - name: Run Python tests
+      - name: Run Scala and Python tests
         run: mvn clean verify
