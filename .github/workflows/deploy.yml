@@ -57,4 +57,4 @@ jobs:
 
         # Deploy SNAPSHOT dependency to Sonatype
       - name: Deploy SNAPSHOT
-        run: mvn clean deploy
+        run: mvn clean deploy -Dmaven.test.skip=true
