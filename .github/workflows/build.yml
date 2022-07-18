@@ -37,7 +37,7 @@ jobs:
 
         # The next step is to install a JDK and maven environment
         # A settings.xml file with credentials will be created and stored in that folder
-        # See next step for settings.xml creation
+        # Since we're only testing the stack, no need for a specific configuration with Sonatype credentials
       - name: Set up Maven
         uses: actions/setup-java@v2
         with:

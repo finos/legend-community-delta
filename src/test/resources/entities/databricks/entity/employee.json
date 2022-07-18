@@ -140,7 +140,7 @@
         "startLine" : 7
       },
       "sourceInformation" : {
-        "endColumn" : 91,
+        "endColumn" : 88,
         "endLine" : 7,
         "sourceId" : "",
         "startColumn" : 3,
@@ -326,7 +326,7 @@
         "value" : "How many high fives did that person get"
       } ],
       "type" : "Integer"
-    }],
+    } ],
     "qualifiedProperties" : [ {
       "body" : [ {
         "_type" : "func",
@@ -338,19 +338,19 @@
             "name" : "this",
             "sourceInformation" : {
               "endColumn" : 93,
-              "endLine" : 12,
+              "endLine" : 11,
               "sourceId" : "",
               "startColumn" : 89,
-              "startLine" : 12
+              "startLine" : 11
             }
           } ],
-          "property" : "joinedDate",
+          "property" : "birthDate",
           "sourceInformation" : {
-            "endColumn" : 104,
-            "endLine" : 12,
+            "endColumn" : 103,
+            "endLine" : 11,
             "sourceId" : "",
             "startColumn" : 95,
-            "startLine" : 12
+            "startLine" : 11
           }
         }, {
           "_type" : "property",
@@ -359,19 +359,19 @@
             "name" : "this",
             "sourceInformation" : {
               "endColumn" : 7,
-              "endLine" : 13,
+              "endLine" : 12,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 13
+              "startLine" : 12
             }
           } ],
-          "property" : "birthDate",
+          "property" : "joinedDate",
           "sourceInformation" : {
-            "endColumn" : 17,
-            "endLine" : 13,
+            "endColumn" : 18,
+            "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 9,
-            "startLine" : 13
+            "startLine" : 12
           }
         }, {
           "_type" : "property",
@@ -380,27 +380,27 @@
             "fullPath" : "DurationUnit",
             "sourceInformation" : {
               "endColumn" : 14,
-              "endLine" : 14,
+              "endLine" : 13,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 14
+              "startLine" : 13
             }
           } ],
           "property" : "YEARS",
           "sourceInformation" : {
             "endColumn" : 20,
-            "endLine" : 14,
+            "endLine" : 13,
             "sourceId" : "",
             "startColumn" : 16,
-            "startLine" : 14
+            "startLine" : 13
           }
         } ],
         "sourceInformation" : {
-          "endColumn" : 114,
-          "endLine" : 12,
+          "endColumn" : 113,
+          "endLine" : 11,
           "sourceId" : "",
-          "startColumn" : 107,
-          "startLine" : 12
+          "startColumn" : 106,
+          "startLine" : 11
         }
       } ],
       "name" : "hiringAge",
@@ -412,35 +412,35 @@
       "returnType" : "Integer",
       "sourceInformation" : {
         "endColumn" : 15,
-        "endLine" : 15,
+        "endLine" : 14,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 12
+        "startLine" : 11
       },
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
           "endColumn" : 73,
-          "endLine" : 12,
+          "endLine" : 11,
           "sourceId" : "",
           "startColumn" : 4,
-          "startLine" : 12
+          "startLine" : 11
         },
         "tag" : {
           "profile" : "meta::pure::profiles::doc",
           "profileSourceInformation" : {
             "endColumn" : 28,
-            "endLine" : 12,
+            "endLine" : 11,
             "sourceId" : "",
             "startColumn" : 4,
-            "startLine" : 12
+            "startLine" : 11
           },
           "sourceInformation" : {
             "endColumn" : 32,
-            "endLine" : 12,
+            "endLine" : 11,
             "sourceId" : "",
             "startColumn" : 30,
-            "startLine" : 12
+            "startLine" : 11
           },
           "value" : "doc"
         },
@@ -451,36 +451,36 @@
         "_type" : "func",
         "function" : "dateDiff",
         "parameters" : [ {
-          "_type" : "func",
-          "function" : "today",
-          "parameters" : [ ],
-          "sourceInformation" : {
-            "endColumn" : 69,
-            "endLine" : 16,
-            "sourceId" : "",
-            "startColumn" : 65,
-            "startLine" : 16
-          }
-        }, {
           "_type" : "property",
           "parameters" : [ {
             "_type" : "var",
             "name" : "this",
             "sourceInformation" : {
-              "endColumn" : 7,
-              "endLine" : 17,
+              "endColumn" : 69,
+              "endLine" : 15,
               "sourceId" : "",
-              "startColumn" : 3,
-              "startLine" : 17
+              "startColumn" : 65,
+              "startLine" : 15
             }
           } ],
           "property" : "birthDate",
           "sourceInformation" : {
-            "endColumn" : 17,
-            "endLine" : 17,
+            "endColumn" : 79,
+            "endLine" : 15,
             "sourceId" : "",
-            "startColumn" : 9,
-            "startLine" : 17
+            "startColumn" : 71,
+            "startLine" : 15
+          }
+        }, {
+          "_type" : "func",
+          "function" : "today",
+          "parameters" : [ ],
+          "sourceInformation" : {
+            "endColumn" : 7,
+            "endLine" : 16,
+            "sourceId" : "",
+            "startColumn" : 3,
+            "startLine" : 16
           }
         }, {
           "_type" : "property",
@@ -489,27 +489,27 @@
             "fullPath" : "DurationUnit",
             "sourceInformation" : {
               "endColumn" : 14,
-              "endLine" : 18,
+              "endLine" : 17,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 18
+              "startLine" : 17
             }
           } ],
           "property" : "YEARS",
           "sourceInformation" : {
             "endColumn" : 20,
-            "endLine" : 18,
+            "endLine" : 17,
             "sourceId" : "",
             "startColumn" : 16,
-            "startLine" : 18
+            "startLine" : 17
           }
         } ],
         "sourceInformation" : {
-          "endColumn" : 81,
-          "endLine" : 16,
+          "endColumn" : 89,
+          "endLine" : 15,
           "sourceId" : "",
-          "startColumn" : 74,
-          "startLine" : 16
+          "startColumn" : 82,
+          "startLine" : 15
         }
       } ],
       "name" : "age",
@@ -521,44 +521,248 @@
       "returnType" : "Integer",
       "sourceInformation" : {
         "endColumn" : 15,
-        "endLine" : 19,
+        "endLine" : 18,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 16
+        "startLine" : 15
       },
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
           "endColumn" : 55,
-          "endLine" : 16,
+          "endLine" : 15,
           "sourceId" : "",
           "startColumn" : 4,
-          "startLine" : 16
+          "startLine" : 15
         },
         "tag" : {
           "profile" : "meta::pure::profiles::doc",
           "profileSourceInformation" : {
             "endColumn" : 28,
-            "endLine" : 16,
+            "endLine" : 15,
             "sourceId" : "",
             "startColumn" : 4,
-            "startLine" : 16
+            "startLine" : 15
           },
           "sourceInformation" : {
             "endColumn" : 32,
-            "endLine" : 16,
+            "endLine" : 15,
             "sourceId" : "",
             "startColumn" : 30,
-            "startLine" : 16
+            "startLine" : 15
           },
           "value" : "doc"
         },
         "value" : "Employee age today"
       } ]
+    }, {
+      "body" : [ {
+        "_type" : "func",
+        "function" : "plus",
+        "parameters" : [ {
+          "_type" : "collection",
+          "multiplicity" : {
+            "lowerBound" : 3,
+            "upperBound" : 3
+          },
+          "sourceInformation" : {
+            "endColumn" : 1,
+            "endLine" : 25,
+            "sourceId" : "",
+            "startColumn" : 3,
+            "startLine" : 22
+          },
+          "values" : [ {
+            "_type" : "func",
+            "function" : "substring",
+            "parameters" : [ {
+              "_type" : "property",
+              "parameters" : [ {
+                "_type" : "var",
+                "name" : "this",
+                "sourceInformation" : {
+                  "endColumn" : 73,
+                  "endLine" : 19,
+                  "sourceId" : "",
+                  "startColumn" : 69,
+                  "startLine" : 19
+                }
+              } ],
+              "property" : "firstName",
+              "sourceInformation" : {
+                "endColumn" : 83,
+                "endLine" : 19,
+                "sourceId" : "",
+                "startColumn" : 75,
+                "startLine" : 19
+              }
+            }, {
+              "_type" : "integer",
+              "multiplicity" : {
+                "lowerBound" : 1,
+                "upperBound" : 1
+              },
+              "sourceInformation" : {
+                "endColumn" : 3,
+                "endLine" : 20,
+                "sourceId" : "",
+                "startColumn" : 3,
+                "startLine" : 20
+              },
+              "values" : [ 0 ]
+            }, {
+              "_type" : "integer",
+              "multiplicity" : {
+                "lowerBound" : 1,
+                "upperBound" : 1
+              },
+              "sourceInformation" : {
+                "endColumn" : 3,
+                "endLine" : 21,
+                "sourceId" : "",
+                "startColumn" : 3,
+                "startLine" : 21
+              },
+              "values" : [ 1 ]
+            } ],
+            "sourceInformation" : {
+              "endColumn" : 94,
+              "endLine" : 19,
+              "sourceId" : "",
+              "startColumn" : 86,
+              "startLine" : 19
+            }
+          }, {
+            "_type" : "string",
+            "multiplicity" : {
+              "lowerBound" : 1,
+              "upperBound" : 1
+            },
+            "sourceInformation" : {
+              "endColumn" : 6,
+              "endLine" : 22,
+              "sourceId" : "",
+              "startColumn" : 5,
+              "startLine" : 22
+            },
+            "values" : [ "" ]
+          }, {
+            "_type" : "func",
+            "function" : "substring",
+            "parameters" : [ {
+              "_type" : "property",
+              "parameters" : [ {
+                "_type" : "var",
+                "name" : "this",
+                "sourceInformation" : {
+                  "endColumn" : 14,
+                  "endLine" : 22,
+                  "sourceId" : "",
+                  "startColumn" : 10,
+                  "startLine" : 22
+                }
+              } ],
+              "property" : "lastName",
+              "sourceInformation" : {
+                "endColumn" : 23,
+                "endLine" : 22,
+                "sourceId" : "",
+                "startColumn" : 16,
+                "startLine" : 22
+              }
+            }, {
+              "_type" : "integer",
+              "multiplicity" : {
+                "lowerBound" : 1,
+                "upperBound" : 1
+              },
+              "sourceInformation" : {
+                "endColumn" : 3,
+                "endLine" : 23,
+                "sourceId" : "",
+                "startColumn" : 3,
+                "startLine" : 23
+              },
+              "values" : [ 0 ]
+            }, {
+              "_type" : "integer",
+              "multiplicity" : {
+                "lowerBound" : 1,
+                "upperBound" : 1
+              },
+              "sourceInformation" : {
+                "endColumn" : 3,
+                "endLine" : 24,
+                "sourceId" : "",
+                "startColumn" : 3,
+                "startLine" : 24
+              },
+              "values" : [ 1 ]
+            } ],
+            "sourceInformation" : {
+              "endColumn" : 34,
+              "endLine" : 22,
+              "sourceId" : "",
+              "startColumn" : 26,
+              "startLine" : 22
+            }
+          } ]
+        } ],
+        "sourceInformation" : {
+          "endColumn" : 1,
+          "endLine" : 25,
+          "sourceId" : "",
+          "startColumn" : 3,
+          "startLine" : 22
+        }
+      } ],
+      "name" : "initials",
+      "parameters" : [ ],
+      "returnMultiplicity" : {
+        "lowerBound" : 1,
+        "upperBound" : 1
+      },
+      "returnType" : "String",
+      "sourceInformation" : {
+        "endColumn" : 14,
+        "endLine" : 25,
+        "sourceId" : "",
+        "startColumn" : 3,
+        "startLine" : 19
+      },
+      "stereotypes" : [ ],
+      "taggedValues" : [ {
+        "sourceInformation" : {
+          "endColumn" : 54,
+          "endLine" : 19,
+          "sourceId" : "",
+          "startColumn" : 4,
+          "startLine" : 19
+        },
+        "tag" : {
+          "profile" : "meta::pure::profiles::doc",
+          "profileSourceInformation" : {
+            "endColumn" : 28,
+            "endLine" : 19,
+            "sourceId" : "",
+            "startColumn" : 4,
+            "startLine" : 19
+          },
+          "sourceInformation" : {
+            "endColumn" : 32,
+            "endLine" : 19,
+            "sourceId" : "",
+            "startColumn" : 30,
+            "startLine" : 19
+          },
+          "value" : "doc"
+        },
+        "value" : "Employee initials"
+      } ]
     } ],
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 20,
+      "endLine" : 26,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 1
