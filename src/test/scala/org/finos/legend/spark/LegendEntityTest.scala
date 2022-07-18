@@ -22,10 +22,20 @@ import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
+import org.finos.legend.engine.language.pure.compiler.Compiler
+import org.finos.legend.engine.language.pure.compiler.toPureGraph.{CompileContext, HelperValueSpecificationBuilder, PureModel}
+import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
+import org.finos.legend.engine.plan.generation.PlanGenerator
+import org.finos.legend.engine.plan.generation.transformers.LegendPlanTransformers
+import org.finos.legend.engine.plan.platform.PlanPlatform
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain.Function
+import org.finos.legend.pure.generated.core_relational_relational_router_router_extension
 import org.scalatest.flatspec.AnyFlatSpec
 
-import java.io.StringReader
+import java.io.{BufferedReader, InputStreamReader, StringReader}
 import java.nio.file.Paths
+import java.util.Objects
+import java.util.stream.Collectors
 
 class LegendEntityTest extends AnyFlatSpec {
 
@@ -101,7 +111,7 @@ class LegendEntityTest extends AnyFlatSpec {
     assert(
       expectations.values.toSet == Set(
         "birthDate IS NOT NULL",
-        "sme IS NULL OR sme IN ('Scala', 'Python', 'C', 'Java', 'R', 'SQL')",
+        "sme IS NULL OR sme IN ('Scala', 'Python', 'Java', 'R', 'SQL')",
         "id IS NOT NULL",
         "joinedDate IS NOT NULL",
         "firstName IS NOT NULL",
@@ -161,6 +171,27 @@ class LegendEntityTest extends AnyFlatSpec {
     val parserRealSql = new CCJSqlParserManager()
     val select = parserRealSql.parse(new StringReader(sql)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
     assert(select.getFromItem.getAlias.getName == "`root`")
+  }
+
+
+  "A native legend engine" should "compile execution plan" in {
+    val inputStreamReader = new InputStreamReader(Objects.requireNonNull(this.getClass.getResourceAsStream("/pure/databricks.pure")))
+    val bufferedReader = new BufferedReader(inputStreamReader)
+    val contextData = PureGrammarParser.newInstance.parseModel(bufferedReader.lines.collect(Collectors.joining("\n")))
+    val pureModel = Compiler.compile(contextData, null, null)
+    val fetchFunction = contextData.getElementsOfType(classOf[Function]).stream.filter((x: Function) => "test::fetch" == x._package + "::" + x.name).findFirst.orElseThrow(() => new IllegalArgumentException("Unknown function"))
+    PlanGenerator.generateExecutionPlan(
+      HelperValueSpecificationBuilder.buildLambda(fetchFunction.body, fetchFunction.parameters, new CompileContext.Builder(pureModel).build),
+      pureModel.getMapping("test::Map"),
+      pureModel.getRuntime("test::Runtime"),
+      null,
+      pureModel,
+      "vX_X_X",
+      PlanPlatform.JAVA,
+      null,
+      core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),
+      LegendPlanTransformers.transformers
+    )
   }
 
 }

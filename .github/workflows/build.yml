@@ -20,13 +20,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
+      # The first step is obviously to check out the repository
       - name: Checkout repo
-        uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/checkout@v3
+
+        # The next step is to install a JDK and maven environment
+        # A settings.xml file with credentials will be created and stored in that folder
+        # See next step for settings.xml creation
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
         with:
-          java-version: 11
-      - name: Print out mvn version
-        run: mvn -v
-      - name: Build + Test
-        run: mvn clean test
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+        # The next step is to install a JDK and maven environment
+        # A settings.xml file with credentials will be created and stored in that folder
+        # See next step for settings.xml creation
+      - name: Set up Maven
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+
+        # Pyspark test are integration-tests and requires packaging all dependencies first before
+        # invoking a pyspark context. This logic is included in pom.xml and triggered on mvn verify goal
+      - name: Run Scala and Python tests
+        run: mvn clean verify

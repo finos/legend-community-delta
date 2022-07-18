@@ -11,7 +11,7 @@
       "name" : "legend",
       "sourceInformation" : {
         "endColumn" : 3,
-        "endLine" : 17,
+        "endLine" : 18,
         "sourceId" : "",
         "startColumn" : 3,
         "startLine" : 4
@@ -131,7 +131,7 @@
         "primaryKey" : [ "id" ],
         "sourceInformation" : {
           "endColumn" : 5,
-          "endLine" : 16,
+          "endLine" : 17,
           "sourceId" : "",
           "startColumn" : 5,
           "startLine" : 6
@@ -141,7 +141,7 @@
     } ],
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 18,
+      "endLine" : 19,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 2

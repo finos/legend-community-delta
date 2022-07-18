@@ -5,19 +5,19 @@ import java.util.Collections
 import net.sf.jsqlparser.parser.CCJSqlParserManager
 import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.spark.sql.types._
-import org.finos.legend.engine.language.pure.compiler.toPureGraph.{HelperValueSpecificationBuilder, PureModel}
+import org.finos.legend.engine.language.pure.compiler.toPureGraph.{CompileContext, HelperValueSpecificationBuilder, PureModel}
 import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
 import org.finos.legend.engine.plan.generation.PlanGenerator
 import org.finos.legend.engine.plan.generation.transformers.LegendPlanTransformers
 import org.finos.legend.engine.plan.platform.PlanPlatform
+import org.finos.legend.engine.protocol.pure.PureClientVersions
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.SingleExecutionPlan
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.Service
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.ValueSpecification
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.raw.Lambda
-import org.finos.legend.pure.generated.core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_
-import org.finos.legend.pure.generated.{Root_meta_relational_mapping_RelationalPropertyMapping_Impl, Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl, Root_meta_relational_metamodel_TableAliasColumn_Impl, Root_meta_relational_metamodel_relation_Table_Impl}
+import org.finos.legend.pure.generated.{Root_meta_relational_mapping_RelationalPropertyMapping_Impl, Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl, Root_meta_relational_metamodel_TableAliasColumn_Impl, Root_meta_relational_metamodel_relation_Table_Impl, core_relational_relational_router_router_extension}
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
@@ -159,10 +159,10 @@ object LegendUtils {
       legendRuntime,
       null,
       pureModel,
-      "vX_X_X", //TODO: Replace by PureVersion.production when https://github.com/finos/legend-pure/pull/507
+      "vX_X_X",
       PlanPlatform.JAVA,
-      "1.0",
-      Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),
+      null,
+      core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),
       LegendPlanTransformers.transformers
     )
   }

@@ -18,7 +18,7 @@
 package org.finos.legend
 
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, Row}
 
 package object spark {
 

@@ -37,17 +37,6 @@
       "value" : "Python"
     }, {
       "sourceInformation" : {
-        "endColumn" : 3,
-        "endLine" : 5,
-        "sourceId" : "",
-        "startColumn" : 3,
-        "startLine" : 5
-      },
-      "stereotypes" : [ ],
-      "taggedValues" : [ ],
-      "value" : "C"
-    }, {
-      "sourceInformation" : {
         "endColumn" : 6,
         "endLine" : 6,
         "sourceId" : "",

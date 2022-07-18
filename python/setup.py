@@ -12,15 +12,11 @@ def run_cmd(cmd):
                       f"STDERR: {cmd_proc.stderr.decode('utf-8')}")
     return cmd_proc.stdout.decode('utf-8').strip()
 
-
-#
 # fetch the most recent version tag to use as build version
-#
 latest_tag = run_cmd('git describe --abbrev=0 --tags')
 
 # set by maven and following semantic versioning style version: https://semver.org
 # we only keep MAJOR.MINOR.PATCH
-
 m = re.search('.*(\d+\.\d+\.\d+).*', latest_tag, re.IGNORECASE)
 if m:
     build_version = m.group(1)
@@ -39,7 +35,7 @@ setup(
     version=build_version,
     author='Antoine Amend',
     author_email='antoine.amend@databricks.com',
-    description='This project helps organizations define LEGEND data models that can be converted into efficient Delta '
+    description='This project helps organizations define Legend data models that can be converted into efficient Delta '
                 'pipelines',
     long_description=long_description,
     long_description_content_type='text/markdown',

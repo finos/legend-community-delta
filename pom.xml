@@ -53,9 +53,9 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
-        <legend.engine.version>2.58.0</legend.engine.version>
-        <legend.sdlc.version>0.70.0</legend.sdlc.version>
-        <legend.pure.version>1.51.0</legend.pure.version>
+        <legend.engine.version>3.4.0</legend.engine.version>
+        <legend.sdlc.version>0.77.1</legend.sdlc.version>
+        <legend.pure.version>3.0.0</legend.pure.version>
     </properties>
 
     <dependencies>
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>io.delta</groupId>
             <artifactId>delta-core_${scala.binary.version}</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.1</version>
         </dependency>
 
         <!-- LEGEND DEPENDENCIES -->
@@ -105,6 +105,19 @@
             <groupId>org.pac4j</groupId>
             <artifactId>pac4j-core</artifactId>
             <version>3.9.0</version>
+        </dependency>
+
+        <!-- Spark runtime comes with its own antlr version (4.5) and returns warning-->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.8-1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>4.8-1</version>
         </dependency>
 
         <dependency>
@@ -176,8 +189,14 @@
         </dependency>
 
         <dependency>
+            <groupId>org.finos.legend.pure</groupId>
+            <artifactId>legend-pure-m2-dsl-diagram</artifactId>
+            <version>${legend.pure.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-protocol-relational</artifactId>
+            <artifactId>legend-engine-xt-relationalStore-protocol</artifactId>
             <version>${legend.engine.version}</version>
             <exclusions>
                 <exclusion>
@@ -189,7 +208,7 @@
 
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-language-pure-store-relational</artifactId>
+            <artifactId>legend-engine-xt-relationalStore-pure</artifactId>
             <version>${legend.engine.version}</version>
             <exclusions>
                 <exclusion>
@@ -209,47 +228,68 @@
 
         <dependency>
             <groupId>org.finos.legend.engine</groupId>
-            <artifactId>legend-engine-executionPlan-execution-store-inMemory</artifactId>
+            <artifactId>legend-engine-xt-relationalStore-grammar</artifactId>
             <version>${legend.engine.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-dbcp</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.legend.engine</groupId>
+            <artifactId>legend-engine-xt-relationalStore-executionPlan</artifactId>
+            <version>${legend.engine.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-dbcp</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- USER DEPENDENCIES -->
 
-        <!-- Spark runtime comes with its own antlr version (4.5) and returns warning-->
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.8-1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.8-1</version>
-        </dependency>
-
         <dependency>
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>
-            <version>1.1</version>
+            <version>4.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.36</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.3</version>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
@@ -257,7 +297,7 @@
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.binary.version}</artifactId>
-            <version>3.2.9</version>
+            <version>3.2.12</version>
             <scope>test</scope>
         </dependency>
 
@@ -343,6 +383,7 @@
                             <overWriteReleases>true</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
+                            <excludeGroupIds>org.antlr</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -395,6 +436,7 @@
                                 <argument>install</argument>
                                 <argument>-r</argument>
                                 <argument>requirements.txt</argument>
+                                <argument>coverage</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -414,6 +456,39 @@
                                 <argument>tests/tests.py</argument>
                             </arguments>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- delete additional directory for maven clean -->
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>python/build</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>python/dist</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.19.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

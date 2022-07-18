@@ -133,14 +133,14 @@
       },
       "name" : "id",
       "propertyTypeSourceInformation" : {
-        "endColumn" : 92,
+        "endColumn" : 84,
         "endLine" : 7,
         "sourceId" : "",
-        "startColumn" : 86,
+        "startColumn" : 78,
         "startLine" : 7
       },
       "sourceInformation" : {
-        "endColumn" : 96,
+        "endColumn" : 91,
         "endLine" : 7,
         "sourceId" : "",
         "startColumn" : 3,
@@ -149,7 +149,7 @@
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
-          "endColumn" : 79,
+          "endColumn" : 71,
           "endLine" : 7,
           "sourceId" : "",
           "startColumn" : 4,
@@ -173,7 +173,7 @@
           },
           "value" : "doc"
         },
-        "value" : "Unique identifier of a databricks employee"
+        "value" : "Unique ID of a databricks employee"
       } ],
       "type" : "Integer"
     }, {
@@ -326,7 +326,7 @@
         "value" : "How many high fives did that person get"
       } ],
       "type" : "Integer"
-    } ],
+    }],
     "qualifiedProperties" : [ {
       "body" : [ {
         "_type" : "func",
@@ -338,19 +338,19 @@
             "name" : "this",
             "sourceInformation" : {
               "endColumn" : 93,
-              "endLine" : 11,
+              "endLine" : 12,
               "sourceId" : "",
               "startColumn" : 89,
-              "startLine" : 11
+              "startLine" : 12
             }
           } ],
           "property" : "joinedDate",
           "sourceInformation" : {
             "endColumn" : 104,
-            "endLine" : 11,
+            "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 95,
-            "startLine" : 11
+            "startLine" : 12
           }
         }, {
           "_type" : "property",
@@ -359,19 +359,19 @@
             "name" : "this",
             "sourceInformation" : {
               "endColumn" : 7,
-              "endLine" : 12,
+              "endLine" : 13,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 12
+              "startLine" : 13
             }
           } ],
           "property" : "birthDate",
           "sourceInformation" : {
             "endColumn" : 17,
-            "endLine" : 12,
+            "endLine" : 13,
             "sourceId" : "",
             "startColumn" : 9,
-            "startLine" : 12
+            "startLine" : 13
           }
         }, {
           "_type" : "property",
@@ -380,27 +380,27 @@
             "fullPath" : "DurationUnit",
             "sourceInformation" : {
               "endColumn" : 14,
-              "endLine" : 13,
+              "endLine" : 14,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 13
+              "startLine" : 14
             }
           } ],
           "property" : "YEARS",
           "sourceInformation" : {
             "endColumn" : 20,
-            "endLine" : 13,
+            "endLine" : 14,
             "sourceId" : "",
             "startColumn" : 16,
-            "startLine" : 13
+            "startLine" : 14
           }
         } ],
         "sourceInformation" : {
           "endColumn" : 114,
-          "endLine" : 11,
+          "endLine" : 12,
           "sourceId" : "",
           "startColumn" : 107,
-          "startLine" : 11
+          "startLine" : 12
         }
       } ],
       "name" : "hiringAge",
@@ -412,35 +412,35 @@
       "returnType" : "Integer",
       "sourceInformation" : {
         "endColumn" : 15,
-        "endLine" : 14,
+        "endLine" : 15,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 11
+        "startLine" : 12
       },
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
           "endColumn" : 73,
-          "endLine" : 11,
+          "endLine" : 12,
           "sourceId" : "",
           "startColumn" : 4,
-          "startLine" : 11
+          "startLine" : 12
         },
         "tag" : {
           "profile" : "meta::pure::profiles::doc",
           "profileSourceInformation" : {
             "endColumn" : 28,
-            "endLine" : 11,
+            "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 4,
-            "startLine" : 11
+            "startLine" : 12
           },
           "sourceInformation" : {
             "endColumn" : 32,
-            "endLine" : 11,
+            "endLine" : 12,
             "sourceId" : "",
             "startColumn" : 30,
-            "startLine" : 11
+            "startLine" : 12
           },
           "value" : "doc"
         },
@@ -456,10 +456,10 @@
           "parameters" : [ ],
           "sourceInformation" : {
             "endColumn" : 69,
-            "endLine" : 15,
+            "endLine" : 16,
             "sourceId" : "",
             "startColumn" : 65,
-            "startLine" : 15
+            "startLine" : 16
           }
         }, {
           "_type" : "property",
@@ -468,19 +468,19 @@
             "name" : "this",
             "sourceInformation" : {
               "endColumn" : 7,
-              "endLine" : 16,
+              "endLine" : 17,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 16
+              "startLine" : 17
             }
           } ],
           "property" : "birthDate",
           "sourceInformation" : {
             "endColumn" : 17,
-            "endLine" : 16,
+            "endLine" : 17,
             "sourceId" : "",
             "startColumn" : 9,
-            "startLine" : 16
+            "startLine" : 17
           }
         }, {
           "_type" : "property",
@@ -489,27 +489,27 @@
             "fullPath" : "DurationUnit",
             "sourceInformation" : {
               "endColumn" : 14,
-              "endLine" : 17,
+              "endLine" : 18,
               "sourceId" : "",
               "startColumn" : 3,
-              "startLine" : 17
+              "startLine" : 18
             }
           } ],
           "property" : "YEARS",
           "sourceInformation" : {
             "endColumn" : 20,
-            "endLine" : 17,
+            "endLine" : 18,
             "sourceId" : "",
             "startColumn" : 16,
-            "startLine" : 17
+            "startLine" : 18
           }
         } ],
         "sourceInformation" : {
           "endColumn" : 81,
-          "endLine" : 15,
+          "endLine" : 16,
           "sourceId" : "",
           "startColumn" : 74,
-          "startLine" : 15
+          "startLine" : 16
         }
       } ],
       "name" : "age",
@@ -521,35 +521,35 @@
       "returnType" : "Integer",
       "sourceInformation" : {
         "endColumn" : 15,
-        "endLine" : 18,
+        "endLine" : 19,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 15
+        "startLine" : 16
       },
       "stereotypes" : [ ],
       "taggedValues" : [ {
         "sourceInformation" : {
           "endColumn" : 55,
-          "endLine" : 15,
+          "endLine" : 16,
           "sourceId" : "",
           "startColumn" : 4,
-          "startLine" : 15
+          "startLine" : 16
         },
         "tag" : {
           "profile" : "meta::pure::profiles::doc",
           "profileSourceInformation" : {
             "endColumn" : 28,
-            "endLine" : 15,
+            "endLine" : 16,
             "sourceId" : "",
             "startColumn" : 4,
-            "startLine" : 15
+            "startLine" : 16
           },
           "sourceInformation" : {
             "endColumn" : 32,
-            "endLine" : 15,
+            "endLine" : 16,
             "sourceId" : "",
             "startColumn" : 30,
-            "startLine" : 15
+            "startLine" : 16
           },
           "value" : "doc"
         },
@@ -558,7 +558,7 @@
     } ],
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 19,
+      "endLine" : 20,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 1
