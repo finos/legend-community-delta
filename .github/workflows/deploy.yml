@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Test
+name: Deploy
 
-on: [push]
+on: [workflow_dispatch]
+
+env:
+  CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
+  CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
+  CI_GPG_PASSPHRASE: ${{ secrets.CI_GPG_PASSPHRASE }}
+  MAVEN_OPTS: -Xmx4g
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
 
@@ -37,14 +43,18 @@ jobs:
 
         # The next step is to install a JDK and maven environment
         # A settings.xml file with credentials will be created and stored in that folder
-        # Since we're only testing the stack, no need for a specific configuration with Sonatype credentials
+        # See next step for settings.xml creation
       - name: Set up Maven
         uses: actions/setup-java@v2
         with:
           distribution: "zulu"
           java-version: "11"
+          server-id: ossrh
+          server-username: CI_DEPLOY_USERNAME
+          server-password: CI_DEPLOY_PASSWORD
+          gpg-private-key: ${{ secrets.CI_GPG_PRIVATE_KEY }}
+          gpg-passphrase: CI_GPG_PASSPHRASE
 
-        # Pyspark test are integration-tests and requires packaging all dependencies first before
-        # invoking a pyspark context. This logic is included in pom.xml and triggered on mvn verify goal
-      - name: Run Scala and Python tests
-        run: mvn clean verify
+        # Deploy SNAPSHOT dependency to Sonatype
+      - name: Deploy SNAPSHOT
+        run: mvn clean deploy

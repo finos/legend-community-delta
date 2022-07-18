@@ -53,6 +53,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
+        <delta.version>1.2.1</delta.version>
         <legend.engine.version>3.9.2</legend.engine.version>
         <legend.sdlc.version>0.84.0</legend.sdlc.version>
         <legend.pure.version>3.2.0</legend.pure.version>
@@ -95,7 +96,7 @@
         <dependency>
             <groupId>io.delta</groupId>
             <artifactId>delta-core_${scala.binary.version}</artifactId>
-            <version>1.2.1</version>
+            <version>${delta.version}</version>
         </dependency>
 
         <!-- LEGEND DEPENDENCIES -->
@@ -272,12 +273,6 @@
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>
             <version>4.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.36</version>
         </dependency>
 
         <dependency>
