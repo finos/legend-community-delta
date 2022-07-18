@@ -85,7 +85,7 @@ class LegendTest(unittest.TestCase):
         expected = {
             'hiringAge': 'year(joined_date) - year(birth_date) AS `hiringAge`',
             'age': 'year(current_date) - year(birth_date) AS `age`',
-            'initials': "concat(substring(first_name, 0, 1), '', substring(last_name, 0, 1)) AS `initials`"
+            'initials': "concat(substring(first_name, 0, 1), substring(last_name, 0, 1)) AS `initials`"
         }
         self.assertEqual(derivations, expected)
         print(derivations)

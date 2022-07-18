@@ -150,7 +150,7 @@ class LegendEntityTest extends AnyFlatSpec {
     val derivations = legend.getDerivations("databricks::mapping::employee_delta")
     assert(derivations.keySet == Set("hiringAge", "age", "initials"))
     assert(derivations.values.toSet == Set(
-      "concat(substring(first_name, 0, 1), '', substring(last_name, 0, 1)) AS `initials`",
+      "concat(substring(first_name, 0, 1), substring(last_name, 0, 1)) AS `initials`",
       "year(joined_date) - year(birth_date) AS `hiringAge`",
       "year(current_date) - year(birth_date) AS `age`")
     )
