@@ -30,11 +30,12 @@ import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExe
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
 import org.finos.legend.engine.shared.core.api.grammar.RenderStyle
-import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
-import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
+import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.{Mapping => LegendMapping}
+import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime.{Runtime => LegendRuntime}
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
 import org.finos.legend.spark.LegendUtils._
+
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
@@ -51,7 +52,7 @@ class Legend(entities: Map[String, Entity]) {
   lazy val pureModelBuilder: PureModelBuilder.PureModelWithContextData = PureModelBuilder.newBuilder.withEntities(entities.values.asJava).build
   lazy val pureModel: PureModel = pureModelBuilder.getPureModel
   lazy val pureModelContext: PureModelContextData = pureModelBuilder.getPureModelContextData
-  lazy val pureRuntime: runtime.Runtime = Legend.buildRuntime(UUID.randomUUID().toString)
+  lazy val pureRuntime: LegendRuntime = Legend.buildRuntime(UUID.randomUUID().toString)
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
@@ -251,7 +252,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param mappingName the mapping name (fully qualified name) to retrieve
    * @return the legend mapping object
    */
-  def getMapping(mappingName: String): Mapping = {
+  def getMapping(mappingName: String): LegendMapping = {
     LOGGER.info(s"Retrieving legend mapping [$mappingName]")
     Try(pureModel.getMapping(mappingName)) match {
       case Success(mapping) =>
@@ -267,7 +268,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param mapping the relational mapping to compile qualified properties against
    * @return a map of each derived property field with corresponding SQL
    */
-  def getEntityDerivations(entity: Entity, mapping: Mapping): Seq[(String, String)] = {
+  def getEntityDerivations(entity: Entity, mapping: LegendMapping): Seq[(String, String)] = {
     val entityClass = entity.toLegendClass
     entityClass.qualifiedProperties.asScala.map(qp => {
       (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
@@ -342,7 +343,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param mapping the relational mapping that will help us convert field into coolumn
    * @return the SQL generated constraint
    */
-  private def compileExpectation(expectation: String, entityName: String, mapping: Mapping): String = {
+  private def compileExpectation(expectation: String, entityName: String, mapping: LegendMapping): String = {
 
     // We generate code to query table with constraints as a WHERE clause
     val query = "%1$s->getAll()->filter(this|%2$s)".format(entityName, expectation)
@@ -358,7 +359,7 @@ class Legend(entities: Map[String, Entity]) {
 
   }
 
-  private def compileDerivation(derivation: String, entityName: String, mapping: Mapping): String = {
+  private def compileDerivation(derivation: String, entityName: String, mapping: LegendMapping): String = {
 
     // Build our query plan in pure
     val query = "%1$s.all()->project([x|$x.%2$s],['%2$s'])".format(entityName, derivation)
@@ -663,7 +664,7 @@ object Legend {
    * @param uuid a unique identifier to minimize conflicts with user defined pure model
    * @return a legend runtime of type Databricks that can be used to build SQL code
    */
-  def buildRuntime(uuid: String): runtime.Runtime = {
+  def buildRuntime(uuid: String): LegendRuntime = {
     val uniqueIdentifier = uuid.replaceAll("-", "")
     val contextData: PureModelContextData = PureGrammarParser.newInstance.parseModel(
       pureModelString.format(uniqueIdentifier)
