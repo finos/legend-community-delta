@@ -185,6 +185,12 @@
 
         <dependency>
             <groupId>org.finos.legend.pure</groupId>
+            <artifactId>legend-pure-m3-core</artifactId>
+            <version>${legend.pure.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.finos.legend.pure</groupId>
             <artifactId>legend-pure-m3-dsl-graph</artifactId>
             <version>${legend.pure.version}</version>
         </dependency>
