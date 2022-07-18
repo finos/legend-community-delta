@@ -102,7 +102,7 @@ class LegendPureTest extends AnyFlatSpec {
   "A more complex function" should "be converted as SQL clause" in {
     val legend = LegendClasspathLoader.loadResources()
     val mapping = legend.getMapping("databricks::mapping::employee_delta")
-    val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.joinedDate->dateDiff($x.birthDate, DurationUnit.YEARS) > 20)"
+    val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.birthDate->dateDiff($x.joinedDate, DurationUnit.YEARS) > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
     val sql = LegendUtils.parseSqlWhere(sqlPlan)

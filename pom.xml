@@ -53,9 +53,9 @@
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.2.1</spark.version>
         <java.version>11</java.version>
-        <legend.engine.version>3.4.0</legend.engine.version>
-        <legend.sdlc.version>0.77.1</legend.sdlc.version>
-        <legend.pure.version>3.0.0</legend.pure.version>
+        <legend.engine.version>3.9.2</legend.engine.version>
+        <legend.sdlc.version>0.84.0</legend.sdlc.version>
+        <legend.pure.version>3.2.0</legend.pure.version>
     </properties>
 
     <dependencies>
@@ -474,6 +474,17 @@
                         <fileset>
                             <directory>python/dist</directory>
                             <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>python/legend_delta.egg-info</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>python</directory>
+                            <followSymlinks>false</followSymlinks>
+                            <includes>
+                                <include>.coverage</include>
+                            </includes>
                         </fileset>
                     </filesets>
                 </configuration>

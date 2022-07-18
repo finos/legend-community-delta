@@ -112,12 +112,12 @@
               }, {
                 "_type" : "collection",
                 "multiplicity" : {
-                  "lowerBound" : 5,
-                  "upperBound" : 5
+                  "lowerBound" : 7,
+                  "upperBound" : 7
                 },
                 "sourceInformation" : {
                   "endColumn" : 3,
-                  "endLine" : 22,
+                  "endLine" : 24,
                   "sourceId" : "",
                   "startColumn" : 3,
                   "startLine" : 16
@@ -277,9 +277,9 @@
                         "startLine" : 21
                       }
                     } ],
-                    "property" : "sme",
+                    "property" : "hiringAge",
                     "sourceInformation" : {
-                      "endColumn" : 12,
+                      "endColumn" : 18,
                       "endLine" : 21,
                       "sourceId" : "",
                       "startColumn" : 10,
@@ -291,55 +291,97 @@
                     "name" : "x"
                   } ],
                   "sourceInformation" : {
-                    "endColumn" : 12,
+                    "endColumn" : 18,
                     "endLine" : 21,
                     "sourceId" : "",
                     "startColumn" : 6,
                     "startLine" : 21
                   }
+                }, {
+                  "_type" : "lambda",
+                  "body" : [ {
+                    "_type" : "property",
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x",
+                      "sourceInformation" : {
+                        "endColumn" : 8,
+                        "endLine" : 22,
+                        "sourceId" : "",
+                        "startColumn" : 7,
+                        "startLine" : 22
+                      }
+                    } ],
+                    "property" : "sme",
+                    "sourceInformation" : {
+                      "endColumn" : 12,
+                      "endLine" : 22,
+                      "sourceId" : "",
+                      "startColumn" : 10,
+                      "startLine" : 22
+                    }
+                  } ],
+                  "parameters" : [ {
+                    "_type" : "var",
+                    "name" : "x"
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 12,
+                    "endLine" : 22,
+                    "sourceId" : "",
+                    "startColumn" : 6,
+                    "startLine" : 22
+                  }
+                }, {
+                  "_type" : "lambda",
+                  "body" : [ {
+                    "_type" : "property",
+                    "parameters" : [ {
+                      "_type" : "var",
+                      "name" : "x",
+                      "sourceInformation" : {
+                        "endColumn" : 8,
+                        "endLine" : 23,
+                        "sourceId" : "",
+                        "startColumn" : 7,
+                        "startLine" : 23
+                      }
+                    } ],
+                    "property" : "initials",
+                    "sourceInformation" : {
+                      "endColumn" : 17,
+                      "endLine" : 23,
+                      "sourceId" : "",
+                      "startColumn" : 10,
+                      "startLine" : 23
+                    }
+                  } ],
+                  "parameters" : [ {
+                    "_type" : "var",
+                    "name" : "x"
+                  } ],
+                  "sourceInformation" : {
+                    "endColumn" : 17,
+                    "endLine" : 23,
+                    "sourceId" : "",
+                    "startColumn" : 6,
+                    "startLine" : 23
+                  }
                 } ]
               }, {
                 "_type" : "collection",
                 "multiplicity" : {
-                  "lowerBound" : 5,
-                  "upperBound" : 5
+                  "lowerBound" : 7,
+                  "upperBound" : 7
                 },
                 "sourceInformation" : {
                   "endColumn" : 3,
-                  "endLine" : 29,
+                  "endLine" : 33,
                   "sourceId" : "",
                   "startColumn" : 3,
-                  "startLine" : 23
+                  "startLine" : 25
                 },
                 "values" : [ {
-                  "_type" : "string",
-                  "multiplicity" : {
-                    "lowerBound" : 1,
-                    "upperBound" : 1
-                  },
-                  "sourceInformation" : {
-                    "endColumn" : 15,
-                    "endLine" : 24,
-                    "sourceId" : "",
-                    "startColumn" : 5,
-                    "startLine" : 24
-                  },
-                  "values" : [ "FirstName" ]
-                }, {
-                  "_type" : "string",
-                  "multiplicity" : {
-                    "lowerBound" : 1,
-                    "upperBound" : 1
-                  },
-                  "sourceInformation" : {
-                    "endColumn" : 14,
-                    "endLine" : 25,
-                    "sourceId" : "",
-                    "startColumn" : 5,
-                    "startLine" : 25
-                  },
-                  "values" : [ "LastName" ]
-                }, {
                   "_type" : "string",
                   "multiplicity" : {
                     "lowerBound" : 1,
@@ -352,6 +394,34 @@
                     "startColumn" : 5,
                     "startLine" : 26
                   },
+                  "values" : [ "FirstName" ]
+                }, {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 14,
+                    "endLine" : 27,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 27
+                  },
+                  "values" : [ "LastName" ]
+                }, {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 15,
+                    "endLine" : 28,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 28
+                  },
                   "values" : [ "HighFives" ]
                 }, {
                   "_type" : "string",
@@ -361,10 +431,10 @@
                   },
                   "sourceInformation" : {
                     "endColumn" : 9,
-                    "endLine" : 27,
+                    "endLine" : 29,
                     "sourceId" : "",
                     "startColumn" : 5,
-                    "startLine" : 27
+                    "startLine" : 29
                   },
                   "values" : [ "Age" ]
                 }, {
@@ -374,13 +444,41 @@
                     "upperBound" : 1
                   },
                   "sourceInformation" : {
-                    "endColumn" : 9,
-                    "endLine" : 28,
+                    "endColumn" : 16,
+                    "endLine" : 30,
                     "sourceId" : "",
                     "startColumn" : 5,
-                    "startLine" : 28
+                    "startLine" : 30
+                  },
+                  "values" : [ "Hiring Age" ]
+                }, {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 9,
+                    "endLine" : 31,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 31
                   },
                   "values" : [ "Sme" ]
+                }, {
+                  "_type" : "string",
+                  "multiplicity" : {
+                    "lowerBound" : 1,
+                    "upperBound" : 1
+                  },
+                  "sourceInformation" : {
+                    "endColumn" : 14,
+                    "endLine" : 32,
+                    "sourceId" : "",
+                    "startColumn" : 5,
+                    "startLine" : 32
+                  },
+                  "values" : [ "Initials" ]
                 } ]
               } ],
               "sourceInformation" : {
@@ -398,10 +496,10 @@
               },
               "sourceInformation" : {
                 "endColumn" : 3,
-                "endLine" : 33,
+                "endLine" : 37,
                 "sourceId" : "",
                 "startColumn" : 3,
-                "startLine" : 31
+                "startLine" : 35
               },
               "values" : [ {
                 "_type" : "func",
@@ -414,28 +512,28 @@
                   },
                   "sourceInformation" : {
                     "endColumn" : 20,
-                    "endLine" : 32,
+                    "endLine" : 36,
                     "sourceId" : "",
                     "startColumn" : 10,
-                    "startLine" : 32
+                    "startLine" : 36
                   },
                   "values" : [ "HighFives" ]
                 } ],
                 "sourceInformation" : {
                   "endColumn" : 8,
-                  "endLine" : 32,
+                  "endLine" : 36,
                   "sourceId" : "",
                   "startColumn" : 5,
-                  "startLine" : 32
+                  "startLine" : 36
                 }
               } ]
             } ],
             "sourceInformation" : {
               "endColumn" : 7,
-              "endLine" : 30,
+              "endLine" : 34,
               "sourceId" : "",
               "startColumn" : 4,
-              "startLine" : 30
+              "startLine" : 34
             }
           }, {
             "_type" : "integer",
@@ -445,25 +543,25 @@
             },
             "sourceInformation" : {
               "endColumn" : 10,
-              "endLine" : 34,
+              "endLine" : 38,
               "sourceId" : "",
               "startColumn" : 9,
-              "startLine" : 34
+              "startLine" : 38
             },
             "values" : [ 10 ]
           } ],
           "sourceInformation" : {
             "endColumn" : 7,
-            "endLine" : 34,
+            "endLine" : 38,
             "sourceId" : "",
             "startColumn" : 4,
-            "startLine" : 34
+            "startLine" : 38
           }
         } ],
         "parameters" : [ ],
         "sourceInformation" : {
           "endColumn" : 11,
-          "endLine" : 34,
+          "endLine" : 38,
           "sourceId" : "",
           "startColumn" : 12,
           "startLine" : 13
@@ -472,25 +570,25 @@
       "mapping" : "databricks::mapping::employee_delta",
       "mappingSourceInformation" : {
         "endColumn" : 48,
-        "endLine" : 35,
+        "endLine" : 39,
         "sourceId" : "",
         "startColumn" : 14,
-        "startLine" : 35
+        "startLine" : 39
       },
       "runtime" : {
         "_type" : "runtimePointer",
         "runtime" : "databricks::runtime::employee",
         "sourceInformation" : {
           "endColumn" : 42,
-          "endLine" : 36,
+          "endLine" : 40,
           "sourceId" : "",
           "startColumn" : 14,
-          "startLine" : 36
+          "startLine" : 40
         }
       },
       "sourceInformation" : {
         "endColumn" : 3,
-        "endLine" : 37,
+        "endLine" : 41,
         "sourceId" : "",
         "startColumn" : 14,
         "startLine" : 11
@@ -502,7 +600,7 @@
     "pattern" : "/employee",
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 45,
+      "endLine" : 49,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 2
@@ -515,10 +613,10 @@
       "data" : "",
       "sourceInformation" : {
         "endColumn" : 3,
-        "endLine" : 44,
+        "endLine" : 48,
         "sourceId" : "",
         "startColumn" : 9,
-        "startLine" : 38
+        "startLine" : 42
       }
     }
   }

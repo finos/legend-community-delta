@@ -6,7 +6,7 @@
     "package" : "databricks::entity",
     "sourceInformation" : {
       "endColumn" : 1,
-      "endLine" : 9,
+      "endLine" : 8,
       "sourceId" : "",
       "startColumn" : 1,
       "startLine" : 1
@@ -38,10 +38,10 @@
     }, {
       "sourceInformation" : {
         "endColumn" : 6,
-        "endLine" : 6,
+        "endLine" : 5,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 6
+        "startLine" : 5
       },
       "stereotypes" : [ ],
       "taggedValues" : [ ],
@@ -49,10 +49,10 @@
     }, {
       "sourceInformation" : {
         "endColumn" : 3,
-        "endLine" : 7,
+        "endLine" : 6,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 7
+        "startLine" : 6
       },
       "stereotypes" : [ ],
       "taggedValues" : [ ],
@@ -60,10 +60,10 @@
     }, {
       "sourceInformation" : {
         "endColumn" : 5,
-        "endLine" : 8,
+        "endLine" : 7,
         "sourceId" : "",
         "startColumn" : 3,
-        "startLine" : 8
+        "startLine" : 7
       },
       "stereotypes" : [ ],
       "taggedValues" : [ ],
