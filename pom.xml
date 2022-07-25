@@ -56,7 +56,7 @@
         <delta.version>1.2.1</delta.version>
         <legend.engine.version>3.9.2</legend.engine.version>
         <legend.sdlc.version>0.84.0</legend.sdlc.version>
-        <legend.pure.version>3.2.0</legend.pure.version>
+        <legend.pure.version>3.2.1</legend.pure.version>
     </properties>
 
     <dependencies>
