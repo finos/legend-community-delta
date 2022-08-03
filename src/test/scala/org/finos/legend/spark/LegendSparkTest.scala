@@ -49,26 +49,39 @@ class LegendSparkTest extends AnyFlatSpec {
     val expectations = legend.getExpectations("databricks::mapping::employee_delta")
     val derivations = legend.getDerivations("databricks::mapping::employee_delta")
     val table = legend.getTable("databricks::mapping::employee_delta")
+
     assert(table == "legend.employee")
+    assert(!expectations.exists(_._2.isFailure))
 
     val inputDF = spark.read.format("json").schema(schema).load(dataFile)
+
     inputDF.show(truncate = false)
 
     val mappedDF = inputDF.legendTransform(transformations)
+
     mappedDF.show(truncate = false)
 
-    val cleanedDF = mappedDF.legendValidate(expectations, "legend").withColumn("legend", explode(col("legend")))
+    val validExpectations = expectations.filter(_._2.isSuccess).mapValues(_.get)
+    val cleanedDF = mappedDF
+      .legendValidate(validExpectations, "legend")
+      .withColumn("legend", explode(col("legend")))
+
     cleanedDF.show(truncate = false)
 
     val df1 = derivations.foldLeft(mappedDF)((d, w) => d.withColumn(w._1, expr(w._2)))
     val df2 = transformations.foldLeft(df1)((d, w) => d.withColumnRenamed(w._2, w._1))
+
     df2.show(truncate = false)
 
     val test = cleanedDF.groupBy("legend").count()
+
     test.show(truncate = false)
 
     assert(test.count() == 3)
-    val failed = test.rdd.map(r => r.getAs[String](("legend"))).collect().map(_.split(" ").head.trim).toSet
+
+    val failed = test.rdd.map(r => r.getAs[String]("legend"))
+      .collect().map(_.split(" ").head.trim).toSet
+
     assert(failed == Set("[id]", "[sme]", "[hiringAge]"))
 
   }
