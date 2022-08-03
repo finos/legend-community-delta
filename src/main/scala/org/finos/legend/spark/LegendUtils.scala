@@ -162,7 +162,6 @@ object LegendUtils {
       "vX_X_X",
       PlanPlatform.JAVA,
       null,
-//      core_relational_relational_router_router_extension.Root_meta_pure_router_extension_defaultRelationalExtensions__RouterExtension_MANY_(pureModel.getExecutionSupport),
       Root_meta_relational_extension_relationalExtensions__Extension_MANY_(pureModel.getExecutionSupport),
       LegendPlanTransformers.transformers
     )
@@ -269,12 +268,16 @@ object LegendUtils {
      * @return the Lambda representation of a constraint
      */
     def toLambda: String = {
-      Legend
-        .objectMapper
-        .writeValueAsString(constraint.functionDefinition.accept(Legend.grammarComposer))
-        .dropRight(1)
-        .drop(2)
-        .replaceAll("\\\\n\\s*", "")
+      try {
+        Legend
+          .objectMapper
+          .writeValueAsString(constraint.functionDefinition.accept(Legend.grammarComposer))
+          .dropRight(1)
+          .drop(2)
+          .replaceAll("\\\\n\\s*", "")
+      } catch {
+        case e: Throwable => throw new Exception("Could not build lambda function, " + e.getMessage, e)
+      }
     }
   }
 
@@ -286,12 +289,16 @@ object LegendUtils {
      * @return the Lambda representation of a constraint
      */
     def toLambda: String = {
-      Legend
-        .objectMapper
-        .writeValueAsString(lambda.accept(Legend.grammarComposer))
-        .dropRight(1)
-        .drop(2)
-        .replaceAll("\\\\n\\s*", "")
+      try {
+        Legend
+          .objectMapper
+          .writeValueAsString(lambda.accept(Legend.grammarComposer))
+          .dropRight(1)
+          .drop(2)
+          .replaceAll("\\\\n\\s*", "")
+      } catch {
+        case e: Throwable => throw new Exception("Could not build lambda function, " + e.getMessage, e)
+      }
     }
   }
 

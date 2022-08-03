@@ -12,6 +12,8 @@ updates:
       - dependency-name: io.delta:*
       - dependency-name: org.pac4j:*
       - dependency-name: org.antlr:*
+      # ignoring maven plugins
+      - dependency-name: org.apache.maven.plugins:*
   - package-ecosystem: "pip"
     directory: "/python"
     schedule:

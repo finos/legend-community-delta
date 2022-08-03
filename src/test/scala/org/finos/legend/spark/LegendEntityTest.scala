@@ -17,14 +17,11 @@
 
 package org.finos.legend.spark
 
-import net.sf.jsqlparser.parser.CCJSqlParserManager
-import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
 
-import java.io.StringReader
 import java.nio.file.Paths
 
 class LegendEntityTest extends AnyFlatSpec {
@@ -98,8 +95,9 @@ class LegendEntityTest extends AnyFlatSpec {
     val expectations = legend.getEntityExpectations(
       "databricks::entity::employee"
     )
+    assert(!expectations.exists(_._2.isFailure))
     assert(
-      expectations.values.toSet == Set(
+      expectations.values.map(_.get).toSet == Set(
         "birthDate IS NOT NULL",
         "sme IS NULL OR sme IN ('Scala', 'Python', 'Java', 'R', 'SQL')",
         "id IS NOT NULL",
@@ -124,8 +122,9 @@ class LegendEntityTest extends AnyFlatSpec {
   it should "compile PURE expectations to SQL" in {
     val legend = LegendClasspathLoader.loadResources()
     val transform = legend.getMappingExpectations("databricks::mapping::employee_delta")
-    assert(transform.values.toSet.contains("year(joined_date) - year(birth_date) > 18"))
-    assert(transform.values.toSet.contains("(high_fives IS NOT NULL AND high_fives > 0)"))
+    assert(!transform.exists(_._2.isFailure))
+    assert(transform.values.map(_.get).toSet.contains("year(joined_date) - year(birth_date) > 18"))
+    assert(transform.values.map(_.get).toSet.contains("(high_fives IS NOT NULL AND high_fives > 0)"))
   }
 
   it should "capture transformations" in {
@@ -156,12 +155,59 @@ class LegendEntityTest extends AnyFlatSpec {
     )
   }
 
-  "A legend service" should "be compiled as SQL query" in {
+  "A legend mapping" should "be compiled as SQL query" in {
     val legend = LegendClasspathLoader.loadResources()
-    val sql = legend.generateSql("databricks::mapping::employee_delta")
-    val parserRealSql = new CCJSqlParserManager()
-    val select = parserRealSql.parse(new StringReader(sql)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
-    assert(select.getFromItem.getAlias.getName == "`root`")
+    val observed = legend.generateSql("databricks::mapping::employee_delta")
+    val expected =
+      """select
+        |`root`.high_fives as `highFives`,
+        |`root`.joined_date as `joinedDate`,
+        |`root`.last_name as `lastName`,
+        |`root`.first_name as `firstName`,
+        |`root`.birth_date as `birthDate`,
+        |`root`.id as `id`,
+        |`root`.sme as `sme`,
+        |`root`.gender as `gender`,
+        |year(`root`.joined_date) - year(`root`.birth_date) as `hiringAge`,
+        |year(current_date) - year(`root`.birth_date) as `age`,
+        |concat(substring(`root`.first_name, 0, 1), substring(`root`.last_name, 0, 1)) as `initials`
+        |from legend.employee as `root`
+        |WHERE birth_date IS NOT NULL
+        |AND (sme IS NULL OR sme IN ('Scala', 'Python', 'Java', 'R', 'SQL'))
+        |AND id IS NOT NULL
+        |AND joined_date IS NOT NULL
+        |AND first_name IS NOT NULL
+        |AND (high_fives IS NOT NULL
+        |AND high_fives > 0)
+        |AND last_name IS NOT NULL
+        |AND year(joined_date) - year(birth_date) > 18"""
+        .stripMargin.split("\n")
+        .mkString(" ")
+        .replaceAll("\\s+", " ")
+
+    println(observed)
+    assert(expected == observed)
+
   }
 
+  "A legend service" should "be compiled as SQL query" in {
+    val legend = LegendClasspathLoader.loadResources()
+    val observed = legend.generateSql("databricks::service::skills")
+    val expected =
+      """select
+        |`root`.gender as `Gender`,
+        |avg(1.0 * `root`.high_fives) as `HighFives`,
+        |count(`root`.id) as `Employees`
+        |from legend.employee as `root`
+        |where not `root`.gender is null
+        |group by `Gender`
+        |order by `HighFives` desc
+        |limit 10"""
+        .stripMargin.split("\n")
+        .mkString(" ")
+        .replaceAll("\\s+", " ")
+
+    println(observed)
+    assert(expected == observed)
+  }
 }
