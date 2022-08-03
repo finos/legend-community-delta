@@ -138,12 +138,11 @@ class Legend(entities: Map[String, Entity]) {
 
         // applying valid constraints
         expectations.filter(_._2.isSuccess).toList.zipWithIndex.foldLeft(sqlExecPlan)((sql, c) => {
-          val append = if (c._2 == 0) {
-            s"WHERE ${c._1._2.get}"
+          if (c._2 == 0) {
+            s"$sql WHERE ${c._1._2.get}"
           } else {
-            s"AND ${c._1._2.get}"
+            s"$sql AND ${c._1._2.get}"
           }
-          s"$sql $append"
         })
 
       case "service" =>
