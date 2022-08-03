@@ -419,7 +419,8 @@ class Legend(entities: Map[String, Entity]) {
           if (legendProperty.isCollection) defaultRules else {
             val nestedRules: Map[String, Try[String]] = getLegendClassExpectations(
               nestedEntity.toLegendClass,
-              LegendUtils.childFieldName(legendProperty.name, parentField)
+              LegendUtils.childFieldName(legendProperty.name, parentField),
+              pure
             )
             defaultRules ++ nestedRules
           }
