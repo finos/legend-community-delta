@@ -44,8 +44,6 @@ import org.apache.log4j.Level
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.PureSingleExecution
 import org.slf4j.LoggerFactory
-import org.json4s.jackson.Json
-import org.json4s.DefaultFormats
 
 class Legend(entities: Map[String, Entity]) {
 
@@ -57,6 +55,13 @@ class Legend(entities: Map[String, Entity]) {
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
   Logger.getLogger("Alloy Execution Server").setLevel(Level.OFF)
+
+  /**
+   * Converting to wrapper for Py4J implementation. Pyspark does not handle collection well from scala
+   * So we wrap functions to return Json instead
+   * @return a Wrapper instance of legend object
+   */
+  def toPy4J: LegendPy4JWrapper = new LegendPy4JWrapper(this)
 
   def getSchema(entityName: String): StructType = {
     val entity = getEntity(entityName)
@@ -77,11 +82,6 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
-  // Pyspark wrapper, not supporting HashMap
-  def getTransformationsJson(mappingName: String): String = {
-    Json(DefaultFormats).write(getTransformations(mappingName))
-  }
-
   def getExpectations(entityName: String): Map[String, Try[String]] = {
     val entity = getEntity(entityName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
@@ -90,11 +90,6 @@ class Legend(entities: Map[String, Entity]) {
       case "mapping" => getMappingExpectations(entityName)
       case _ => throw new IllegalArgumentException(s"Only supporting classes and mapping, got $entityType")
     }
-  }
-
-  // Pyspark wrapper, not supporting HashMap
-  def getExpectationsJson(entityName: String): String = {
-    Json(DefaultFormats).write(getExpectations(entityName).filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
   }
 
   def getDerivations(entityName: String): Map[String, String] = {
@@ -107,11 +102,6 @@ class Legend(entities: Map[String, Entity]) {
         getEntityDerivations(entity, mapping).toMap
       case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
     }
-  }
-
-  // Pyspark wrapper, not supporting HashMap
-  def getDerivationsJson(mappingName: String): String = {
-    Json(DefaultFormats).write(getDerivations(mappingName))
   }
 
   def query(entityName: String): DataFrame = {
@@ -170,14 +160,6 @@ class Legend(entities: Map[String, Entity]) {
       case "mapping" => getMappingTable(mappingName)
       case _ => throw new IllegalArgumentException(s"Only supporting mapping, got $entityType")
     }
-  }
-
-  def createTable(mappingName: String, path: String): String = {
-    createTable(mappingName, Some(path))
-  }
-
-  def createTable(mappingName: String): String = {
-    createTable(mappingName, None: Option[String])
   }
 
   def createTable(mappingName: String, path: Option[String] = None): String = {

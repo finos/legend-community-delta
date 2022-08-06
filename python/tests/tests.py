@@ -30,6 +30,29 @@ class LegendTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.spark.stop()
 
+    def test_names(self):
+        legend = LegendFileLoader().loadResources(self.legend_path)
+        entities = legend.get_entities()
+        for entity in entities:
+            print(entity)
+        self.assertTrue('databricks::mapping::employee_delta' in entities)
+
+    def test_generate_sql(self):
+        legend = LegendFileLoader().loadResources(self.legend_path)
+        sql = legend.generate_sql('databricks::mapping::employee_delta')
+        expected = """select `root`.high_fives as `highFives`, `root`.joined_date as `joinedDate`, 
+        `root`.last_name as `lastName`, `root`.first_name as `firstName`, `root`.birth_date as `birthDate`, 
+        `root`.id as `id`, `root`.sme as `sme`, `root`.gender as `gender`, 
+        year(`root`.joined_date) - year(`root`.birth_date) as `hiringAge`, 
+        year(current_date) - year(`root`.birth_date) as `age`, concat(substring(`root`.first_name, 0, 1), 
+        substring(`root`.last_name, 0, 1)) as `initials` from legend.employee as `root` 
+        WHERE birth_date IS NOT NULL AND (sme IS NULL OR sme IN ('Scala', 'Python', 'Java', 'R', 'SQL')) 
+        AND id IS NOT NULL AND joined_date IS NOT NULL AND first_name IS NOT NULL AND (high_fives IS NOT NULL 
+        AND high_fives > 0) AND last_name IS NOT NULL AND year(joined_date) - year(birth_date) > 18"""
+        expected = ' '.join([x.strip() for x in expected.split('\n')])
+        print(sql)
+        self.assertEqual(sql, expected)
+
     def test_schema(self):
         legend = LegendFileLoader().loadResources(self.legend_path)
         schema = legend.get_schema('databricks::mapping::employee_delta')
@@ -44,8 +67,8 @@ class LegendTest(unittest.TestCase):
             'joinedDate',
             'highFives'
         ])
-        self.assertEqual(fields, expected)
         print(schema)
+        self.assertEqual(fields, expected)
 
     def test_expectations(self):
         legend = LegendFileLoader().loadResources(self.legend_path)
