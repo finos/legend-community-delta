@@ -37,25 +37,9 @@ class LegendTest(unittest.TestCase):
             print(entity)
         self.assertTrue('databricks::mapping::employee_delta' in entities)
 
-    def test_generate_sql(self):
-        legend = LegendFileLoader().loadResources(self.legend_path)
-        sql = legend.generate_sql('databricks::mapping::employee_delta')
-        expected = """select `root`.high_fives as `highFives`, `root`.joined_date as `joinedDate`, 
-        `root`.last_name as `lastName`, `root`.first_name as `firstName`, `root`.birth_date as `birthDate`, 
-        `root`.id as `id`, `root`.sme as `sme`, `root`.gender as `gender`, 
-        year(`root`.joined_date) - year(`root`.birth_date) as `hiringAge`, 
-        year(current_date) - year(`root`.birth_date) as `age`, concat(substring(`root`.first_name, 0, 1), 
-        substring(`root`.last_name, 0, 1)) as `initials` from legend.employee as `root` 
-        WHERE birth_date IS NOT NULL AND (sme IS NULL OR sme IN ('Scala', 'Python', 'Java', 'R', 'SQL')) 
-        AND id IS NOT NULL AND joined_date IS NOT NULL AND first_name IS NOT NULL AND (high_fives IS NOT NULL 
-        AND high_fives > 0) AND last_name IS NOT NULL AND year(joined_date) - year(birth_date) > 18"""
-        expected = ' '.join([x.strip() for x in expected.split('\n')])
-        print(sql)
-        self.assertEqual(sql, expected)
-
     def test_schema(self):
         legend = LegendFileLoader().loadResources(self.legend_path)
-        schema = legend.get_schema('databricks::mapping::employee_delta')
+        schema = legend.get_schema('databricks::entity::employee')
         fields = set([f.name for f in schema.fields])
         expected = set([
             'firstName',
@@ -66,6 +50,23 @@ class LegendTest(unittest.TestCase):
             'sme',
             'joinedDate',
             'highFives'
+        ])
+        print(schema)
+        self.assertEqual(fields, expected)
+
+    def test_schema_mapping(self):
+        legend = LegendFileLoader().loadResources(self.legend_path)
+        schema = legend.get_schema('databricks::mapping::employee_delta')
+        fields = set([f.name for f in schema.fields])
+        expected = set([
+            'first_name',
+            'last_name',
+            'birth_date',
+            'gender',
+            'id',
+            'sme',
+            'joined_date',
+            'high_fives'
         ])
         print(schema)
         self.assertEqual(fields, expected)
@@ -106,9 +107,9 @@ class LegendTest(unittest.TestCase):
         legend = LegendFileLoader().loadResources(self.legend_path)
         derivations = legend.get_derivations('databricks::mapping::employee_delta')
         expected = {
-            'hiringAge': 'year(joined_date) - year(birth_date) AS `hiringAge`',
-            'age': 'year(current_date) - year(birth_date) AS `age`',
-            'initials': "concat(substring(first_name, 0, 1), substring(last_name, 0, 1)) AS `initials`"
+            'hiringAge': 'year(joined_date) - year(birth_date)',
+            'age': 'year(current_date) - year(birth_date)',
+            'initials': "concat(substring(first_name, 0, 1), substring(last_name, 0, 1))"
         }
         self.assertEqual(derivations, expected)
         print(derivations)
@@ -118,6 +119,48 @@ class LegendTest(unittest.TestCase):
         table = legend.get_table('databricks::mapping::employee_delta')
         self.assertTrue(table == 'legend.employee')
 
+    def test_generate_sql_mapping(self):
+        legend = LegendFileLoader().loadResources(self.legend_path)
+        sql = legend.generate_sql('databricks::mapping::employee_delta')
+        expected = """select 
+        `root`.high_fives as `highFives`, 
+        `root`.joined_date as `joinedDate`, 
+        `root`.last_name as `lastName`, 
+        `root`.first_name as `firstName`, 
+        `root`.birth_date as `birthDate`, 
+        `root`.id as `id`, 
+        `root`.sme as `sme`, 
+        `root`.gender as `gender`, 
+        year(`root`.joined_date) - year(`root`.birth_date) as `hiringAge`, 
+        year(current_date) - year(`root`.birth_date) as `age`, 
+        concat(substring(`root`.first_name, 0, 1), substring(`root`.last_name, 0, 1)) as `initials` 
+        from legend.employee as `root` 
+        where (`root`.high_fives is not null and `root`.high_fives > 0) 
+        and `root`.first_name is not null 
+        and `root`.joined_date is not null 
+        and `root`.id is not null 
+        and (`root`.sme is null or `root`.sme in ('Scala', 'Python', 'Java', 'R', 'SQL')) 
+        and `root`.birth_date is not null 
+        and `root`.last_name is not null"""
+        expected = ' '.join([x.strip() for x in expected.split('\n')])
+        print(sql)
+        self.assertEqual(sql, expected)
+
+    def test_generate_sql_service(self):
+        legend = LegendFileLoader().loadResources(self.legend_path)
+        sql = legend.generate_sql('databricks::service::skills')
+        expected = """select 
+        `root`.gender as `Gender`, 
+        avg(1.0 * `root`.high_fives) as `HighFives`, 
+        count(`root`.id) as `Employees` 
+        from legend.employee as `root` 
+        where not `root`.gender is null 
+        group by `Gender` 
+        order by `HighFives` desc 
+        limit 10"""
+        expected = ' '.join([x.strip() for x in expected.split('\n')])
+        print(sql)
+        self.assertEqual(sql, expected)
 
 if __name__ == '__main__':
     unittest.main()

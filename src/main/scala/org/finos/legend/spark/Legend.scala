@@ -17,10 +17,11 @@
 
 package org.finos.legend.spark
 
-import java.util.UUID
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.delta.tables.DeltaTable
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.types._
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.finos.legend.engine.language.pure.compiler.Compiler
 import org.finos.legend.engine.language.pure.compiler.toPureGraph.PureModel
 import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
@@ -28,6 +29,7 @@ import org.finos.legend.engine.language.pure.grammar.to.DEPRECATED_PureGrammarCo
 import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextData
 import org.finos.legend.engine.protocol.pure.v1.model.executionPlan.nodes.SQLExecutionNode
 import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.domain._
+import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.PureSingleExecution
 import org.finos.legend.engine.shared.core.ObjectMapperFactory
 import org.finos.legend.engine.shared.core.api.grammar.RenderStyle
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.{Mapping => LegendMapping}
@@ -35,15 +37,11 @@ import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime.{Runtime => Legen
 import org.finos.legend.sdlc.domain.model.entity.Entity
 import org.finos.legend.sdlc.language.pure.compiler.toPureGraph.PureModelBuilder
 import org.finos.legend.spark.LegendUtils._
+import org.slf4j.LoggerFactory
 
+import java.util.UUID
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
-import org.apache.log4j.Logger
-import org.apache.log4j.Level
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service.PureSingleExecution
-import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.ValueSpecification
-import org.slf4j.LoggerFactory
 
 class Legend(entities: Map[String, Entity]) {
 
@@ -82,7 +80,7 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
-  def getExpectations(entityName: String, compile: Boolean): Map[String, Try[String]] = {
+  def getExpectations(entityName: String, compile: Boolean = true): Map[String, Try[String]] = {
     val entity = getEntity(entityName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
     entityType match {
@@ -92,7 +90,7 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
-  def getDerivations(entityName: String, compile: Boolean): Map[String, Try[String]] = {
+  def getDerivations(entityName: String, compile: Boolean = true): Map[String, Try[String]] = {
     val entity = getEntity(entityName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
     entityType match {
@@ -115,26 +113,29 @@ class Legend(entities: Map[String, Entity]) {
     entityType match {
       case "mapping" =>
 
-        // Retrieve all entities required to read high quality data
         val mapping = getMapping(entityName)
-        val expectations = getExpectations(entityName, compile = false)
+
+        // Retrieve all fields and derived properties required
         val transformations = getTransformations(entityName).keys.toSeq
         val derivations = getEntity(mapping.getEntityName).toLegendClass.qualifiedProperties.asScala.map(_.name)
-        val keys = (transformations ++ derivations).map(k => "x|$x." + k).mkString(",")
+        val keys = (transformations ++ derivations).map(k => "this|$this." + k).mkString(",")
         val values = (transformations ++ derivations).map(k => s"'$k'").mkString(",")
-        val lambda = s"${mapping.getEntityName}.all()->project([$keys],[$values])"
+
+        // Retrieve all necessary constraints to read high quality data
+        val expectations = getExpectations(entityName, compile = false).values.filter(_.isSuccess).map(_.get)
+        val appliedConstraints = expectations.filter(constraint => transformations.exists(constraint.contains))
+        val filter = appliedConstraints.map(c => s"filter(this|$c)")
+
+        // Build our PURE query with filters
+        val lambda = if (filter.nonEmpty) {
+          s"${mapping.getEntityName}.all()->${filter.mkString("->")}->project([$keys],[$values])"
+        } else {
+          s"${mapping.getEntityName}.all()->project([$keys],[$values])"
+        }
+
+        // Convert as Spark SQL
         val plan = LegendUtils.generateExecutionPlan(lambda, mapping, pureRuntime, pureModel)
-        val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode].sqlQuery
-//
-//        // applying valid constraints
-//        expectations.filter(_._2.isSuccess).toList.zipWithIndex.foldLeft(sqlExecPlan)((sql, c) => {
-//          if (c._2 == 0) {
-//            s"$sql WHERE ${c._1._2.get}"
-//          } else {
-//            s"$sql AND ${c._1._2.get}"
-//          }
-//        })
-        sqlExecPlan
+        plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode].sqlQuery
 
       case "service" =>
         val service = getEntity(entityName).toLegendService
@@ -143,11 +144,7 @@ class Legend(entities: Map[String, Entity]) {
             val mapping = getMapping(execution.mapping)
             val lambda = execution.func.toLambda
             val plan = LegendUtils.generateExecutionPlan(lambda, mapping, pureRuntime, pureModel)
-            val sqlExecPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode].sqlQuery
-            //TODO: find a way to apply SQL constraints
-            // An option could be to create a view first or a with clause
-            // Another option would be to manipulate pure entity and attach lambda definition prior to compilation
-            sqlExecPlan
+            plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode].sqlQuery
           case _ => throw new IllegalAccessException(s"Service $entityName should have a single execution, got ${service.execution.getClass}")
         }
       case _ => throw new IllegalArgumentException(s"Only supporting mapping or service, got $entityType")
@@ -168,19 +165,10 @@ class Legend(entities: Map[String, Entity]) {
     val mapping = getMapping(mappingName)
     val tableName = mapping.getRelationalTransformation.getMappingTable
     val entityName = mapping.getEntityName
+    val mappingSchema = getMappingSchema(mappingName)
 
-    require(SparkSession.getActiveSession.isDefined, "a spark session must be active")
-    val spark = SparkSession.active
-
-    val srcSchema = getMappingSchema(mappingName)
-    val transformations = getMappingTransformations(mappingName)
-
-    LOGGER.info(s"Generating output schema for legend mapping [$mappingName]")
-    val df = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], srcSchema)
-    val dstSchema = transformations.foldLeft(df)((d, t) => d.withColumnRenamed(t._1, t._2)).schema
-
-    // We do not want to enforced nullable constraints at write
-    val schema = StructType(dstSchema.fields.map(_.copy(nullable = true)))
+    // We do not want to define nullable constraints at write, those will be enforced at read
+    val schema = StructType(mappingSchema.fields.map(_.copy(nullable = true)))
 
     LOGGER.info(s"Creating delta table for legend table [$tableName]")
     val dt = DeltaTable
@@ -194,7 +182,6 @@ class Legend(entities: Map[String, Entity]) {
     } else {
       dt.execute()
     }
-
     tableName
   }
 
@@ -209,7 +196,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param entityName the entity name (fully qualified name) to retrieve
    * @return the legend entity object
    */
-  def getEntity(entityName: String): Entity = {
+  private def getEntity(entityName: String): Entity = {
     LOGGER.info(s"Retrieving legend entity [$entityName]")
     require(entities.contains(entityName), s"could not find entity [$entityName]")
     entities(entityName)
@@ -248,7 +235,7 @@ class Legend(entities: Map[String, Entity]) {
    * @param mappingName the mapping name (fully qualified name) to retrieve
    * @return the legend mapping object
    */
-  def getMapping(mappingName: String): LegendMapping = {
+  private[spark] def getMapping(mappingName: String): LegendMapping = {
     LOGGER.info(s"Retrieving legend mapping [$mappingName]")
     Try(pureModel.getMapping(mappingName)) match {
       case Success(mapping) =>
@@ -283,10 +270,12 @@ class Legend(entities: Map[String, Entity]) {
    * @return the spark schema for the Legend mapping entity
    */
   private def getMappingSchema(mappingName: String): StructType = {
-    LOGGER.info(s"Retrieving schema for legend mapping [$mappingName]")
     val mapping = getMapping(mappingName)
     val entityName = mapping.getEntityName
-    getEntitySchema(entityName)
+    val entitySchema = getEntitySchema(entityName)
+    val transformations = getTransformations(mappingName)
+    LOGGER.info(s"Altering entity schema for mapping [$mappingName]")
+    StructType(entitySchema.fields.map(s => s.copy(name = transformations(s.name))))
   }
 
   /**
