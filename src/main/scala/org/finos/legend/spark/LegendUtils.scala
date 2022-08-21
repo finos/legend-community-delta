@@ -15,10 +15,12 @@ import org.finos.legend.engine.protocol.pure.v1.model.packageableElement.service
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.ValueSpecification
 import org.finos.legend.engine.protocol.pure.v1.model.valueSpecification.raw.Lambda
 import org.finos.legend.pure.generated.core_relational_relational_extensions_extension.Root_meta_relational_extension_relationalExtensions__Extension_MANY_
-import org.finos.legend.pure.generated.{Root_meta_relational_mapping_RelationalPropertyMapping_Impl, Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl, Root_meta_relational_metamodel_TableAliasColumn_Impl, Root_meta_relational_metamodel_relation_Table_Impl}
 import org.finos.legend.pure.m3.coreinstance.meta.pure.mapping.Mapping
 import org.finos.legend.pure.m3.coreinstance.meta.pure.metamodel.function.LambdaFunction
 import org.finos.legend.pure.m3.coreinstance.meta.pure.runtime
+import org.finos.legend.pure.m3.coreinstance.meta.relational.mapping.{RelationalPropertyMapping, RootRelationalInstanceSetImplementation}
+import org.finos.legend.pure.m3.coreinstance.meta.relational.metamodel.TableAliasColumn
+import org.finos.legend.pure.m3.coreinstance.meta.relational.metamodel.relation.Table
 import org.finos.legend.sdlc.domain.model.entity.Entity
 
 import java.io.StringReader
@@ -40,13 +42,13 @@ object LegendUtils {
 
   implicit class MappingUtilsImpl(mapping: Mapping) {
 
-    def getRelationalTransformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl = {
+    def getRelationalTransformation: RootRelationalInstanceSetImplementation = {
       val transformations = mapping._classMappings().asScala
       require(transformations.nonEmpty)
-      require(transformations.head.isInstanceOf[Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl])
-      val transformation = transformations.head.asInstanceOf[Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl]
-      require(transformation._mainTableAlias._relationalElement() != null)
-      require(transformation._mainTableAlias._relationalElement().isInstanceOf[Root_meta_relational_metamodel_relation_Table_Impl])
+      require(transformations.head.isInstanceOf[RootRelationalInstanceSetImplementation])
+      val transformation = transformations.head.asInstanceOf[RootRelationalInstanceSetImplementation]
+      require(transformation._mainTableAlias()._relationalElement() != null)
+      require(transformation._mainTableAlias()._relationalElement().isInstanceOf[Table])
       transformation
     }
 
@@ -302,15 +304,15 @@ object LegendUtils {
     }
   }
 
-  implicit class TransformationImpl(transformation: Root_meta_relational_mapping_RootRelationalInstanceSetImplementation_Impl) {
+  implicit class TransformationImpl(transformation: RootRelationalInstanceSetImplementation) {
 
     def getMappingFields: Map[String, String] = {
 
-      transformation._propertyMappings.asScala.flatMap({ o =>
+      transformation._propertyMappings().asScala.flatMap({ o =>
         o match {
-          case p: Root_meta_relational_mapping_RelationalPropertyMapping_Impl =>
-            p._relationalOperationElement match {
-              case e: Root_meta_relational_metamodel_TableAliasColumn_Impl =>
+          case p: RelationalPropertyMapping =>
+            p._relationalOperationElement() match {
+              case e: TableAliasColumn =>
                 Some((p._property()._name(), e._columnName()))
               case _ => None
             }
@@ -321,8 +323,8 @@ object LegendUtils {
     }
 
     def getMappingTable: String = {
-      val target = transformation._mainTableAlias._relationalElement().asInstanceOf[Root_meta_relational_metamodel_relation_Table_Impl]
-      target._schema._name() + "." + target._name()
+      val target = transformation._mainTableAlias()._relationalElement().asInstanceOf[Table]
+      target._schema()._name() + "." + target._name()
     }
 
   }

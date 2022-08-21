@@ -92,7 +92,7 @@ class Legend(entities: Map[String, Entity]) {
     }
   }
 
-  def getDerivations(entityName: String): Map[String, String] = {
+  def getDerivations(entityName: String): Map[String, Try[String]] = {
     val entity = getEntity(entityName)
     val entityType = entity.getContent.get("_type").asInstanceOf[String].toLowerCase()
     entityType match {
@@ -263,10 +263,10 @@ class Legend(entities: Map[String, Entity]) {
    * @param mapping the relational mapping to compile qualified properties against
    * @return a map of each derived property field with corresponding SQL
    */
-  def getEntityDerivations(entity: Entity, mapping: LegendMapping): Seq[(String, String)] = {
+  def getEntityDerivations(entity: Entity, mapping: LegendMapping): Seq[(String, Try[String])] = {
     val entityClass = entity.toLegendClass
     entityClass.qualifiedProperties.asScala.map(qp => {
-      (qp.name, compileDerivation(qp.name, mapping.getEntityName, mapping))
+      (qp.name, Try(compileDerivation(qp.name, mapping.getEntityName, mapping)))
     })
   }
 

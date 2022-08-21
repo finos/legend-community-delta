@@ -52,6 +52,7 @@ class LegendSparkTest extends AnyFlatSpec {
 
     assert(table == "legend.employee")
     assert(!expectations.exists(_._2.isFailure))
+    assert(!derivations.exists(_._2.isFailure))
 
     val inputDF = spark.read.format("json").schema(schema).load(dataFile)
 
@@ -68,7 +69,8 @@ class LegendSparkTest extends AnyFlatSpec {
 
     cleanedDF.show(truncate = false)
 
-    val df1 = derivations.foldLeft(mappedDF)((d, w) => d.withColumn(w._1, expr(w._2)))
+    val validDerivations = derivations.filter(_._2.isSuccess).mapValues(_.get)
+    val df1 = validDerivations.foldLeft(mappedDF)((d, w) => d.withColumn(w._1, expr(w._2)))
     val df2 = transformations.foldLeft(df1)((d, w) => d.withColumnRenamed(w._2, w._1))
 
     df2.show(truncate = false)
