@@ -25,8 +25,6 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.scalatest.flatspec.AnyFlatSpec
 
-import scala.io.Source
-
 class LegendSparkTest extends AnyFlatSpec {
 
   val dataFile: String = {
@@ -44,46 +42,33 @@ class LegendSparkTest extends AnyFlatSpec {
   "Raw files" should "be processed fully from a legend specs" in {
 
     val legend = LegendClasspathLoader.loadResources()
-    val schema = legend.getSchema("databricks::mapping::employee_delta")
+
+    // 1. READ: Apply schema of the PURE entity
+    val schema = legend.getSchema("databricks::entity::employee")
+    val bronze = spark.read.format("json").schema(schema).load(dataFile)
+    bronze.show(truncate = false)
+
+    // 2. TRANSFORM: Convert source into target field
     val transformations = legend.getTransformations("databricks::mapping::employee_delta")
-    val expectations = legend.getExpectations("databricks::mapping::employee_delta")
-    val derivations = legend.getDerivations("databricks::mapping::employee_delta")
-    val table = legend.getTable("databricks::mapping::employee_delta")
+    val silver = bronze.legendTransform(transformations)
+    silver.show(truncate = false)
 
-    assert(table == "legend.employee")
-    assert(!expectations.exists(_._2.isFailure))
+    // 3. VALIDATE: Apply all necessary constraints
+    val expectations = legend.getExpectations("databricks::mapping::employee_delta").mapValues(_.get)
+    val gold = silver.legendValidate(expectations, "legend").withColumn("legend", explode(col("legend")))
+    gold.show(truncate = false)
 
-    val inputDF = spark.read.format("json").schema(schema).load(dataFile)
+    // 4. DERIVATION: Apply all derived properties
+    val derivations = legend.getDerivations("databricks::mapping::employee_delta").mapValues(_.get)
+    val view = derivations.foldLeft(silver)((d, w) => d.withColumn(w._1, expr(w._2)))
+    view.show(truncate = false)
 
-    inputDF.show(truncate = false)
-
-    val mappedDF = inputDF.legendTransform(transformations)
-
-    mappedDF.show(truncate = false)
-
-    val validExpectations = expectations.filter(_._2.isSuccess).mapValues(_.get)
-    val cleanedDF = mappedDF
-      .legendValidate(validExpectations, "legend")
-      .withColumn("legend", explode(col("legend")))
-
-    cleanedDF.show(truncate = false)
-
-    val df1 = derivations.foldLeft(mappedDF)((d, w) => d.withColumn(w._1, expr(w._2)))
-    val df2 = transformations.foldLeft(df1)((d, w) => d.withColumnRenamed(w._2, w._1))
-
-    df2.show(truncate = false)
-
-    val test = cleanedDF.groupBy("legend").count()
-
-    test.show(truncate = false)
-
-    assert(test.count() == 3)
-
-    val failed = test.rdd.map(r => r.getAs[String]("legend"))
-      .collect().map(_.split(" ").head.trim).toSet
-
+    // 5. ASSERT
+    val dqm = gold.groupBy("legend").count()
+    dqm.show(truncate = false)
+    assert(dqm.count() == 3)
+    val failed = dqm.rdd.map(r => r.getAs[String]("legend")).collect().map(_.split(" ").head.trim).toSet
     assert(failed == Set("[id]", "[sme]", "[hiringAge]"))
-
   }
 
 }

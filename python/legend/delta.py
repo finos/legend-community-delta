@@ -42,22 +42,22 @@ class Legend():
 
     def __init__(self, legend):
         self.spark = SparkSession.getActiveSession()
-        self.legend = legend
+        self.legend = legend.toPy4J()
 
     def get_schema(self, entity_name):
-        schema_str = self.legend.getSchema(entity_name).json()
+        schema_str = self.legend.getSchema(entity_name)
         return StructType.fromJson(json.loads(schema_str))
 
     def get_expectations(self, entity_name):
-        expectations_str = self.legend.getExpectationsJson(entity_name)
+        expectations_str = self.legend.getExpectations(entity_name)
         return json.loads(expectations_str)
 
     def get_transformations(self, mapping_name):
-        transformations_str = self.legend.getTransformationsJson(mapping_name)
+        transformations_str = self.legend.getTransformations(mapping_name)
         return json.loads(transformations_str)
 
     def get_derivations(self, mapping_name):
-        derivations_str = self.legend.getDerivationsJson(mapping_name)
+        derivations_str = self.legend.getDerivations(mapping_name)
         return json.loads(derivations_str)
 
     def get_table(self, mapping_name):
@@ -74,3 +74,10 @@ class Legend():
     def query(self, entity_name):
         sql = self.legend.generateSql(entity_name)
         return SparkSession.getActiveSession().sql(sql)
+
+    def generate_sql(self, entity_name):
+        return self.legend.generateSql(entity_name)
+
+    def get_entities(self):
+        entities_str = self.legend.getEntityNames()
+        return json.loads(entities_str)
