@@ -10,7 +10,7 @@
 
     <groupId>org.finos.legend-community</groupId>
     <artifactId>legend-delta</artifactId>
-    <version>0.1.8-SNAPSHOT</version>
+    <version>0.1.8</version>
 
     <name>legend-delta</name>
     <description>Interpreting Legend schema definitions and constraints with Spark</description>
@@ -44,7 +44,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/finos/legend-delta</developerConnection>
-        <tag>HEAD</tag>
+        <tag>legend-delta-0.1.8</tag>
     </scm>
 
     <properties>
