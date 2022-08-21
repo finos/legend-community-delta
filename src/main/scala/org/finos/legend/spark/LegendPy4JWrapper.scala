@@ -42,12 +42,14 @@ class LegendPy4JWrapper(legend: Legend) {
     Json(DefaultFormats).write(legend.getTransformations(mappingName))
   }
 
-  def getExpectations(entityName: String): String = {
-    Json(DefaultFormats).write(legend.getExpectations(entityName).filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
+  def getExpectations(entityName: String, compile: Boolean): String = {
+    Json(DefaultFormats).write(legend.getExpectations(entityName, compile)
+      .filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
   }
 
-  def getDerivations(mappingName: String): String = {
-    Json(DefaultFormats).write(legend.getDerivations(mappingName))
+  def getDerivations(mappingName: String, compile: Boolean): String = {
+    Json(DefaultFormats).write(legend.getDerivations(mappingName, compile)
+      .filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
   }
 
   def query(entityName: String): DataFrame = {

@@ -78,23 +78,39 @@ class LegendEntityTest extends AnyFlatSpec {
   it should "be converted as a spark schema" in {
     val legend = LegendClasspathLoader.loadResources()
     assert(legend.getEntityNames.contains("databricks::entity::person"))
-    val fields = legend.getEntitySchema("databricks::entity::person").fields.map(_.name)
+    val fields = legend.getSchema("databricks::entity::person").fields.map(_.name)
     assert(fields.toSet == Set("firstName", "lastName", "birthDate", "gender"))
   }
 
   it should "support supertype entities" in {
     val legend = LegendClasspathLoader.loadResources()
     assert(legend.getEntityNames.contains("databricks::entity::employee"))
-    val personFields = legend.getEntitySchema("databricks::entity::person").fields.map(_.name)
-    val employeeFields = legend.getEntitySchema("databricks::entity::employee").fields.map(_.name)
+    val personFields = legend.getSchema("databricks::entity::person").fields.map(_.name)
+    val employeeFields = legend.getSchema("databricks::entity::employee").fields.map(_.name)
     assert(employeeFields.diff(personFields).toSet == Set("highFives", "sme", "id", "joinedDate"))
   }
 
-  it should "include valid expectations" in {
+  it should "include entity expectations" in {
     val legend = LegendClasspathLoader.loadResources()
-    val expectations = legend.getEntityExpectations(
-      "databricks::entity::employee"
+    val expectations = legend.getExpectations("databricks::entity::employee", compile = false)
+    assert(!expectations.exists(_._2.isFailure))
+    assert(
+      expectations.values.map(_.get).toSet == Set(
+        "$this.highFives > 0",
+        "$this.firstName->isNotEmpty()",
+        "$this.sme->isEmpty() || $this.sme->in(['Scala', 'Python', 'Java', 'R', 'SQL'])",
+        "$this.id->isNotEmpty()",
+        "$this.birthDate->isNotEmpty()",
+        "$this.lastName->isNotEmpty()",
+        "$this.joinedDate->isNotEmpty()",
+        "$this.hiringAge > 18"
+      )
     )
+  }
+
+  "Entity expectations" should "return SQL expressions" in {
+    val legend = LegendClasspathLoader.loadResources()
+    val expectations = legend.getExpectations("databricks::entity::employee", compile = true)
     assert(!expectations.exists(_._2.isFailure))
     assert(
       expectations.values.map(_.get).toSet == Set(
@@ -115,24 +131,52 @@ class LegendEntityTest extends AnyFlatSpec {
 
   it should "include a source schema" in {
     val legend = LegendClasspathLoader.loadResources()
-    val fields = legend.getMappingSchema("databricks::mapping::employee_delta").fields.map(_.name).toSet
+    val fields = legend.getSchema("databricks::mapping::employee_delta").fields.map(_.name).toSet
     assert(fields == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
   }
 
-  it should "compile PURE expectations to SQL" in {
+  it should "include entity expectations" in {
     val legend = LegendClasspathLoader.loadResources()
-    val transform = legend.getMappingExpectations("databricks::mapping::employee_delta")
-    assert(!transform.exists(_._2.isFailure))
-    assert(transform.values.map(_.get).toSet.contains("year(joined_date) - year(birth_date) > 18"))
-    assert(transform.values.map(_.get).toSet.contains("(high_fives IS NOT NULL AND high_fives > 0)"))
+    val expectations = legend.getExpectations("databricks::mapping::employee_delta", compile = false)
+    assert(!expectations.exists(_._2.isFailure))
+    assert(
+      expectations.values.map(_.get).toSet == Set(
+        "$this.highFives > 0",
+        "$this.firstName->isNotEmpty()",
+        "$this.sme->isEmpty() || $this.sme->in(['Scala', 'Python', 'Java', 'R', 'SQL'])",
+        "$this.id->isNotEmpty()",
+        "$this.birthDate->isNotEmpty()",
+        "$this.lastName->isNotEmpty()",
+        "$this.joinedDate->isNotEmpty()",
+        "$this.hiringAge > 18"
+      )
+    )
   }
 
-  it should "capture transformations" in {
+  "Mapping expectations" should "return SQL expressions" in {
     val legend = LegendClasspathLoader.loadResources()
-    val transform = legend.getMappingTransformations("databricks::mapping::employee_delta")
-    assert(transform.keys.toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
-    assert(transform.values.toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
+    val expectations = legend.getExpectations("databricks::mapping::employee_delta", compile = true)
+    assert(!expectations.exists(_._2.isFailure))
+    assert(
+      expectations.values.map(_.get).toSet == Set(
+        "year(joined_date) - year(birth_date) > 18",
+        "id IS NOT NULL",
+        "last_name IS NOT NULL",
+        "first_name IS NOT NULL",
+        "(sme IS NULL OR sme IN ('Scala', 'Python', 'Java', 'R', 'SQL'))",
+        "birth_date IS NOT NULL",
+        "joined_date IS NOT NULL",
+        "(high_fives IS NOT NULL AND high_fives > 0)"
+      )
+    )
   }
+
+  "A legend mapping" should "capture transformations" in {
+      val legend = LegendClasspathLoader.loadResources()
+      val transform = legend.getTransformations("databricks::mapping::employee_delta")
+      assert(transform.keys.toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
+      assert(transform.values.toSet == Set("high_fives", "joined_date", "last_name", "first_name", "birth_date", "id", "sme", "gender"))
+    }
 
   it should "yield a spark schema" in {
     SparkSession.getActiveSession match {
@@ -140,19 +184,30 @@ class LegendEntityTest extends AnyFlatSpec {
       case _ => SparkSession.builder().appName("test").master("local[1]").getOrCreate()
     }
     val legend = LegendClasspathLoader.loadResources()
-    val schema = legend.getMappingSchema("databricks::mapping::employee_delta")
+    val schema = legend.getSchema("databricks::mapping::employee_delta")
     assert(schema.fields.map(_.name).toSet == Set("highFives", "joinedDate", "lastName", "firstName", "birthDate", "id", "sme", "gender"))
   }
 
   it should "yield derivations" in {
     val legend = LegendClasspathLoader.loadResources()
-    val derivations = legend.getDerivations("databricks::mapping::employee_delta")
+    val derivations = legend.getDerivations("databricks::mapping::employee_delta", compile = false)
     assert(derivations.keySet == Set("hiringAge", "age", "initials"))
     assert(!derivations.exists(_._2.isFailure))
     assert(derivations.mapValues(_.get).values.toSet == Set(
-      "concat(substring(first_name, 0, 1), substring(last_name, 0, 1)) AS `initials`",
-      "year(joined_date) - year(birth_date) AS `hiringAge`",
-      "year(current_date) - year(birth_date) AS `age`")
+      "$this.birthDate->dateDiff($this.joinedDate,DurationUnit.YEARS)",
+      "$this.birthDate->dateDiff(today(),DurationUnit.YEARS)",
+      "$this.firstName->substring(0,1) + $this.lastName->substring(0,1)"
+    ))
+  }
+
+  "derivations" should "be compiled as SQL" in {
+    val legend = LegendClasspathLoader.loadResources()
+    val derivations = legend.getDerivations("databricks::mapping::employee_delta", compile = true)
+    assert(!derivations.exists(_._2.isFailure))
+    assert(derivations.mapValues(_.get).values.toSet == Set(
+      "year(joined_date) - year(birth_date)",
+      "year(current_date) - year(birth_date)",
+      "concat(substring(first_name, 0, 1), substring(last_name, 0, 1))")
     )
   }
 
@@ -190,25 +245,25 @@ class LegendEntityTest extends AnyFlatSpec {
     assert(expected == observed)
 
   }
-
-  "A legend service" should "be compiled as SQL query" in {
-    val legend = LegendClasspathLoader.loadResources()
-    val observed = legend.generateSql("databricks::service::skills")
-    val expected =
-      """select
-        |`root`.gender as `Gender`,
-        |avg(1.0 * `root`.high_fives) as `HighFives`,
-        |count(`root`.id) as `Employees`
-        |from legend.employee as `root`
-        |where not `root`.gender is null
-        |group by `Gender`
-        |order by `HighFives` desc
-        |limit 10"""
-        .stripMargin.split("\n")
-        .mkString(" ")
-        .replaceAll("\\s+", " ")
-
-    println(observed)
-    assert(expected == observed)
-  }
+//
+//  "A legend service" should "be compiled as SQL query" in {
+//    val legend = LegendClasspathLoader.loadResources()
+//    val observed = legend.generateSql("databricks::service::skills")
+//    val expected =
+//      """select
+//        |`root`.gender as `Gender`,
+//        |avg(1.0 * `root`.high_fives) as `HighFives`,
+//        |count(`root`.id) as `Employees`
+//        |from legend.employee as `root`
+//        |where not `root`.gender is null
+//        |group by `Gender`
+//        |order by `HighFives` desc
+//        |limit 10"""
+//        .stripMargin.split("\n")
+//        .mkString(" ")
+//        .replaceAll("\\s+", " ")
+//
+//    println(observed)
+//    assert(expected == observed)
+//  }
 }

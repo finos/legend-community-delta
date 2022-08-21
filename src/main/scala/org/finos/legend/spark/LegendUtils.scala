@@ -1,7 +1,7 @@
 package org.finos.legend.spark
 
 import net.sf.jsqlparser.parser.CCJSqlParserManager
-import net.sf.jsqlparser.statement.select.{PlainSelect, Select}
+import net.sf.jsqlparser.statement.select.{PlainSelect, Select, SelectExpressionItem}
 import org.apache.spark.sql.types._
 import org.finos.legend.engine.language.pure.compiler.toPureGraph.{HelperValueSpecificationBuilder, PureModel}
 import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
@@ -133,7 +133,7 @@ object LegendUtils {
    * @param executionPlan generated SQL plan from legend engine
    * @return the WHERE clause of the generated SQL expression
    */
-  def parseSqlWhere(executionPlan: SQLExecutionNode): String = {
+  def parseSqlWhereClause(executionPlan: SQLExecutionNode): String = {
     val parserRealSql = new CCJSqlParserManager()
     val select = parserRealSql.parse(new StringReader(executionPlan.sqlQuery)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
     val alias = s"${select.getFromItem.getAlias.getName}."
@@ -147,11 +147,14 @@ object LegendUtils {
    * @param executionPlan generated SQL plan from legend engine
    * @return the selected field for the generated SQL expression
    */
-  def parseSqlSelect(executionPlan: SQLExecutionNode): String = {
+  def parseSqlSelectExpr(executionPlan: SQLExecutionNode): String = {
     val parserRealSql = new CCJSqlParserManager()
     val select = parserRealSql.parse(new StringReader(executionPlan.sqlQuery)).asInstanceOf[Select].getSelectBody.asInstanceOf[PlainSelect]
     val alias = s"${select.getFromItem.getAlias.getName}."
-    select.getSelectItems.get(0).toString.replaceAll(alias, "")
+    val expr = select.getSelectItems.get(0)
+    expr.toString
+      .replaceAll(expr.asInstanceOf[SelectExpressionItem].getAlias.toString, "")
+      .replaceAll(alias, "")
   }
 
   def generateExecutionPlan(query: String, legendMapping: Mapping, legendRuntime: runtime.Runtime, pureModel: PureModel): SingleExecutionPlan = {
@@ -251,6 +254,13 @@ object LegendUtils {
      * @return the Doc metadata from tagged value, if any. This will be used as a COMMENT in our Spark schema
      */
     def getDoc: Option[String] = property.taggedValues.asScala.map(t => (t.tag.value, t.value)).toMap.get("doc")
+
+    def getDerivation: String = {
+      property.body.asScala.head match {
+        case v: ValueSpecification => v.toLambda
+        case _ => throw new IllegalAccessException("Property does not have valid derivation")
+      }
+    }
   }
 
   implicit class EnumerationImpl(enumeration: Enumeration) {
@@ -260,6 +270,27 @@ object LegendUtils {
      * @return the Doc metadata from tagged value, if any. This will be used as a COMMENT in our Spark schema
      */
     def getDoc: Option[String] = enumeration.taggedValues.asScala.map(t => (t.tag.value, t.value)).toMap.get("doc")
+  }
+
+  implicit class ValueSpecificationImpl(vs: ValueSpecification) {
+    /**
+     * Convert a JSON constraint into its lambda definition
+     * Constraints are defined as anonymous lambda function incompatible with Pure execution plan
+     *
+     * @return the Lambda representation of a constraint
+     */
+    def toLambda: String = {
+      try {
+        Legend
+          .objectMapper
+          .writeValueAsString(vs.accept(Legend.grammarComposer))
+          .dropRight(1)
+          .drop(1)
+          .replaceAll("\\\\n\\s*", "")
+      } catch {
+        case e: Throwable => throw new Exception("Could not build lambda function, " + e.getMessage, e)
+      }
+    }
   }
 
   implicit class ConstraintImpl(constraint: Constraint) {
