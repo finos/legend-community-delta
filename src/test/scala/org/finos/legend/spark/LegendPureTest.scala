@@ -75,7 +75,7 @@ class LegendPureTest extends AnyFlatSpec {
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.highFives > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = LegendUtils.parseSqlWhere(sqlPlan)
+    val sql = LegendUtils.parseSqlWhereClause(sqlPlan)
     assert(sql == "(high_fives IS NOT NULL AND high_fives > 20)")
   }
 
@@ -85,7 +85,7 @@ class LegendPureTest extends AnyFlatSpec {
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.firstName->in(['antoine', 'junta']))"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = LegendUtils.parseSqlWhere(sqlPlan)
+    val sql = LegendUtils.parseSqlWhereClause(sqlPlan)
     assert(sql == "first_name IN ('antoine', 'junta')")
   }
 
@@ -95,7 +95,7 @@ class LegendPureTest extends AnyFlatSpec {
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.id->isEmpty())"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = LegendUtils.parseSqlWhere(sqlPlan)
+    val sql = LegendUtils.parseSqlWhereClause(sqlPlan)
     assert(sql == "id IS NULL")
   }
 
@@ -105,7 +105,7 @@ class LegendPureTest extends AnyFlatSpec {
     val lambdaString = "databricks::entity::employee->getAll()->filter(x|$x.birthDate->dateDiff($x.joinedDate, DurationUnit.YEARS) > 20)"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = LegendUtils.parseSqlWhere(sqlPlan)
+    val sql = LegendUtils.parseSqlWhereClause(sqlPlan)
     assert(sql == "year(joined_date) - year(birth_date) > 20")
   }
 
@@ -115,8 +115,8 @@ class LegendPureTest extends AnyFlatSpec {
     val lambdaString = "databricks::entity::employee.all()->project([x|$x.age], ['age'])"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = LegendUtils.parseSqlSelect(sqlPlan)
-    assert(sql == "year(current_date) - year(birth_date) AS `age`")
+    val sql = LegendUtils.parseSqlSelectExpr(sqlPlan)
+    assert(sql == "year(current_date) - year(birth_date)")
   }
 
   it should "be converted as SQL clause" in {
@@ -125,7 +125,7 @@ class LegendPureTest extends AnyFlatSpec {
     val lambdaString = "databricks::entity::employee.all()->project([x|$x.hiringAge], ['hiringAge'])"
     val plan = LegendUtils.generateExecutionPlan(lambdaString, mapping, legend.pureRuntime, legend.pureModel)
     val sqlPlan = plan.rootExecutionNode.executionNodes.get(0).asInstanceOf[SQLExecutionNode]
-    val sql = LegendUtils.parseSqlSelect(sqlPlan)
-    assert(sql == "year(joined_date) - year(birth_date) AS `hiringAge`")
+    val sql = LegendUtils.parseSqlSelectExpr(sqlPlan)
+    assert(sql == "year(joined_date) - year(birth_date)")
   }
 }

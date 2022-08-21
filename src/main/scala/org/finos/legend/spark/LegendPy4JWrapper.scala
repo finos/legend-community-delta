@@ -43,11 +43,13 @@ class LegendPy4JWrapper(legend: Legend) {
   }
 
   def getExpectations(entityName: String): String = {
-    Json(DefaultFormats).write(legend.getExpectations(entityName).filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
+    Json(DefaultFormats).write(legend.getExpectations(entityName)
+      .filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
   }
 
   def getDerivations(mappingName: String): String = {
-    Json(DefaultFormats).write(legend.getDerivations(mappingName))
+    Json(DefaultFormats).write(legend.getDerivations(mappingName)
+      .filter(_._2.isSuccess).map(i => (i._1, i._2.get)))
   }
 
   def query(entityName: String): DataFrame = {
@@ -69,7 +71,5 @@ class LegendPy4JWrapper(legend: Legend) {
   def createTable(mappingName: String): String = {
     legend.createTable(mappingName, None)
   }
-
-
 
 }
