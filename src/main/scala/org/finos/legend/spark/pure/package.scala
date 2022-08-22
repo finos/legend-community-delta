@@ -82,7 +82,7 @@ package object pure {
          |  stereotypes: [Generated];
          |}
          |
-         |${pureTables.map(_.toPure).mkString("\n")}
+         |${pureTables.map(_.toPure).mkString("\n\n")}
          |
          |###Relational
          |Database $NAMESPACE::store::Schema
@@ -94,7 +94,7 @@ package object pure {
          |)
          |
          |###Mapping
-         |${pureTables.map(_.toMapping(databaseName)).mkString("\n")}""".stripMargin
+         |${pureTables.map(_.toMapping(databaseName)).mkString("\n\n")}""".stripMargin
     }
   }
 }

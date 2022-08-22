@@ -31,7 +31,7 @@ class LegendCodegenTest extends AnyFlatSpec {
 
   "A spark schema" should "be converted as PURE" in {
 
-    val schema = StructType(List(
+    val schema1 = StructType(List(
       StructField("string", StringType, nullable = true),
       StructField("boolean", ArrayType(BooleanType), nullable = false),
       StructField("binary", ArrayType(BinaryType), nullable = true),
@@ -46,14 +46,22 @@ class LegendCodegenTest extends AnyFlatSpec {
       StructField("date", DateType, nullable = false),
       StructField("timestamp", TimestampType, nullable = false)
     ))
-    val observed = LegendCodegen.codeGen(schema, "foo.bar")
+
+    val schema2 = StructType(List(
+      StructField("string", StringType, nullable = true)
+    ))
+
+    val pureTable1 = LegendCodegen.codeGen(schema1, "table_bar1")
+    val pureTable2 = LegendCodegen.codeGen(schema2, "table_bar2")
+
+    val observed = PureDatabase("database_foo", Array(pureTable1, pureTable2)).toPure
     val expected = """###Pure
                      |Profile legend::delta::generated::Profile
                      |{
                      |  stereotypes: [Generated];
                      |}
                      |
-                     |Class <<legend::delta::generated::Profile.Generated>> legend::delta::generated::class::bar
+                     |Class <<legend::delta::generated::Profile.Generated>> legend::delta::generated::class::table_bar1
                      |{
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} string: String[0..1];
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} boolean: Boolean[1..*];
@@ -69,12 +77,17 @@ class LegendCodegenTest extends AnyFlatSpec {
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} timestamp: DateTime[1];
                      |}
                      |
+                     |Class <<legend::delta::generated::Profile.Generated>> legend::delta::generated::class::table_bar2
+                     |{
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} string: String[0..1];
+                     |}
+                     |
                      |###Relational
                      |Database legend::delta::generated::store::Schema
                      |(
-                     |  Schema foo
+                     |  Schema database_foo
                      |  (
-                     |    Table bar
+                     |    Table table_bar1
                      |    (
                      |      string VARCHAR(2147483647),
                      |      boolean BIT,
@@ -89,31 +102,48 @@ class LegendCodegenTest extends AnyFlatSpec {
                      |      date DATE,
                      |      timestamp TIMESTAMP
                      |    )
+                     |    Table table_bar2
+                     |    (
+                     |      string VARCHAR(2147483647)
+                     |    )
                      |  )
                      |)
                      |
                      |###Mapping
-                     |Mapping legend::delta::generated::mapping::bar
+                     |Mapping legend::delta::generated::mapping::table_bar1
                      |(
-                     |  *legend::delta::generated::class::bar: Relational
+                     |  *legend::delta::generated::class::table_bar1: Relational
                      |  {
                      |    ~primaryKey
                      |    (
-                     |      [legend::delta::generated::store::Schema]foo.bar.string
+                     |      [legend::delta::generated::store::Schema]database_foo.table_bar1.string
                      |    )
-                     |    ~mainTable [legend::delta::generated::store::Schema]foo.bar
-                     |    string: [legend::delta::generated::store::Schema]foo.bar.string,
-                     |    boolean: [legend::delta::generated::store::Schema]foo.bar.boolean,
-                     |    binary: [legend::delta::generated::store::Schema]foo.bar.binary,
-                     |    byte: [legend::delta::generated::store::Schema]foo.bar.byte,
-                     |    short: [legend::delta::generated::store::Schema]foo.bar.short,
-                     |    integer: [legend::delta::generated::store::Schema]foo.bar.integer,
-                     |    long: [legend::delta::generated::store::Schema]foo.bar.long,
-                     |    float: [legend::delta::generated::store::Schema]foo.bar.float,
-                     |    double: [legend::delta::generated::store::Schema]foo.bar.double,
-                     |    decimal: [legend::delta::generated::store::Schema]foo.bar.decimal,
-                     |    date: [legend::delta::generated::store::Schema]foo.bar.date,
-                     |    timestamp: [legend::delta::generated::store::Schema]foo.bar.timestamp
+                     |    ~mainTable [legend::delta::generated::store::Schema]database_foo.table_bar1
+                     |    string: [legend::delta::generated::store::Schema]database_foo.table_bar1.string,
+                     |    boolean: [legend::delta::generated::store::Schema]database_foo.table_bar1.boolean,
+                     |    binary: [legend::delta::generated::store::Schema]database_foo.table_bar1.binary,
+                     |    byte: [legend::delta::generated::store::Schema]database_foo.table_bar1.byte,
+                     |    short: [legend::delta::generated::store::Schema]database_foo.table_bar1.short,
+                     |    integer: [legend::delta::generated::store::Schema]database_foo.table_bar1.integer,
+                     |    long: [legend::delta::generated::store::Schema]database_foo.table_bar1.long,
+                     |    float: [legend::delta::generated::store::Schema]database_foo.table_bar1.float,
+                     |    double: [legend::delta::generated::store::Schema]database_foo.table_bar1.double,
+                     |    decimal: [legend::delta::generated::store::Schema]database_foo.table_bar1.decimal,
+                     |    date: [legend::delta::generated::store::Schema]database_foo.table_bar1.date,
+                     |    timestamp: [legend::delta::generated::store::Schema]database_foo.table_bar1.timestamp
+                     |  }
+                     |)
+                     |
+                     |Mapping legend::delta::generated::mapping::table_bar2
+                     |(
+                     |  *legend::delta::generated::class::table_bar2: Relational
+                     |  {
+                     |    ~primaryKey
+                     |    (
+                     |      [legend::delta::generated::store::Schema]database_foo.table_bar2.string
+                     |    )
+                     |    ~mainTable [legend::delta::generated::store::Schema]database_foo.table_bar2
+                     |    string: [legend::delta::generated::store::Schema]database_foo.table_bar2.string
                      |  }
                      |)""".stripMargin
     print(observed)

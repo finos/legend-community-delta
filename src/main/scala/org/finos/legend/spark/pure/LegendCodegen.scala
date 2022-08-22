@@ -18,38 +18,47 @@
 package org.finos.legend.spark.pure
 
 import io.delta.tables.DeltaTable
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types._
+import org.slf4j.LoggerFactory
+
+import scala.util.Try
 
 object LegendCodegen {
 
-  private final val DELTA_DEFAULT_DB = "default"
   private final val DELTA_DEFAULT_PROPERTY = "auto-generated property"
+  final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
-  def codeGen(dataframe: DataFrame, tableName: String): String = {
+  def codeGen(database: String): String = {
+
+    val sparkOpt = SparkSession.getDefaultSession
+    require(sparkOpt.isDefined, "A spark session should be active")
+    val spark = sparkOpt.get
+
+    // Generate PURE model for each table
+    val tables = spark.sql(s"SHOW TABLES IN $database").rdd.filter(r => {
+      !r.getAs[Boolean]("isTemporary")
+    }).map(_.getAs[String]("tableName")).collect().flatMap(tableName => {
+      LOGGER.info(s"Generate PURE model for table $tableName")
+      Try {
+        val schema = DeltaTable.forName(s"$database.$tableName").toDF.schema
+        codeGen(schema, tableName)
+      }.toOption
+    })
+
+    // Serialize model
+    PureDatabase(database, tables).toPure
+
+  }
+
+  def codeGen(dataframe: DataFrame, tableName: String): PureTable = {
     val fields = processFields(dataframe.schema.fields)
-    val (database, table) = getDatabaseTableName(tableName)
-    PureDatabase(database, Array(PureTable(table, fields))).toPure
+    PureTable(tableName, fields)
   }
 
-  def codeGen(schema: StructType, tableName: String): String = {
+  def codeGen(schema: StructType, tableName: String): PureTable = {
     val fields = processFields(schema.fields)
-    val (database, table) = getDatabaseTableName(tableName)
-    PureDatabase(database, Array(PureTable(table, fields))).toPure
-  }
-
-  def codeGen(tableName: String): String = {
-    val schema = DeltaTable.forName(tableName).toDF.schema
-    val fields = processFields(schema.fields)
-    val (database, table) = getDatabaseTableName(tableName)
-    PureDatabase(database, Array(PureTable(table, fields))).toPure
-  }
-
-  private def getDatabaseTableName(tableName: String): (String, String) = {
-    tableName.split("\\.").take(2) match {
-      case Array(db, tb) => (db, tb)
-      case Array(tb) => (DELTA_DEFAULT_DB, tb)
-    }
+    PureTable(tableName, fields)
   }
 
   private def processFields(fields: Array[StructField]): Array[PureField] = {
