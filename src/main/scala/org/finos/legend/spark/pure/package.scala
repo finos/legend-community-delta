@@ -30,63 +30,71 @@ package object pure {
     }
 
     def toRelational: String = {
-      s"    $name ${pureType.pureRelationalType}"
+      s"      $name ${pureType.pureRelationalType}"
     }
 
-    def toMapping(tableName: String): String = {
-      s"    $name: [$NAMESPACE::store::Schema]$tableName.$name"
+    def toMapping(databaseName: String, tableName: String): String = {
+      s"    $name: [$NAMESPACE::store::Schema]$databaseName.$tableName.$name"
     }
 
   }
 
-  case class PureTable(database: Option[String], tableName: String, fields: Array[PureField]) {
+  case class PureTable(tableName: String, fields: Array[PureField]) {
 
-    val dbTableName: String = if (database.isEmpty) tableName else s"${database.get}.$tableName"
     val primaryKey: String = fields.head.name
 
     def toRelational: String = {
-      if (database.isEmpty) {
-        s"""Database $NAMESPACE::store::Schema
-           |(
-           |  Table $tableName
-           |  (
-           |${fields.map(_.toRelational).mkString(",\n")}
-           |  )
-           |)""".stripMargin
-      } else {
-        s"""Database $NAMESPACE::store::Schema
-           |(
-           |  Schema ${database.get}
-           |  (
-           |    Table $tableName
-           |    (
-           |${fields.zipWithIndex.map(f => s"  ${f._1.toRelational(f._2)}").mkString(",\n")}
-           |    )
-           |  )
-           |)""".stripMargin
-      }
+      s"""    Table $tableName
+         |    (
+         |${fields.map(_.toRelational).mkString(",\n")}
+         |    )""".stripMargin
     }
 
-    def toMapping: String = {
-      s"""Mapping $NAMESPACE::mapping::${tableName}Mapping
+    def toMapping(databaseName: String): String = {
+      s"""Mapping $NAMESPACE::mapping::$tableName
         |(
         |  *$NAMESPACE::class::$tableName: Relational
         |  {
         |    ~primaryKey
         |    (
-        |      [$NAMESPACE::store::Schema]$dbTableName.$primaryKey
+        |      [$NAMESPACE::store::Schema]$databaseName.$tableName.$primaryKey
         |    )
-        |    ~mainTable [$NAMESPACE::store::Schema]$dbTableName
-        |${fields.map(_.toMapping(dbTableName)).mkString(",\n")}
+        |    ~mainTable [$NAMESPACE::store::Schema]$databaseName.$tableName
+        |${fields.map(_.toMapping(databaseName, tableName)).mkString(",\n")}
         |  }
         |)""".stripMargin
     }
 
     def toPure: String = {
-      s"""Class $NAMESPACE::class::$tableName
+      s"""Class <<$NAMESPACE::Profile.Generated>> $NAMESPACE::class::$tableName
          |{
          |${fields.map(_.toPure).mkString("\n")}
          |}""".stripMargin
+    }
+
+  }
+
+  case class PureDatabase(databaseName: String, pureTables: Array[PureTable]) {
+    def toPure: String = {
+      s"""###Pure
+         |Profile $NAMESPACE::Profile
+         |{
+         |  stereotypes: [Generated];
+         |}
+         |
+         |${pureTables.map(_.toPure).mkString("\n")}
+         |
+         |###Relational
+         |Database $NAMESPACE::store::Schema
+         |(
+         |  Schema $databaseName
+         |  (
+         |${pureTables.map(_.toRelational).mkString("\n")}
+         |  )
+         |)
+         |
+         |###Mapping
+         |${pureTables.map(_.toMapping(databaseName)).mkString("\n")}""".stripMargin
     }
   }
 }

@@ -23,29 +23,32 @@ import org.apache.spark.sql.types._
 
 object LegendCodegen {
 
+  private final val DELTA_DEFAULT_DB = "default"
+  private final val DELTA_DEFAULT_PROPERTY = "auto-generated property"
+
   def codeGen(dataframe: DataFrame, tableName: String): String = {
     val fields = processFields(dataframe.schema.fields)
     val (database, table) = getDatabaseTableName(tableName)
-    PureTable(database, table, fields).toMapping
+    PureDatabase(database, Array(PureTable(table, fields))).toPure
   }
 
   def codeGen(schema: StructType, tableName: String): String = {
     val fields = processFields(schema.fields)
     val (database, table) = getDatabaseTableName(tableName)
-    PureTable(database, table, fields).toMapping
+    PureDatabase(database, Array(PureTable(table, fields))).toPure
   }
 
   def codeGen(tableName: String): String = {
     val schema = DeltaTable.forName(tableName).toDF.schema
     val fields = processFields(schema.fields)
     val (database, table) = getDatabaseTableName(tableName)
-    PureTable(database, table, fields).toMapping
+    PureDatabase(database, Array(PureTable(table, fields))).toPure
   }
 
-  private def getDatabaseTableName(tableName: String): (Option[String], String) = {
+  private def getDatabaseTableName(tableName: String): (String, String) = {
     tableName.split("\\.").take(2) match {
-      case Array(db, tb) => (Some(db), tb)
-      case Array(tb) => (None: Option[String], tb)
+      case Array(db, tb) => (db, tb)
+      case Array(tb) => (DELTA_DEFAULT_DB, tb)
     }
   }
 
@@ -80,18 +83,21 @@ object LegendCodegen {
   private def getFieldDescription(field: StructField): String = {
     if (field.metadata.contains("comment"))
       field.metadata.getString("comment")
-    else "auto-generated property"
+    else DELTA_DEFAULT_PROPERTY
   }
 
   private def convertSparkToPureDataType(d: DataType): PureDatatype = {
     d match {
-      case _: FloatType => PureDatatype("Float", "FLOAT")
+      case _: FloatType => PureDatatype("Float", "DOUBLE")
+      case _: DecimalType => PureDatatype("Decimal", "DOUBLE")
       case _: DoubleType => PureDatatype("Decimal", "DOUBLE")
-      case _: IntegerType => PureDatatype("Integer", "INT")
-      case _: LongType => PureDatatype("Number", "LONG")
-      case _: StringType => PureDatatype("String", "VARCHAR(255)")
-      case _: BooleanType => PureDatatype("Boolean", "BOOLEAN")
-      case _: BinaryType => PureDatatype("Binary", "BINARY")
+      case _: ByteType => PureDatatype("Integer", "TINYINT")
+      case _: ShortType => PureDatatype("Integer", "SMALLINT")
+      case _: IntegerType => PureDatatype("Integer", "INTEGER")
+      case _: LongType => PureDatatype("Number", "BIGINT")
+      case _: StringType => PureDatatype("String", s"VARCHAR(${Int.MaxValue})")
+      case _: BooleanType => PureDatatype("Boolean", "BIT")
+      case _: BinaryType => PureDatatype("Binary", s"BINARY(${Int.MaxValue})")
       case _: DateType => PureDatatype("Date", "DATE")
       case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
       case _ => throw new IllegalArgumentException(s"Unsupported field type [$d]")

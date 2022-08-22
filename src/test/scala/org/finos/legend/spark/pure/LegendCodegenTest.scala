@@ -20,143 +20,104 @@ package org.finos.legend.spark.pure
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.types._
 import org.scalatest.flatspec.AnyFlatSpec
-import org.apache.log4j.{Level, Logger}
 
 class LegendCodegenTest extends AnyFlatSpec {
 
   val spark: SparkSession = SparkSession.builder().appName("TEST").master("local[1]").getOrCreate()
-  Logger.getLogger("Alloy Execution Server").setLevel(Level.OFF)
-  Logger.getLogger("org.apache").setLevel(Level.OFF)
-  Logger.getLogger("akka").setLevel(Level.OFF)
 
   implicit class SchemaImpl(schema: StructType) {
     def toDF: DataFrame = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], schema)
   }
 
-  "A simple spark schema" should "be converted as PURE entity" in {
-    val schema = StructType(List(
-      StructField("name", StringType, nullable = false)
-    ))
-    val pure = LegendCodegen.codeGen(schema, "foo.bar")
-    val expected = """###Pure
-                     |Class foo::bar::entity
-                     |{
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} name: String[1];
-                     |}""".stripMargin
-//    assert(pure == expected)
-    print(pure)
-  }
+  "A spark schema" should "be converted as PURE" in {
 
-  it should "ignore database if not provided" in {
     val schema = StructType(List(
-      StructField("name", StringType, nullable = false)
-    ))
-    val pure = LegendCodegen.codeGen(schema, "bar")
-    val expected = """###Pure
-                     |Class foo::bar::entity
-                     |{
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} name: String[1];
-                     |}""".stripMargin
-    //    assert(pure == expected)
-    print(pure)
-  }
-
-  it should "return metadata if any" in {
-    val schema = StructType(List(
-      StructField("name", StringType, nullable = false,
-        new MetadataBuilder().putString("comment", "entity name").build())
-    ))
-    val pure = LegendCodegen.codeGen(schema, "foo.bar")
-    val expected = """###Pure
-                     |Class foo::bar::entity
-                     |{
-                     |  {meta::pure::profiles::doc.doc = 'entity name'} name: String[1];
-                     |}""".stripMargin
-//    assert(pure == expected)
-    print(pure)
-  }
-
-  it should "handle cardinality" in {
-    val schema = StructType(List(
-      StructField("name", StringType, nullable = true)
-    ))
-    val pure = LegendCodegen.codeGen(schema, "foo.bar")
-    val expected = """###Pure
-                     |Class foo::bar::entity
-                     |{
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} name: String[0..1];
-                     |}""".stripMargin
-//    assert(pure == expected)
-    print(pure)
-  }
-
-  it should "handle all primitive types" in {
-    val schema = StructType(List(
-      StructField("string", StringType, nullable = false),
-      StructField("boolean", BooleanType, nullable = false),
-      StructField("binary", BinaryType, nullable = false),
-      StructField("integer", IntegerType, nullable = false),
+      StructField("string", StringType, nullable = true),
+      StructField("boolean", ArrayType(BooleanType), nullable = false),
+      StructField("binary", ArrayType(BinaryType), nullable = true),
+      StructField("byte", ByteType, nullable = true),
+      StructField("short", ShortType, nullable = true),
+      StructField("integer", IntegerType, nullable = false, metadata =
+        new MetadataBuilder().putString("comment", "this is a comment").build()),
       StructField("long", LongType, nullable = false),
       StructField("float", FloatType, nullable = false),
       StructField("double", DoubleType, nullable = false),
+      StructField("decimal", DoubleType, nullable = false),
       StructField("date", DateType, nullable = false),
       StructField("timestamp", TimestampType, nullable = false)
     ))
-    val pure = LegendCodegen.codeGen(schema, "foo.bar")
+    val observed = LegendCodegen.codeGen(schema, "foo.bar")
     val expected = """###Pure
-                     |Class foo::bar::entity
+                     |Profile legend::delta::generated::Profile
                      |{
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} string: String[1];
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} boolean: Boolean[1];
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} binary: Binary[1];
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} integer: Integer[1];
+                     |  stereotypes: [Generated];
+                     |}
+                     |
+                     |Class <<legend::delta::generated::Profile.Generated>> legend::delta::generated::class::bar
+                     |{
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} string: String[0..1];
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} boolean: Boolean[1..*];
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} binary: Binary[0..*];
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} byte: Integer[0..1];
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} short: Integer[0..1];
+                     |  {meta::pure::profiles::doc.doc = 'this is a comment'} integer: Integer[1];
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} long: Number[1];
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} float: Float[1];
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} double: Decimal[1];
+                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} decimal: Decimal[1];
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} date: Date[1];
                      |  {meta::pure::profiles::doc.doc = 'auto-generated property'} timestamp: DateTime[1];
-                     |}""".stripMargin
-//    assert(pure == expected)
-    print(pure)
-  }
-
-  it should "handle array type" in {
-    val schema = StructType(List(StructField("name", ArrayType(StringType), nullable = false)))
-    val pure = LegendCodegen.codeGen(schema, "foo.bar")
-    val expected = """###Pure
-                     |Class foo::bar::entity
-                     |{
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} name: String[1..*];
-                     |}""".stripMargin
-//    assert(pure == expected)
-    print(pure)
-  }
-
-  it should "handle array cardinality" in {
-    val schema = StructType(List(StructField("name", ArrayType(IntegerType), nullable = true)))
-    val pure = LegendCodegen.codeGen(schema, "foo.bar")
-    val expected = """###Pure
-                     |Class foo::bar::entity
-                     |{
-                     |  {meta::pure::profiles::doc.doc = 'auto-generated property'} name: Integer[0..*];
-                     |}""".stripMargin
-//    assert(pure == expected)
-    print(pure)
-  }
-
-  "A nested spark schema" should "be converted as PURE entity" in {
-    val child = StructType(List(
-      StructField("name", StringType, nullable = false),
-      StructField("age", IntegerType, nullable = false),
-    ))
-    val schema = StructType(List(
-      StructField("name", StringType, nullable = false),
-      StructField("age", IntegerType, nullable = false),
-      StructField("children", ArrayType(child), nullable = false)
-    ))
-    assertThrows[IllegalArgumentException] {
-      LegendCodegen.codeGen(schema, "foo.bar")
-    }
+                     |}
+                     |
+                     |###Relational
+                     |Database legend::delta::generated::store::Schema
+                     |(
+                     |  Schema foo
+                     |  (
+                     |    Table bar
+                     |    (
+                     |      string VARCHAR(2147483647),
+                     |      boolean BIT,
+                     |      binary BINARY(2147483647),
+                     |      byte TINYINT,
+                     |      short SMALLINT,
+                     |      integer INTEGER,
+                     |      long BIGINT,
+                     |      float DOUBLE,
+                     |      double DOUBLE,
+                     |      decimal DOUBLE,
+                     |      date DATE,
+                     |      timestamp TIMESTAMP
+                     |    )
+                     |  )
+                     |)
+                     |
+                     |###Mapping
+                     |Mapping legend::delta::generated::mapping::bar
+                     |(
+                     |  *legend::delta::generated::class::bar: Relational
+                     |  {
+                     |    ~primaryKey
+                     |    (
+                     |      [legend::delta::generated::store::Schema]foo.bar.string
+                     |    )
+                     |    ~mainTable [legend::delta::generated::store::Schema]foo.bar
+                     |    string: [legend::delta::generated::store::Schema]foo.bar.string,
+                     |    boolean: [legend::delta::generated::store::Schema]foo.bar.boolean,
+                     |    binary: [legend::delta::generated::store::Schema]foo.bar.binary,
+                     |    byte: [legend::delta::generated::store::Schema]foo.bar.byte,
+                     |    short: [legend::delta::generated::store::Schema]foo.bar.short,
+                     |    integer: [legend::delta::generated::store::Schema]foo.bar.integer,
+                     |    long: [legend::delta::generated::store::Schema]foo.bar.long,
+                     |    float: [legend::delta::generated::store::Schema]foo.bar.float,
+                     |    double: [legend::delta::generated::store::Schema]foo.bar.double,
+                     |    decimal: [legend::delta::generated::store::Schema]foo.bar.decimal,
+                     |    date: [legend::delta::generated::store::Schema]foo.bar.date,
+                     |    timestamp: [legend::delta::generated::store::Schema]foo.bar.timestamp
+                     |  }
+                     |)""".stripMargin
+    print(observed)
+    assert(observed == expected)
   }
 
 }
