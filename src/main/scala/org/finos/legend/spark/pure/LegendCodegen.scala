@@ -23,41 +23,27 @@ import org.apache.spark.sql.types._
 
 object LegendCodegen {
 
-  def codeGen(entityName: String, tableName: String, dataframe: DataFrame): String = {
-    require(isValidEntityName(entityName), "Entity should be in the form of namespace::*::name")
+  def codeGen(dataframe: DataFrame, tableName: String): String = {
     val fields = processFields(dataframe.schema.fields)
-    val (database, table) = getDatabaseTableNames(tableName)
-    val namespace = getNamespaceFromEntityName(entityName)
-    PureTable(entityName, namespace, database, table, fields).toPure
+    val (database, table) = getDatabaseTableName(tableName)
+    PureTable(database, table, fields).toMapping
   }
 
-  def codeGen(entityName: String, tableName: String, schema: StructType): String = {
-    require(isValidEntityName(entityName), "Entity should be in the form of namespace::*::name")
+  def codeGen(schema: StructType, tableName: String): String = {
     val fields = processFields(schema.fields)
-    val (database, table) = getDatabaseTableNames(tableName)
-    val namespace = getNamespaceFromEntityName(entityName)
-    PureTable(entityName, namespace, database, table, fields).toPure
+    val (database, table) = getDatabaseTableName(tableName)
+    PureTable(database, table, fields).toMapping
   }
 
-  def codeGen(entityName: String, tableName: String): String = {
-    require(isValidEntityName(entityName), "Entity should be in the form of namespace::*::name")
+  def codeGen(tableName: String): String = {
     val schema = DeltaTable.forName(tableName).toDF.schema
     val fields = processFields(schema.fields)
-    val (database, table) = getDatabaseTableNames(tableName)
-    val namespace = getNamespaceFromEntityName(entityName)
-    PureTable(entityName, namespace, database, table, fields).toPure
+    val (database, table) = getDatabaseTableName(tableName)
+    PureTable(database, table, fields).toMapping
   }
 
-  private def getNamespaceFromEntityName(entityName: String): String = {
-    entityName.split("::").dropRight(1).mkString("::")
-  }
-
-  private def isValidEntityName(entityName: String): Boolean = {
-    entityName.split("::").length > 1
-  }
-
-  private def getDatabaseTableNames(tableName: String): (Option[String], String) = {
-    tableName.split("\\.") match {
+  private def getDatabaseTableName(tableName: String): (Option[String], String) = {
+    tableName.split("\\.").take(2) match {
       case Array(db, tb) => (Some(db), tb)
       case Array(tb) => (None: Option[String], tb)
     }
@@ -72,53 +58,43 @@ object LegendCodegen {
           if (a.elementType.isInstanceOf[StructType])
             throw new IllegalArgumentException(s"Field [${f.name}] is a nested property not compatible with Legend query")
           processFieldArray(f)
-        case _ =>
-          processFieldPrimitive(f)
+        case _ => processFieldPrimitive(f)
       }
     })
   }
 
-  private def processFieldPrimitive(field: StructField): PureField = {
-    val cardinality = if (field.nullable) "[0..1]" else "[1]"
-    val pureDatatype = convertSparkToPureDataType(field.dataType, isArray = false)
+  private def processFieldArray(field: StructField): PureField = {
+    val cardinality = if (field.nullable) "[0..*]" else "[1..*]"
+    val pureDatatype = convertSparkToPureDataType(field.dataType.asInstanceOf[ArrayType].elementType)
     val description = getFieldDescription(field)
     PureField(field.name, cardinality, pureDatatype, description)
   }
 
-  private def processFieldArray(field: StructField): PureField = {
-    val cardinality = if (field.nullable) "[0..*]" else "[1..*]"
-    val pureDatatype = convertSparkToPureDataType(field.dataType.asInstanceOf[ArrayType].elementType, isArray = true)
+  private def processFieldPrimitive(field: StructField): PureField = {
+    val cardinality = if (field.nullable) "[0..1]" else "[1]"
+    val pureDatatype = convertSparkToPureDataType(field.dataType)
     val description = getFieldDescription(field)
     PureField(field.name, cardinality, pureDatatype, description)
   }
 
   private def getFieldDescription(field: StructField): String = {
-    if (field.metadata.contains("comment")) {
+    if (field.metadata.contains("comment"))
       field.metadata.getString("comment")
-    } else {
-      "auto-generated property"
-    }
+    else "auto-generated property"
   }
 
-  private def convertSparkToPureDataType(d: DataType, isArray: Boolean): PureDatatype = {
-    val pureDatatype = d match {
+  private def convertSparkToPureDataType(d: DataType): PureDatatype = {
+    d match {
       case _: FloatType => PureDatatype("Float", "FLOAT")
       case _: DoubleType => PureDatatype("Decimal", "DOUBLE")
       case _: IntegerType => PureDatatype("Integer", "INT")
       case _: LongType => PureDatatype("Number", "LONG")
-      case _: StringType => PureDatatype("String", "VARCHAR")
+      case _: StringType => PureDatatype("String", "VARCHAR(255)")
       case _: BooleanType => PureDatatype("Boolean", "BOOLEAN")
       case _: BinaryType => PureDatatype("Binary", "BINARY")
       case _: DateType => PureDatatype("Date", "DATE")
       case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
       case _ => throw new IllegalArgumentException(s"Unsupported field type [$d]")
     }
-    if (isArray) {
-      pureDatatype.copy(pureRelationalType = s"ARRAY<${pureDatatype.pureRelationalType}>")
-    } else {
-      pureDatatype
-    }
   }
-
-
 }
