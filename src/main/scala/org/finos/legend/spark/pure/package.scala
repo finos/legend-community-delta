@@ -66,7 +66,7 @@ package object pure {
     }
 
     def toPure: String = {
-      s"""Class <<$NAMESPACE::Profile.Generated>> $NAMESPACE::class::$tableName
+      s"""Class <<$NAMESPACE::Profile.'auto-generated'>> $NAMESPACE::class::$tableName
          |{
          |${fields.map(_.toPure).mkString("\n")}
          |}""".stripMargin
@@ -79,7 +79,7 @@ package object pure {
       s"""###Pure
          |Profile $NAMESPACE::Profile
          |{
-         |  stereotypes: [Generated];
+         |  stereotypes: ['auto-generated'];
          |}
          |
          |${pureTables.map(_.toPure).mkString("\n\n")}
