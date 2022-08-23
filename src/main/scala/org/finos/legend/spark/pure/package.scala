@@ -25,35 +25,64 @@ package object pure {
   case class PureDatatype(pureType: String, pureRelationalType: String)
 
   case class PureField(name: String, cardinality: String, pureType: PureDatatype, description: String, isComplex: Boolean = false) {
-    def toPure: String = {
-      s"{meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
+
+    def toPure(nested_counterpart: Boolean = false): String = {
+      if (nested_counterpart && isComplex) {
+        s"{meta::pure::profiles::doc.doc = 'JSON wrapper for field [$name]'} $name: String$cardinality;"
+      } else {
+        s"{meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
+      }
     }
+
     def toRelational: String = {
       s"$name ${pureType.pureRelationalType}"
     }
+
     def toPrimaryKey(namespace: String, databaseName: String, tableName: String):String = {
       s"[$namespace::lakehouse::schema]$databaseName.$tableName.$name"
     }
+
     def toMapping(namespace: String, databaseName: String, tableName: String): String = {
-      require(!isComplex, "Nested properties cannot be mapped to relational objects on legend")
       s"$name: [$namespace::lakehouse::schema]$databaseName.$tableName.$name"
     }
+
   }
 
   case class PureClass(entityFQN: String, fields: Array[PureField], isNested: Boolean = false) {
+
     val tableName: String = entityFQN.split("::").last
-    def toPure: String = {
-      s"""Class $entityFQN
-         |{
-         |  ${fields.map(_.toPure).mkString("\n  ")}
-         |}""".stripMargin
+    val hasNested: Boolean = fields.exists(_.isComplex)
+
+    def getJsonCompanionClassName: String = {
+      val xs = entityFQN.split("::")
+      xs.dropRight(1).mkString("::") + "::json::" + xs.last
     }
+
+    def toPure: String = {
+      val coreClass = s"""Class $entityFQN
+         |{
+         |  ${fields.map(_.toPure()).mkString("\n  ")}
+         |}
+         |""".stripMargin
+      if(hasNested) {
+        coreClass + s"""\nClass $getJsonCompanionClassName
+                       |{
+                       |  ${fields.map(_.toPure(true)).mkString("\n  ")}
+                       |}
+                       |""".stripMargin
+      } else coreClass
+    }
+
     def toRelational: String = {
       require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
       s"""    Table $tableName
          |    (
          |      ${fields.map(_.toRelational).mkString(",\n      ")}
          |    )""".stripMargin
+    }
+
+    def getMappingName(namespace: String): String = {
+      if (hasNested) s"$namespace::mapping::json::$tableName" else s"$namespace::mapping::$tableName"
     }
 
     def toMapping(namespace: String, databaseName: String): String = {
@@ -65,16 +94,17 @@ package object pure {
       A primary key must be defined in the table definition in PURE to use this feature"
       */
       require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
-      s"""Mapping $namespace::mapping::$tableName
+      val mappingName = getMappingName(namespace)
+      s"""Mapping $mappingName
          |(
-         |  *$entityFQN: Relational
+         |  *${if (hasNested) getJsonCompanionClassName else entityFQN}: Relational
          |  {
          |    ~primaryKey
          |    (
-         |      ${fields.filter(!_.isComplex).map(_.toPrimaryKey(namespace, databaseName, tableName)).mkString(",\n      ")}
+         |      ${fields.map(_.toPrimaryKey(namespace, databaseName, tableName)).mkString(",\n      ")}
          |    )
          |    ~mainTable [$namespace::lakehouse::schema]$databaseName.$tableName
-         |    ${fields.filter(!_.isComplex).map(_.toMapping(namespace, databaseName, tableName)).mkString(",\n    ")}
+         |    ${fields.map(_.toMapping(namespace, databaseName, tableName)).mkString(",\n    ")}
          |  }
          |)
          |""".stripMargin
@@ -84,7 +114,8 @@ package object pure {
   case class PureModel(databaseName: String, pureTables: Array[PureClass]) {
     def toPure(namespace: String): String = {
       s"""###Pure
-         |${pureTables.map(_.toPure).mkString("\n\n")}
+         |${pureTables.map(_.toPure).mkString("\n")}
+         |
          |###Relational
          |Database $namespace::lakehouse::schema
          |(
@@ -95,7 +126,8 @@ package object pure {
          |)
          |
          |###Mapping
-         |${pureTables.filter(!_.isNested).map(_.toMapping(namespace, databaseName)).mkString("\n\n")}
+         |${pureTables.filter(!_.isNested).map(_.toMapping(namespace, databaseName)).mkString("\n")}
+         |
          |###Connection
          |RelationalDatabaseConnection $namespace::lakehouse::connection
          |{
@@ -119,7 +151,7 @@ package object pure {
          |{
          |  mappings:
          |  [
-         |    ${pureTables.filter(!_.isNested).map(t => s"$namespace::mapping::${t.tableName}").mkString(",\n    ")}
+         |    ${pureTables.filter(!_.isNested).map(_.getMappingName(namespace)).mkString(",\n    ")}
          |  ];
          |  connections:
          |  [
