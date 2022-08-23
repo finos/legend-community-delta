@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
-class LegendCodegen(namespace: String, entityName: String, schema: StructType) {
+class LegendCodegen(namespacePrefix: String, entityName: String, schema: StructType) {
 
   var store = new ListBuffer[PureClass]()
 
@@ -39,7 +39,7 @@ class LegendCodegen(namespace: String, entityName: String, schema: StructType) {
   }
 
   def generate: List[PureClass] = {
-    parseEntitySchema(s"$namespace::class::$entityName", schema)
+    parseEntitySchema(s"$namespacePrefix::$NAMESPACE_classes::$entityName", schema)
     store.toList
   }
 
@@ -47,12 +47,12 @@ class LegendCodegen(namespace: String, entityName: String, schema: StructType) {
     fields.map(f => {
       f.dataType match {
         case s: StructType =>
-          parseEntitySchema(s"$namespace::class::${f.name}", s, isNested = true)
+          parseEntitySchema(s"$namespacePrefix::$NAMESPACE_classes::${f.name}", s, isNested = true)
           PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = true)
         case a: ArrayType =>
           a.elementType match {
             case structType: StructType =>
-              parseEntitySchema(s"$namespace::class::${f.name}", structType, isNested = true)
+              parseEntitySchema(s"$namespacePrefix::$NAMESPACE_classes::${f.name}", structType, isNested = true)
               PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = true)
             case _ => PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = false)
           }
@@ -81,7 +81,7 @@ class LegendCodegen(namespace: String, entityName: String, schema: StructType) {
         case _: BinaryType => PureDatatype("Binary", s"BINARY(${Int.MaxValue})")
         case _: DateType => PureDatatype("Date", "DATE")
         case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
-        case _: StructType => PureDatatype(s"$namespace::class::${field.name}", s"VARCHAR(${Int.MaxValue})") // Nested elements handled as String on legend SQL
+        case _: StructType => PureDatatype(s"$namespacePrefix::$NAMESPACE_classes::${field.name}", s"VARCHAR(${Int.MaxValue})") // Nested elements handled as String on legend SQL
         case _: ArrayType => field.copy(dataType = field.dataType.asInstanceOf[ArrayType].elementType).toPureType
         case _ =>
           throw new IllegalArgumentException(s"Unsupported field type [${field.dataType}] for field [${field.name}]")

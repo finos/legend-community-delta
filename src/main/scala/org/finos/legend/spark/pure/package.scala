@@ -19,8 +19,14 @@ package org.finos.legend.spark
 
 package object pure {
 
-  val DEFAULT_NAMESPACE: String = "legend::delta::generated"
   val AUTO_GENERATED: String = "auto-generated"
+
+  val NAMESPACE_prefix: String = "legend::delta::generated"
+  val NAMESPACE_nested: String = "nested"
+
+  val NAMESPACE_mapping: String = "mapping"
+  val NAMESPACE_classes: String = "classes"
+  val NAMESPACE_connect: String = "lakehouse"
 
   case class PureDatatype(pureType: String, pureRelationalType: String)
 
@@ -39,11 +45,11 @@ package object pure {
     }
 
     def toPrimaryKey(namespace: String, databaseName: String, tableName: String):String = {
-      s"[$namespace::lakehouse::schema]$databaseName.$tableName.$name"
+      s"[$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
     }
 
     def toMapping(namespace: String, databaseName: String, tableName: String): String = {
-      s"$name: [$namespace::lakehouse::schema]$databaseName.$tableName.$name"
+      s"$name: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
     }
 
   }
@@ -53,9 +59,9 @@ package object pure {
     val tableName: String = entityFQN.split("::").last
     val hasNested: Boolean = fields.exists(_.isComplex)
 
-    def getJsonCompanionClassName: String = {
+    def getNestedCompanion: String = {
       val xs = entityFQN.split("::")
-      xs.dropRight(1).mkString("::") + "::json::" + xs.last
+      xs.dropRight(1).mkString("::") + s"::$NAMESPACE_nested::" + xs.last
     }
 
     def toPure: String = {
@@ -65,7 +71,7 @@ package object pure {
          |}
          |""".stripMargin
       if(hasNested) {
-        coreClass + s"""\nClass $getJsonCompanionClassName
+        coreClass + s"""\nClass $getNestedCompanion
                        |{
                        |  ${fields.map(_.toPure(true)).mkString("\n  ")}
                        |}
@@ -82,7 +88,7 @@ package object pure {
     }
 
     def getMappingName(namespace: String): String = {
-      if (hasNested) s"$namespace::mapping::json::$tableName" else s"$namespace::mapping::$tableName"
+      if (hasNested) s"$namespace::$NAMESPACE_mapping::$NAMESPACE_nested::$tableName" else s"$namespace::$NAMESPACE_mapping::$tableName"
     }
 
     def toMapping(namespace: String, databaseName: String): String = {
@@ -97,13 +103,13 @@ package object pure {
       val mappingName = getMappingName(namespace)
       s"""Mapping $mappingName
          |(
-         |  *${if (hasNested) getJsonCompanionClassName else entityFQN}: Relational
+         |  *${if (hasNested) getNestedCompanion else entityFQN}: Relational
          |  {
          |    ~primaryKey
          |    (
          |      ${fields.map(_.toPrimaryKey(namespace, databaseName, tableName)).mkString(",\n      ")}
          |    )
-         |    ~mainTable [$namespace::lakehouse::schema]$databaseName.$tableName
+         |    ~mainTable [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName
          |    ${fields.map(_.toMapping(namespace, databaseName, tableName)).mkString(",\n    ")}
          |  }
          |)
@@ -115,9 +121,8 @@ package object pure {
     def toPure(namespace: String): String = {
       s"""###Pure
          |${pureTables.map(_.toPure).mkString("\n")}
-         |
          |###Relational
-         |Database $namespace::lakehouse::schema
+         |Database $namespace::$NAMESPACE_connect::DatabricksSchema
          |(
          |  Schema $databaseName
          |  (
@@ -127,11 +132,10 @@ package object pure {
          |
          |###Mapping
          |${pureTables.filter(!_.isNested).map(_.toMapping(namespace, databaseName)).mkString("\n")}
-         |
          |###Connection
-         |RelationalDatabaseConnection $namespace::lakehouse::connection
+         |RelationalDatabaseConnection $namespace::$NAMESPACE_connect::DatabricksJDBCConnection
          |{
-         |  store: $namespace::lakehouse::schema;
+         |  store: $namespace::$NAMESPACE_connect::DatabricksSchema;
          |  type: Databricks;
          |  specification: Databricks
          |  {
@@ -147,7 +151,7 @@ package object pure {
          |}
          |
          |###Runtime
-         |Runtime $namespace::lakehouse::runtime
+         |Runtime $namespace::$NAMESPACE_connect::DatabricksRuntime
          |{
          |  mappings:
          |  [
@@ -155,9 +159,9 @@ package object pure {
          |  ];
          |  connections:
          |  [
-         |    $namespace::lakehouse::schema:
+         |    $namespace::$NAMESPACE_connect::DatabricksSchema:
          |    [
-         |      environment: $namespace::lakehouse::connection
+         |      environment: $namespace::$NAMESPACE_connect::DatabricksJDBCConnection
          |    ]
          |  ];
          |}
