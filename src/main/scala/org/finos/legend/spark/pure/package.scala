@@ -19,82 +19,117 @@ package org.finos.legend.spark
 
 package object pure {
 
-  val NAMESPACE: String = "legend::delta::generated"
+  val DEFAULT_NAMESPACE: String = "legend::delta::generated"
+  val AUTO_GENERATED: String = "auto-generated"
 
   case class PureDatatype(pureType: String, pureRelationalType: String)
 
-  case class PureField(name: String, cardinality: String, pureType: PureDatatype, description: String) {
-
+  case class PureField(name: String, cardinality: String, pureType: PureDatatype, description: String, isComplex: Boolean = false) {
     def toPure: String = {
-      s"  {meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
+      s"{meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
     }
-
     def toRelational: String = {
-      s"      $name ${pureType.pureRelationalType}"
+      s"$name ${pureType.pureRelationalType}"
     }
-
-    def toMapping(databaseName: String, tableName: String): String = {
-      s"    $name: [$NAMESPACE::store::Schema]$databaseName.$tableName.$name"
+    def toPrimaryKey(namespace: String, databaseName: String, tableName: String):String = {
+      s"[$namespace::lakehouse::schema]$databaseName.$tableName.$name"
     }
-
+    def toMapping(namespace: String, databaseName: String, tableName: String): String = {
+      require(!isComplex, "Nested properties cannot be mapped to relational objects on legend")
+      s"$name: [$namespace::lakehouse::schema]$databaseName.$tableName.$name"
+    }
   }
 
-  case class PureTable(tableName: String, fields: Array[PureField]) {
-
-    val primaryKey: String = fields.head.name
-
+  case class PureClass(entityFQN: String, fields: Array[PureField], isNested: Boolean = false) {
+    val tableName: String = entityFQN.split("::").last
+    def toPure: String = {
+      s"""Class $entityFQN
+         |{
+         |  ${fields.map(_.toPure).mkString("\n  ")}
+         |}""".stripMargin
+    }
     def toRelational: String = {
+      require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
       s"""    Table $tableName
          |    (
-         |${fields.map(_.toRelational).mkString(",\n")}
+         |      ${fields.map(_.toRelational).mkString(",\n      ")}
          |    )""".stripMargin
     }
 
-    def toMapping(databaseName: String): String = {
-      s"""Mapping $NAMESPACE::mapping::$tableName
-        |(
-        |  *$NAMESPACE::class::$tableName: Relational
-        |  {
-        |    ~primaryKey
-        |    (
-        |      [$NAMESPACE::store::Schema]$databaseName.$tableName.$primaryKey
-        |    )
-        |    ~mainTable [$NAMESPACE::store::Schema]$databaseName.$tableName
-        |${fields.map(_.toMapping(databaseName, tableName)).mkString(",\n")}
-        |  }
-        |)""".stripMargin
+    def toMapping(namespace: String, databaseName: String): String = {
+      /*
+      Delta does not support PRIMARY KEY in strict sense (not needed)
+      We might rely on some field metadata and CONSTRAINT columns, or here define all fields as a composite key
+      Assert failure at (resource:/platform/pure/corefunctions/test.pure line:22 column:5),
+      "There is no primary key defined on the table legend_primitive.
+      A primary key must be defined in the table definition in PURE to use this feature"
+      */
+      require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
+      s"""Mapping $namespace::mapping::$tableName
+         |(
+         |  *$entityFQN: Relational
+         |  {
+         |    ~primaryKey
+         |    (
+         |      ${fields.filter(!_.isComplex).map(_.toPrimaryKey(namespace, databaseName, tableName)).mkString(",\n      ")}
+         |    )
+         |    ~mainTable [$namespace::lakehouse::schema]$databaseName.$tableName
+         |    ${fields.filter(!_.isComplex).map(_.toMapping(namespace, databaseName, tableName)).mkString(",\n    ")}
+         |  }
+         |)
+         |""".stripMargin
     }
-
-    def toPure: String = {
-      s"""Class <<$NAMESPACE::Profile.'auto-generated'>> $NAMESPACE::class::$tableName
-         |{
-         |${fields.map(_.toPure).mkString("\n")}
-         |}""".stripMargin
-    }
-
   }
 
-  case class PureDatabase(databaseName: String, pureTables: Array[PureTable]) {
-    def toPure: String = {
+  case class PureModel(databaseName: String, pureTables: Array[PureClass]) {
+    def toPure(namespace: String): String = {
       s"""###Pure
-         |Profile $NAMESPACE::Profile
-         |{
-         |  stereotypes: ['auto-generated'];
-         |}
-         |
          |${pureTables.map(_.toPure).mkString("\n\n")}
-         |
          |###Relational
-         |Database $NAMESPACE::store::Schema
+         |Database $namespace::lakehouse::schema
          |(
          |  Schema $databaseName
          |  (
-         |${pureTables.map(_.toRelational).mkString("\n")}
+         |${pureTables.filter(!_.isNested).map(_.toRelational).mkString("\n")}
          |  )
          |)
          |
          |###Mapping
-         |${pureTables.map(_.toMapping(databaseName)).mkString("\n\n")}""".stripMargin
+         |${pureTables.filter(!_.isNested).map(_.toMapping(namespace, databaseName)).mkString("\n\n")}
+         |###Connection
+         |RelationalDatabaseConnection $namespace::lakehouse::connection
+         |{
+         |  store: $namespace::lakehouse::schema;
+         |  type: Databricks;
+         |  specification: Databricks
+         |  {
+         |    hostname: 'TODO';
+         |    port: 'TODO';
+         |    protocol: 'TODO';
+         |    httpPath: 'TODO';
+         |  };
+         |  auth: ApiToken
+         |  {
+         |    apiToken: 'TODO';
+         |  };
+         |}
+         |
+         |###Runtime
+         |Runtime $namespace::lakehouse::runtime
+         |{
+         |  mappings:
+         |  [
+         |    ${pureTables.filter(!_.isNested).map(t => s"$namespace::mapping::${t.tableName}").mkString(",\n    ")}
+         |  ];
+         |  connections:
+         |  [
+         |    $namespace::lakehouse::schema:
+         |    [
+         |      environment: $namespace::lakehouse::connection
+         |    ]
+         |  ];
+         |}
+         |""".stripMargin
     }
   }
 }

@@ -18,98 +18,101 @@
 package org.finos.legend.spark.pure
 
 import io.delta.tables.DeltaTable
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types._
 import org.slf4j.LoggerFactory
 
-import scala.util.Try
+import scala.collection.mutable.ListBuffer
 
-object LegendCodegen {
+class LegendCodegen(namespace: String, entityName: String, schema: StructType) {
 
-  private final val DELTA_DEFAULT_PROPERTY = "auto-generated property"
-  final val LOGGER = LoggerFactory.getLogger(this.getClass)
+  var store = new ListBuffer[PureClass]()
 
-  def codeGen(database: String): String = {
-
-    val sparkOpt = SparkSession.getDefaultSession
-    require(sparkOpt.isDefined, "A spark session should be active")
-    val spark = sparkOpt.get
-
-    // Generate PURE model for each table
-    val tables = spark.sql(s"SHOW TABLES IN $database").rdd.filter(r => {
-      !r.getAs[Boolean]("isTemporary")
-    }).map(_.getAs[String]("tableName")).collect().flatMap(tableName => {
-      LOGGER.info(s"Generate PURE model for table $tableName")
-      Try {
-        val schema = DeltaTable.forName(s"$database.$tableName").toDF.schema
-        codeGen(schema, tableName)
-      }.toOption
-    })
-
-    // Serialize model
-    PureDatabase(database, tables).toPure
-
+  def registerClass(pureClass: PureClass): Unit = {
+    println(s"Registered class ${pureClass.entityFQN}")
+    store.append(pureClass)
   }
 
-  def codeGen(dataframe: DataFrame, tableName: String): PureTable = {
-    val fields = processFields(dataframe.schema.fields)
-    PureTable(tableName, fields)
-  }
-
-  def codeGen(schema: StructType, tableName: String): PureTable = {
+  private def parseEntitySchema(entityFQN: String, schema: StructType, isNested: Boolean = false): Unit = {
     val fields = processFields(schema.fields)
-    PureTable(tableName, fields)
+    registerClass(PureClass(entityFQN, fields, isNested))
+  }
+
+  def generate: List[PureClass] = {
+    parseEntitySchema(s"$namespace::class::$entityName", schema)
+    store.toList
   }
 
   private def processFields(fields: Array[StructField]): Array[PureField] = {
     fields.map(f => {
       f.dataType match {
-        case _: StructType =>
-          throw new IllegalArgumentException(s"Field [${f.name}] is a nested property not compatible with Legend query")
+        case s: StructType =>
+          parseEntitySchema(s"$namespace::class::${f.name}", s, isNested = true)
+          PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = true)
         case a: ArrayType =>
-          if (a.elementType.isInstanceOf[StructType])
-            throw new IllegalArgumentException(s"Field [${f.name}] is a nested property not compatible with Legend query")
-          processFieldArray(f)
-        case _ => processFieldPrimitive(f)
+          a.elementType match {
+            case structType: StructType =>
+              parseEntitySchema(s"$namespace::class::${f.name}", structType, isNested = true)
+              PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = true)
+            case _ => PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = false)
+          }
+        case _ => PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = false)
       }
     })
   }
 
-  private def processFieldArray(field: StructField): PureField = {
-    val cardinality = if (field.nullable) "[0..*]" else "[1..*]"
-    val pureDatatype = convertSparkToPureDataType(field.dataType.asInstanceOf[ArrayType].elementType)
-    val description = getFieldDescription(field)
-    PureField(field.name, cardinality, pureDatatype, description)
-  }
+  implicit class StructFieldImpl(field: StructField) {
 
-  private def processFieldPrimitive(field: StructField): PureField = {
-    val cardinality = if (field.nullable) "[0..1]" else "[1]"
-    val pureDatatype = convertSparkToPureDataType(field.dataType)
-    val description = getFieldDescription(field)
-    PureField(field.name, cardinality, pureDatatype, description)
-  }
-
-  private def getFieldDescription(field: StructField): String = {
-    if (field.metadata.contains("comment"))
-      field.metadata.getString("comment")
-    else DELTA_DEFAULT_PROPERTY
-  }
-
-  private def convertSparkToPureDataType(d: DataType): PureDatatype = {
-    d match {
-      case _: FloatType => PureDatatype("Float", "DOUBLE")
-      case _: DecimalType => PureDatatype("Decimal", "DOUBLE")
-      case _: DoubleType => PureDatatype("Decimal", "DOUBLE")
-      case _: ByteType => PureDatatype("Integer", "TINYINT")
-      case _: ShortType => PureDatatype("Integer", "SMALLINT")
-      case _: IntegerType => PureDatatype("Integer", "INTEGER")
-      case _: LongType => PureDatatype("Number", "BIGINT")
-      case _: StringType => PureDatatype("String", s"VARCHAR(${Int.MaxValue})")
-      case _: BooleanType => PureDatatype("Boolean", "BIT")
-      case _: BinaryType => PureDatatype("Binary", s"BINARY(${Int.MaxValue})")
-      case _: DateType => PureDatatype("Date", "DATE")
-      case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
-      case _ => throw new IllegalArgumentException(s"Unsupported field type [$d]")
+    def cardinality: String = field.dataType match {
+      case _: ArrayType => if (field.nullable) "[0..*]" else "[1..*]"
+      case _ => if (field.nullable) "[0..1]" else "[1]"
     }
+
+    def toPureType: PureDatatype = {
+      field.dataType match {
+        case _: FloatType => PureDatatype("Float", "DOUBLE")
+        case _: DoubleType => PureDatatype("Decimal", "DOUBLE")
+        case _: ByteType => PureDatatype("Integer", "TINYINT")
+        case _: ShortType => PureDatatype("Integer", "SMALLINT")
+        case _: IntegerType => PureDatatype("Integer", "INTEGER")
+        case _: LongType => PureDatatype("Number", "BIGINT")
+        case _: StringType => PureDatatype("String", s"VARCHAR(${Int.MaxValue})")
+        case _: BooleanType => PureDatatype("Boolean", "BIT")
+        case _: BinaryType => PureDatatype("Binary", s"BINARY(${Int.MaxValue})")
+        case _: DateType => PureDatatype("Date", "DATE")
+        case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
+        case _: StructType => PureDatatype(s"$namespace::class::${field.name}", s"VARCHAR(${Int.MaxValue})") // Nested elements handled as String on legend SQL
+        case _: ArrayType => field.copy(dataType = field.dataType.asInstanceOf[ArrayType].elementType).toPureType
+        case _ =>
+          throw new IllegalArgumentException(s"Unsupported field type [${field.dataType}] for field [${field.name}]")
+      }
+    }
+
+    def description: String = if (field.metadata.contains("comment"))
+      field.metadata.getString("comment") else AUTO_GENERATED
+  }
+}
+
+object LegendCodegen {
+
+  final val LOGGER = LoggerFactory.getLogger(this.getClass)
+
+  def parseDatabase(namespace: String, databaseName: String, tableName: String) = {
+    DeltaTable.forName(s"$databaseName.$tableName").toDF
+  }
+
+  def parseDatabase(namespace: String, databaseName: String, dataFrames: Map[String, DataFrame]): String = {
+    val pureClasses = dataFrames.map({ case (entityName, dataFrame) =>
+      new LegendCodegen(namespace, entityName, dataFrame.schema).generate
+    }).foldLeft(Array.empty[PureClass])((previousClasses, newClasses) => previousClasses ++ newClasses)
+    PureModel(databaseName, pureClasses).toPure(namespace)
+  }
+
+  def parseDataframe(namespace: String, dataFrameName: String, dataframe: DataFrame): String = {
+    parseStructType(namespace, dataFrameName, dataframe.schema)
+  }
+
+  def parseStructType(namespace: String, entityName: String, schema: StructType): String = {
+    new LegendCodegen(namespace, entityName, schema).generate.map(_.toPure).mkString("\n\n")
   }
 }
