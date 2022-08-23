@@ -18,16 +18,9 @@
 package org.finos.legend.spark.pure
 
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.scalatest.flatspec.AnyFlatSpec
 
 class LegendCodegenTest extends AnyFlatSpec {
-
-  val spark: SparkSession = SparkSession.builder().appName("TEST").master("local[1]").getOrCreate()
-
-  implicit class SchemaImpl(schema: StructType) {
-    def toDF: DataFrame = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], schema)
-  }
 
   "A spark schema" should "be converted as PURE" in {
 
@@ -55,12 +48,12 @@ class LegendCodegenTest extends AnyFlatSpec {
       StructField("struct_field", testSchema2, nullable = true)
     ))
 
-    val observed = LegendCodegen.parseDatabase(
+    val observed = LegendCodegen.parseSchemas(
       "legend_integration",
       Map(
-        "legend_primitive" -> testSchema1.toDF,
-        "legend_arrays" -> testSchema2.toDF,
-        "legend_nested" -> testSchema3.toDF,
+        "legend_primitive" -> testSchema1,
+        "legend_arrays" -> testSchema2,
+        "legend_nested" -> testSchema3,
       )
     )
     print(observed)

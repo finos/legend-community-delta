@@ -17,7 +17,8 @@
 
 package org.finos.legend.spark.pure
 
-import org.apache.spark.sql.DataFrame
+import io.delta.tables.DeltaTable
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types._
 import org.slf4j.LoggerFactory
 
@@ -92,11 +93,27 @@ object LegendCodegen {
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
-  def parseDatabase(databaseName: String, dataFrames: Map[String, DataFrame]): String = {
+  def parseDatabase(databaseName: String): String = {
+    require(SparkSession.getDefaultSession.isDefined)
+    val spark = SparkSession.active
+    val tables = spark
+      .sql(s"SHOW TABLES IN $databaseName")
+      .rdd
+      .collect()
+      .map(r => r.getAs[String]("tableName")).map(tableName => {
+        val table = s"$databaseName.$tableName"
+        LOGGER.info(s"Accessing spark schema for [$table]")
+        (tableName, DeltaTable.forName(table).toDF.schema)
+      }).toMap
+    parseSchemas(databaseName, tables)
+  }
+
+  def parseSchemas(databaseName: String, schemas: Map[String, StructType]): String = {
     val namespace = databaseName.split("_")
       .map(_.toLowerCase()).foldLeft(NAMESPACE_prefix)((prefix, suffix) => s"$prefix::$suffix")
-    val pureClasses = dataFrames.map({ case (entityName, dataFrame) =>
-      new LegendCodegen(namespace, entityName, dataFrame.schema).generate
+    val pureClasses = schemas.map({ case (entityName, schema) =>
+      LOGGER.info(s"Converting spark entity [$entityName] to PURE collection")
+      new LegendCodegen(namespace, entityName, schema).generate
     }).foldLeft(Array.empty[PureClass])((previousClasses, newClasses) => previousClasses ++ newClasses)
     PureModel(databaseName, pureClasses).toPure(namespace)
   }
