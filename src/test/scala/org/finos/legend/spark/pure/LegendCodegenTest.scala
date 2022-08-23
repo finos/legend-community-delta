@@ -56,7 +56,6 @@ class LegendCodegenTest extends AnyFlatSpec {
     ))
 
     val observed = LegendCodegen.parseDatabase(
-      "com::databricks",
       "legend_integration",
       Map(
         "legend_primitive" -> testSchema1.toDF,

@@ -17,59 +17,54 @@
 
 package org.finos.legend.spark.pure
 
-import io.delta.tables.DeltaTable
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types._
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
-class LegendCodegen(namespacePrefix: String, entityName: String, schema: StructType) {
+class LegendCodegen(namespace: String, tableName: String, schema: StructType) {
 
   var store = new ListBuffer[PureClass]()
 
-  def registerClass(pureClass: PureClass): Unit = {
-    println(s"Registered class ${pureClass.entityFQN}")
-    store.append(pureClass)
-  }
-
-  private def parseEntitySchema(entityFQN: String, schema: StructType, isNested: Boolean = false): Unit = {
-    val fields = processFields(schema.fields)
-    registerClass(PureClass(entityFQN, fields, isNested))
-  }
-
   def generate: List[PureClass] = {
-    parseEntitySchema(s"$namespacePrefix::$NAMESPACE_classes::$entityName", schema)
+    val entityName = tableName.camelCase
+    processEntity(entityName, schema)
     store.toList
   }
 
-  private def processFields(fields: Array[StructField]): Array[PureField] = {
+  private def processEntity(entityName: String, schema: StructType, isNested: Boolean = false): Unit = {
+    val fields = processEntityFields(entityName, schema.fields)
+    store.append(PureClass(tableName, s"$namespace::$NAMESPACE_classes::$entityName", fields, isNested))
+  }
+
+  private def processEntityFields(entityName: String, fields: Array[StructField]): Array[PureField] = {
     fields.map(f => {
       f.dataType match {
         case s: StructType =>
-          parseEntitySchema(s"$namespacePrefix::$NAMESPACE_classes::${f.name}", s, isNested = true)
-          PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = true)
+          processEntity(s"$entityName${f.name.camelCase}", s, isNested = true)
+          PureField(f.name, f.cardinality, f.toPureType(entityName), f.description, isComplex = true)
         case a: ArrayType =>
           a.elementType match {
             case structType: StructType =>
-              parseEntitySchema(s"$namespacePrefix::$NAMESPACE_classes::${f.name}", structType, isNested = true)
-              PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = true)
-            case _ => PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = false)
+              processEntity(s"$entityName${f.name.camelCase}", structType, isNested = true)
+              PureField(f.name, f.cardinality, f.toPureType(entityName), f.description, isComplex = true)
+            case _ => PureField(f.name, f.cardinality, f.toPureType(entityName), f.description)
           }
-        case _ => PureField(f.name, f.cardinality, f.toPureType, f.description, isComplex = false)
+        case _ => PureField(f.name, f.cardinality, f.toPureType(entityName), f.description)
       }
     })
   }
 
-  implicit class StructFieldImpl(field: StructField) {
+  implicit class StructFieldImpl(f: StructField) {
 
-    def cardinality: String = field.dataType match {
-      case _: ArrayType => if (field.nullable) "[0..*]" else "[1..*]"
-      case _ => if (field.nullable) "[0..1]" else "[1]"
+    def cardinality: String = f.dataType match {
+      case _: ArrayType => if (f.nullable) "[0..*]" else "[1..*]"
+      case _ => if (f.nullable) "[0..1]" else "[1]"
     }
 
-    def toPureType: PureDatatype = {
-      field.dataType match {
+    def toPureType(entityName: String): PureDatatype = {
+      f.dataType match {
         case _: FloatType => PureDatatype("Float", "DOUBLE")
         case _: DoubleType => PureDatatype("Decimal", "DOUBLE")
         case _: ByteType => PureDatatype("Integer", "TINYINT")
@@ -81,15 +76,15 @@ class LegendCodegen(namespacePrefix: String, entityName: String, schema: StructT
         case _: BinaryType => PureDatatype("Binary", s"BINARY(${Int.MaxValue})")
         case _: DateType => PureDatatype("Date", "DATE")
         case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
-        case _: StructType => PureDatatype(s"$namespacePrefix::$NAMESPACE_classes::${field.name}", s"VARCHAR(${Int.MaxValue})") // Nested elements handled as String on legend SQL
-        case _: ArrayType => field.copy(dataType = field.dataType.asInstanceOf[ArrayType].elementType).toPureType
+        case _: StructType => PureDatatype(s"$namespace::$NAMESPACE_classes::$entityName${f.name.camelCase}", s"VARCHAR(${Int.MaxValue})") // Nested elements handled as String on legend SQL
+        case _: ArrayType => f.copy(dataType = f.dataType.asInstanceOf[ArrayType].elementType).toPureType(entityName)
         case _ =>
-          throw new IllegalArgumentException(s"Unsupported field type [${field.dataType}] for field [${field.name}]")
+          throw new IllegalArgumentException(s"Unsupported field type [${f.dataType}] for field [${f.name}]")
       }
     }
 
-    def description: String = if (field.metadata.contains("comment"))
-      field.metadata.getString("comment") else AUTO_GENERATED
+    def description: Option[String] = if (f.metadata.contains("comment"))
+      Some(f.metadata.getString("comment")) else None: Option[String]
   }
 }
 
@@ -97,11 +92,9 @@ object LegendCodegen {
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
-  def parseDatabase(namespace: String, databaseName: String, tableName: String) = {
-    DeltaTable.forName(s"$databaseName.$tableName").toDF
-  }
-
-  def parseDatabase(namespace: String, databaseName: String, dataFrames: Map[String, DataFrame]): String = {
+  def parseDatabase(databaseName: String, dataFrames: Map[String, DataFrame]): String = {
+    val namespace = databaseName.split("_")
+      .map(_.toLowerCase()).foldLeft(NAMESPACE_prefix)((prefix, suffix) => s"$prefix::$suffix")
     val pureClasses = dataFrames.map({ case (entityName, dataFrame) =>
       new LegendCodegen(namespace, entityName, dataFrame.schema).generate
     }).foldLeft(Array.empty[PureClass])((previousClasses, newClasses) => previousClasses ++ newClasses)

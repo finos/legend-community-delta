@@ -19,25 +19,41 @@ package org.finos.legend.spark
 
 package object pure {
 
-  val AUTO_GENERATED: String = "auto-generated"
-
-  val NAMESPACE_prefix: String = "legend::delta::generated"
-  val NAMESPACE_nested: String = "nested"
-
+  val NAMESPACE_prefix: String = "com::databricks"
   val NAMESPACE_mapping: String = "mapping"
   val NAMESPACE_classes: String = "classes"
-  val NAMESPACE_connect: String = "lakehouse"
+  val NAMESPACE_connect: String = "connect"
 
-  case class PureDatatype(pureType: String, pureRelationalType: String)
+  implicit class StringImpl(string: String) {
+    def camelCase: String = string.split("_").map(_.capitalize).mkString("")
+    def nestedField: String = s"__${string}__"
+  }
 
-  case class PureField(name: String, cardinality: String, pureType: PureDatatype, description: String, isComplex: Boolean = false) {
+  case class PureDatatype(
+                           pureType: String,
+                           pureRelationalType: String
+                         )
 
-    def toPure(nested_counterpart: Boolean = false): String = {
-      if (nested_counterpart && isComplex) {
-        s"{meta::pure::profiles::doc.doc = 'JSON wrapper for field [$name]'} $name: String$cardinality;"
-      } else {
+  case class PureField(
+                        name: String,
+                        cardinality: String,
+                        pureType: PureDatatype,
+                        description: Option[String],
+                        isComplex: Boolean = false
+                      ) {
+
+    def toPure: String = {
+      if (description.isDefined) {
         s"{meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
+      } else {
+        s"$name: ${pureType.pureType}$cardinality;"
       }
+    }
+
+    def toPureComplex: String = {
+      require(isComplex, s"Wrapper for nested properties only, [$name] is not a nested object")
+      s"{meta::pure::profiles::doc.doc = 'JSON wrapper for nested property [$name]'} " +
+        s"${name.nestedField}: String$cardinality;"
     }
 
     def toRelational: String = {
@@ -48,35 +64,59 @@ package object pure {
       s"[$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
     }
 
-    def toMapping(namespace: String, databaseName: String, tableName: String): String = {
-      s"$name: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
+    def toService: String = {
+      if (isComplex) {
+        "x|$x." + name.nestedField
+      } else "x|$x." + name
     }
 
+    def toServiceName: String = {
+      s"'$name'"
+    }
+
+    def toMapping(namespace: String, databaseName: String, tableName: String): String = {
+      if (isComplex) {
+        s"${name.nestedField}: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
+      } else {
+        s"$name: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
+      }
+    }
   }
 
-  case class PureClass(entityFQN: String, fields: Array[PureField], isNested: Boolean = false) {
+  case class PureClass(
+                        tableName: String,
+                        entityFQN: String,
+                        fields: Array[PureField],
+                        isNested: Boolean = false
+                      ) {
 
-    val tableName: String = entityFQN.split("::").last
     val hasNested: Boolean = fields.exists(_.isComplex)
 
-    def getNestedCompanion: String = {
-      val xs = entityFQN.split("::")
-      xs.dropRight(1).mkString("::") + s"::$NAMESPACE_nested::" + xs.last
+    def toService(namespace: String): String = {
+      require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
+      val entityName = entityFQN.split("::").last
+      val projection = s"[${fields.map(_.toService).mkString(",")}], [${fields.map(_.toServiceName).mkString(",")}]"
+      s"""Service $namespace::$NAMESPACE_connect::$entityName
+         |{
+         |  pattern: '/$entityName';
+         |  documentation: 'Simple REST Api to query [$entityFQN] entities';
+         |  autoActivateUpdates: true;
+         |  execution: Single
+         |  {
+         |    query: |$namespace::$NAMESPACE_classes::$entityName.all()->project($projection);
+         |    mapping: $namespace::$NAMESPACE_mapping::$entityName;
+         |    runtime: $namespace::$NAMESPACE_connect::DatabricksRuntime;
+         |  }
+         |}""".stripMargin
     }
 
     def toPure: String = {
-      val coreClass = s"""Class $entityFQN
+      val pureFields = fields.map(_.toPure) ++ fields.filter(_.isComplex).map(_.toPureComplex)
+      s"""Class $entityFQN
          |{
-         |  ${fields.map(_.toPure()).mkString("\n  ")}
+         |  ${pureFields.mkString("\n  ")}
          |}
          |""".stripMargin
-      if(hasNested) {
-        coreClass + s"""\nClass $getNestedCompanion
-                       |{
-                       |  ${fields.map(_.toPure(true)).mkString("\n  ")}
-                       |}
-                       |""".stripMargin
-      } else coreClass
     }
 
     def toRelational: String = {
@@ -88,7 +128,8 @@ package object pure {
     }
 
     def getMappingName(namespace: String): String = {
-      if (hasNested) s"$namespace::$NAMESPACE_mapping::$NAMESPACE_nested::$tableName" else s"$namespace::$NAMESPACE_mapping::$tableName"
+      require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
+      s"$namespace::$NAMESPACE_mapping::${entityFQN.split("::").last}"
     }
 
     def toMapping(namespace: String, databaseName: String): String = {
@@ -103,7 +144,7 @@ package object pure {
       val mappingName = getMappingName(namespace)
       s"""Mapping $mappingName
          |(
-         |  *${if (hasNested) getNestedCompanion else entityFQN}: Relational
+         |  *$entityFQN: Relational
          |  {
          |    ~primaryKey
          |    (
@@ -139,14 +180,14 @@ package object pure {
          |  type: Databricks;
          |  specification: Databricks
          |  {
-         |    hostname: 'TODO';
-         |    port: 'TODO';
-         |    protocol: 'TODO';
-         |    httpPath: 'TODO';
+         |    hostname: 'Databricks hostname';
+         |    port: '443';
+         |    protocol: 'https';
+         |    httpPath: 'Databricks cluster HTTP path';
          |  };
          |  auth: ApiToken
          |  {
-         |    apiToken: 'TODO';
+         |    apiToken: 'Databricks token reference on legend vault';
          |  };
          |}
          |
@@ -165,6 +206,9 @@ package object pure {
          |    ]
          |  ];
          |}
+         |
+         |###Service
+         |${pureTables.filter(!_.isNested).map(_.toService(namespace)).mkString("\n\n")}
          |""".stripMargin
     }
   }
