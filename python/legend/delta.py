@@ -81,3 +81,17 @@ class Legend():
     def get_entities(self):
         entities_str = self.legend.getEntityNames()
         return json.loads(entities_str)
+
+
+class LegendCodeGen:
+
+    def __init__(self):
+        self.spark = SparkSession.getActiveSession()
+
+    def generate_from_table(self, namespace, database_name, table_name):
+        return self.spark.sparkContext._jvm.org.finos.legend.spark.pure.LegendCodegen.generatePureFromTable(
+            namespace, database_name, table_name)
+
+    def generate_from_database(self, namespace, database_name):
+        return self.spark.sparkContext._jvm.org.finos.legend.spark.pure.LegendCodegen.generatePureFromDatabase(
+            namespace, database_name)

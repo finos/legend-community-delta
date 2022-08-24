@@ -100,6 +100,10 @@ object LegendCodegen {
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
+  def generatePureFromDatabase(namespace: String, databaseName: String): String = {
+    generatePure(namespace, databaseName)
+  }
+
   def generatePure(namespace: String, databaseName: String): String = {
     require(SparkSession.getDefaultSession.isDefined, "A spark session should be active")
     require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
@@ -122,6 +126,10 @@ object LegendCodegen {
 
     LOGGER.info(s"Generating PURE model for ${schemas.size} table(s)")
     generatePureFromSchemas(namespace, databaseName, schemas)
+  }
+
+  def generatePureFromTable(namespace: String, databaseName: String, tableName: String): String = {
+    generatePure(namespace, databaseName, tableName)
   }
 
   def generatePure(namespace: String, databaseName: String, tableName: String): String = {

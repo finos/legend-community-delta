@@ -162,5 +162,8 @@ class LegendTest(unittest.TestCase):
         print(sql)
         self.assertEqual(sql, expected)
 
+    def test_failure_gen(self):
+        LegendCodeGen.generate_from_database("database", "name")
+
 if __name__ == '__main__':
     unittest.main()
