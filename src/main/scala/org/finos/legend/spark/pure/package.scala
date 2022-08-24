@@ -42,12 +42,10 @@ package object pure {
                         isComplex: Boolean = false
                       ) {
 
-    def toPure: String = {
+    def toClass: String = {
       if (description.isDefined) {
         s"{meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
-      } else {
-        s"$name: ${pureType.pureType}$cardinality;"
-      }
+      } else s"$name: ${pureType.pureType}$cardinality;"
     }
 
     def toPureComplex: String = {
@@ -56,23 +54,17 @@ package object pure {
         s"${name.nestedField}: String$cardinality;"
     }
 
-    def toRelational: String = {
-      s"$name ${pureType.pureRelationalType}"
-    }
+    def toRelational: String = s"$name ${pureType.pureRelationalType}"
 
     def toPrimaryKey(namespace: String, databaseName: String, tableName: String):String = {
       s"[$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
     }
 
     def toService: String = {
-      if (isComplex) {
-        "x|$x." + name.nestedField
-      } else "x|$x." + name
+      if (isComplex) "x|$x." + name.nestedField else "x|$x." + name
     }
 
-    def toServiceName: String = {
-      s"'$name'"
-    }
+    def toServiceName: String = s"'$name'"
 
     def toMapping(namespace: String, databaseName: String, tableName: String): String = {
       if (isComplex) {
@@ -110,8 +102,8 @@ package object pure {
          |}""".stripMargin
     }
 
-    def toPure: String = {
-      val pureFields = fields.map(_.toPure) ++ fields.filter(_.isComplex).map(_.toPureComplex)
+    def toClass: String = {
+      val pureFields = fields.map(_.toClass) ++ fields.filter(_.isComplex).map(_.toPureComplex)
       s"""Class $entityFQN
          |{
          |  ${pureFields.mkString("\n  ")}
@@ -161,7 +153,7 @@ package object pure {
   case class PureModel(databaseName: String, pureTables: Array[PureClass]) {
     def toPure(namespace: String): String = {
       s"""###Pure
-         |${pureTables.map(_.toPure).mkString("\n")}
+         |${pureTables.map(_.toClass).mkString("\n")}
          |###Relational
          |Database $namespace::$NAMESPACE_connect::DatabricksSchema
          |(

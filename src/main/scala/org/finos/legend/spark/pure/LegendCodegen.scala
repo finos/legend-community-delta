@@ -18,7 +18,7 @@
 package org.finos.legend.spark.pure
 
 import io.delta.tables.DeltaTable
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.slf4j.LoggerFactory
 
@@ -118,11 +118,4 @@ object LegendCodegen {
     PureModel(databaseName, pureClasses).toPure(namespace)
   }
 
-  def parseDataframe(namespace: String, dataFrameName: String, dataframe: DataFrame): String = {
-    parseStructType(namespace, dataFrameName, dataframe.schema)
-  }
-
-  def parseStructType(namespace: String, entityName: String, schema: StructType): String = {
-    new LegendCodegen(namespace, entityName, schema).generate.map(_.toPure).mkString("\n\n")
-  }
 }
