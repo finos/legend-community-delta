@@ -164,22 +164,22 @@ object LegendCodegen {
     }
   }
 
+  def validateModel(pureModel: String): Boolean = {
+    pureModel.isValidPureModel
+  }
+
   private[pure] def generatePureFromSchemas(namespace: String, databaseName: String, schemas: Map[String, StructType]): String = {
     require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
     val pureClasses = schemas.map({ case (tableName, schema) =>
       new LegendCodegen(namespace, tableName, schema).generate
     }).reduce(_++_)
-    val model = PureModel(databaseName, pureClasses).toPure(namespace)
-    require(model.isValidPureModel, "Could not compile generated model \n" + model)
-    model
+    PureModel(databaseName, pureClasses).toPure(namespace)
   }
 
   private[pure] def generatePureFromSchema(namespace: String, databaseName: String, tableName: String, schema: StructType): String = {
     require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
     val pureClasses = new LegendCodegen(namespace, tableName, schema).generate
-    val model = PureModel(databaseName, pureClasses).toPure(namespace)
-    require(model.isValidPureModel, "Could not compile generated model \n" + model)
-    model
+    PureModel(databaseName, pureClasses).toPure(namespace)
   }
 
 }
