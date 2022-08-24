@@ -23,15 +23,16 @@ import org.apache.spark.sql.types._
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
+import scala.util.{Failure, Success, Try}
 
 class LegendCodegen(namespace: String, tableName: String, schema: StructType) {
 
   var store = new ListBuffer[PureClass]()
 
-  def generate: List[PureClass] = {
+  def generate: Array[PureClass] = {
     val entityName = tableName.camelCaseEntity
     processEntity(entityName, schema)
-    store.toList
+    store.toArray
   }
 
   private def processEntity(entityName: String, schema: StructType, isNested: Boolean = false): Unit = {
@@ -99,28 +100,56 @@ object LegendCodegen {
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
-  def parseDatabase(databaseName: String): String = {
-    require(SparkSession.getDefaultSession.isDefined)
+  def generatePure(namespace: String, databaseName: String): String = {
+    require(SparkSession.getDefaultSession.isDefined, "A spark session should be active")
+    require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
     val spark = SparkSession.active
-    val tables = spark
+    val schemas = spark
       .sql(s"SHOW TABLES IN $databaseName")
       .rdd
       .collect()
-      .map(r => r.getAs[String]("tableName")).map(tableName => {
-      val table = s"$databaseName.$tableName"
-      LOGGER.info(s"Accessing spark schema for [$table]")
-      (tableName, DeltaTable.forName(table).toDF.schema)
-    }).toMap
-    parseSchemas(databaseName, tables)
+      .map(r => r.getAs[String]("tableName"))
+      .flatMap(tableName => {
+        val table = s"$databaseName.$tableName"
+        LOGGER.info(s"Accessing spark schema for table [$table]")
+        Try(DeltaTable.forName(table).toDF.schema) match {
+          case Success(schema) => Some((tableName, schema))
+          case Failure(exception) =>
+            LOGGER.error(s"Could not read delta table [$table], ${exception.getMessage}", exception)
+            None
+        }
+      }).toMap
+
+    LOGGER.info(s"Generating PURE model for ${schemas.size} table(s)")
+    generatePureFromSchemas(namespace, databaseName, schemas)
   }
 
-  def parseSchemas(databaseName: String, schemas: Map[String, StructType]): String = {
-    val namespace = databaseName.split("_")
-      .map(_.toLowerCase()).foldLeft(NAMESPACE_prefix)((prefix, suffix) => s"$prefix::$suffix")
-    val pureClasses = schemas.map({ case (entityName, schema) =>
-      LOGGER.info(s"Converting spark entity [$entityName] to PURE collection")
-      new LegendCodegen(namespace, entityName, schema).generate
-    }).foldLeft(Array.empty[PureClass])((previousClasses, newClasses) => previousClasses ++ newClasses)
+  def generatePure(namespace: String, databaseName: String, tableName: String): String = {
+    require(SparkSession.getDefaultSession.isDefined, "A spark session should be active")
+    require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
+    val table = s"$databaseName.$tableName"
+    LOGGER.info(s"Accessing spark schema for table [$table]")
+    Try(DeltaTable.forName(table).toDF.schema) match {
+      case Success(schema) =>
+        LOGGER.info(s"Generating PURE model for table [$table]")
+        generatePureFromSchema(namespace, databaseName, tableName, schema)
+      case Failure(exception) =>
+        LOGGER.error(s"Could not read delta table [$table], ${exception.getMessage}", exception)
+        throw exception
+    }
+  }
+
+  private[pure] def generatePureFromSchemas(namespace: String, databaseName: String, schemas: Map[String, StructType]): String = {
+    require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
+    val pureClasses = schemas.map({ case (tableName, schema) =>
+      new LegendCodegen(namespace, tableName, schema).generate
+    }).reduce(_++_)
+    PureModel(databaseName, pureClasses).toPure(namespace)
+  }
+
+  private[pure] def generatePureFromSchema(namespace: String, databaseName: String, tableName: String, schema: StructType): String = {
+    require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
+    val pureClasses = new LegendCodegen(namespace, tableName, schema).generate
     PureModel(databaseName, pureClasses).toPure(namespace)
   }
 

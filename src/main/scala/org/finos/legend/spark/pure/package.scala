@@ -19,10 +19,9 @@ package org.finos.legend.spark
 
 package object pure {
 
-  val NAMESPACE_prefix: String = "com::databricks"
+  val NAMESPACE_default: String = "org::finos::legend"
   val NAMESPACE_mapping: String = "mapping"
   val NAMESPACE_classes: String = "classes"
-  val NAMESPACE_connect: String = "connect"
 
   implicit class StringImpl(string: String) {
     def camelCaseEntity: String = string.split("_").map(_.capitalize).mkString("")
@@ -30,6 +29,10 @@ package object pure {
       val capitalized = string.camelCaseEntity
       val xs = capitalized.toCharArray.map(_.toString)
       xs.tail.foldLeft(xs.head.toLowerCase)((x1, x2) => s"$x1$x2")
+    }
+    def isValidNamespace: Boolean = {
+      val r = "^[a-z]+(?:\\:\\:[a-z]+)+$".r
+      r.findFirstMatchIn(string).isDefined
     }
   }
 
@@ -65,19 +68,11 @@ package object pure {
     }
 
     def toPrimaryKeyField(namespace: String, databaseName: String, tableName: String): String = {
-      s"[$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
-    }
-
-    def toServiceField: String = {
-      "x|$x." + fieldName
-    }
-
-    def toServiceFieldName: String = {
-      s"'$fieldName'"
+      s"[$namespace::Store]$databaseName.$tableName.$name"
     }
 
     def toMappingField(namespace: String, databaseName: String, tableName: String): String = {
-      s"$fieldName: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
+      s"$fieldName: [$namespace::Store]$databaseName.$tableName.$name"
     }
 
   }
@@ -120,25 +115,6 @@ package object pure {
       }
     }
 
-    def toService(namespace: String, databaseName: String): String = {
-      require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
-      val entityFQNReference = if (hasNested) s"${entityFQN}Serializable" else entityFQN
-      val entityNameReference = entityName.camelCaseEntity
-      val projection = s"[${fields.map(_.toServiceField).mkString(",")}], [${fields.map(_.toServiceFieldName).mkString(",")}]"
-      s"""Service $namespace::$NAMESPACE_connect::services::$entityNameReference
-         |{
-         |  pattern: '/${entityName.camelCaseField}';
-         |  documentation: 'Simple REST Api to query [$databaseName.$entityName] entities';
-         |  autoActivateUpdates: true;
-         |  execution: Single
-         |  {
-         |    query: |$entityFQNReference.all()->project($projection);
-         |    mapping: $namespace::$NAMESPACE_mapping::$entityNameReference;
-         |    runtime: $namespace::$NAMESPACE_connect::DatabricksRuntime;
-         |  }
-         |}""".stripMargin
-    }
-
     def toRelationalTable: String = {
       require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
       s"""    Table $entityName
@@ -166,7 +142,7 @@ package object pure {
          |    (
          |      ${fields.map(_.toPrimaryKeyField(namespace, databaseName, entityName)).mkString(",\n      ")}
          |    )
-         |    ~mainTable [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$entityName
+         |    ~mainTable [$namespace::Store]$databaseName.$entityName
          |    ${fields.map(_.toMappingField(namespace, databaseName, entityName)).mkString(",\n    ")}
          |  }
          |)
@@ -176,60 +152,22 @@ package object pure {
     def getMappingName(namespace: String): String = {
       s"$namespace::$NAMESPACE_mapping::${entityName.camelCaseEntity}"
     }
-
   }
 
   case class PureModel(databaseName: String, pureTables: Array[PureClass]) {
     def toPure(namespace: String): String = {
       s"""###Pure
          |${pureTables.map(_.toClass).mkString("\n")}
+         |###Mapping
+         |${pureTables.filter(!_.isNested).map(_.toMapping(namespace, databaseName)).mkString("\n")}
          |###Relational
-         |Database $namespace::$NAMESPACE_connect::DatabricksSchema
+         |Database $namespace::Store
          |(
          |  Schema $databaseName
          |  (
          |${pureTables.filter(!_.isNested).map(_.toRelationalTable).mkString("\n")}
          |  )
          |)
-         |
-         |###Mapping
-         |${pureTables.filter(!_.isNested).map(_.toMapping(namespace, databaseName)).mkString("\n")}
-         |###Connection
-         |RelationalDatabaseConnection $namespace::$NAMESPACE_connect::DatabricksJDBCConnection
-         |{
-         |  store: $namespace::$NAMESPACE_connect::DatabricksSchema;
-         |  type: Databricks;
-         |  specification: Databricks
-         |  {
-         |    hostname: 'Databricks hostname';
-         |    port: '443';
-         |    protocol: 'https';
-         |    httpPath: 'Databricks cluster HTTP path';
-         |  };
-         |  auth: ApiToken
-         |  {
-         |    apiToken: 'Databricks token reference on legend vault';
-         |  };
-         |}
-         |
-         |###Runtime
-         |Runtime $namespace::$NAMESPACE_connect::DatabricksRuntime
-         |{
-         |  mappings:
-         |  [
-         |    ${pureTables.filter(!_.isNested).map(_.getMappingName(namespace)).mkString(",\n    ")}
-         |  ];
-         |  connections:
-         |  [
-         |    $namespace::$NAMESPACE_connect::DatabricksSchema:
-         |    [
-         |      environment: $namespace::$NAMESPACE_connect::DatabricksJDBCConnection
-         |    ]
-         |  ];
-         |}
-         |
-         |###Service
-         |${pureTables.filter(!_.isNested).map(_.toService(namespace, databaseName)).mkString("\n\n")}
          |""".stripMargin
     }
   }

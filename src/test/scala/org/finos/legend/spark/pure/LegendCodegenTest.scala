@@ -22,9 +22,26 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class LegendCodegenTest extends AnyFlatSpec {
 
+  "A namespace" should "be valid" in {
+    assert("antoine::amend".isValidNamespace)
+    assert(!" antoine::amend".isValidNamespace)
+    assert(!"antoine.amend".isValidNamespace)
+    assert(!"antoine::amend::".isValidNamespace)
+    assert("antoine::amend::legend".isValidNamespace)
+  }
+
+  "Capitalizing field" should "work" in {
+    assert("hello_world".camelCaseEntity == "HelloWorld")
+    assert("helloWorld".camelCaseEntity == "HelloWorld")
+    assert("helloworld".camelCaseEntity == "Helloworld")
+    assert("hello_world".camelCaseField == "helloWorld")
+    assert("helloWorld".camelCaseField == "helloWorld")
+    assert("helloworld".camelCaseField == "helloworld")
+  }
+
   "A spark schema" should "be converted as PURE" in {
 
-    val testSchema1 = StructType(List(
+    val child = StructType(List(
       StructField("string_field", StringType, nullable = true),
       StructField("byte_field", ByteType, nullable = true),
       StructField("boolean_field", BooleanType, nullable = true),
@@ -38,23 +55,16 @@ class LegendCodegenTest extends AnyFlatSpec {
       StructField("binary_field", BinaryType, nullable = true)
     ))
 
-    val testSchema2 = StructType(List(
+    val parent = StructType(List(
       StructField("integer_field", IntegerType, nullable = true),
-      StructField("string_field", ArrayType(StringType), nullable = true)
+      StructField("struct_field", child, nullable = true)
     ))
 
-    val testSchema3 = StructType(List(
-      StructField("integer_field", IntegerType, nullable = true),
-      StructField("struct_field", testSchema2, nullable = true)
-    ))
-
-    val observed = LegendCodegen.parseSchemas(
-      "legend_integration",
-      Map(
-        "legend_primitive" -> testSchema1,
-        "legend_arrays" -> testSchema2,
-        "legend_nested" -> testSchema3
-      )
+    val observed = LegendCodegen.generatePureFromSchema(
+      "org::finos::legend::delta",
+      "database",
+      "table",
+      parent
     )
     print(observed)
   }
