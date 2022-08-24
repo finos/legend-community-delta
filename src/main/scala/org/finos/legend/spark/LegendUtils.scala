@@ -114,8 +114,10 @@ object LegendUtils {
     returnType match {
       case "String" => StringType
       case "Boolean" => BooleanType
+      case "Byte" => ByteType
       case "Binary" => BinaryType
       case "Integer" => IntegerType
+      case "Short" => ShortType
       case "Number" => LongType
       case "Float" => FloatType
       case "Decimal" => DoubleType

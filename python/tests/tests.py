@@ -162,5 +162,17 @@ class LegendTest(unittest.TestCase):
         print(sql)
         self.assertEqual(sql, expected)
 
+    def test_generate_pure_from_database(self):
+        with self.assertRaises(Exception) as context:
+            LegendCodeGen().generate_from_database("namespace", "database")
+        # we do not wish to read from a database in test, just that we could call scala functions from python
+        self.assertIn('namespace should be in the form', str(context.exception))
+
+    def test_generate_pure_from_table(self):
+        with self.assertRaises(Exception) as context:
+            LegendCodeGen().generate_from_table("namespace", "database", "table")
+        # we do not wish to read from a database in test, just that we could call scala functions from python
+        self.assertIn('namespace should be in the form', str(context.exception))
+
 if __name__ == '__main__':
     unittest.main()
