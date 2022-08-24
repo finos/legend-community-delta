@@ -17,6 +17,11 @@
 
 package org.finos.legend.spark
 
+import org.finos.legend.engine.language.pure.compiler.Compiler
+import org.finos.legend.engine.language.pure.grammar.from.PureGrammarParser
+
+import scala.util.Try
+
 package object pure {
 
   val NAMESPACE_default: String = "org::finos::legend"
@@ -33,6 +38,12 @@ package object pure {
     def isValidNamespace: Boolean = {
       val r = "^[a-z]+(?:\\:\\:[a-z]+)+$".r
       r.findFirstMatchIn(string).isDefined
+    }
+    def isValidPureModel: Boolean = {
+      Try {
+        val contextData = PureGrammarParser.newInstance.parseModel(string)
+        Compiler.compile(contextData, null, null)
+      }.isSuccess
     }
   }
 

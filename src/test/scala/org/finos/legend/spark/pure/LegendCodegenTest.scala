@@ -132,6 +132,15 @@ class LegendCodegenTest extends AnyFlatSpec {
     assert(observed == expected)
   }
 
+  "A pure model" should "be valid" in {
+    val pureModelString = """###Pure
+                            |Class foo::bar::Entity
+                            |{
+                            |  foobar: String[0..1];
+                            |}""".stripMargin
+    assert(pureModelString.isValidPureModel)
+  }
+
   "Generated PURE model" should "be correctly interpreted" in {
 
     val schema = StructType(List(

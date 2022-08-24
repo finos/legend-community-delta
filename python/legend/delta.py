@@ -18,7 +18,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 import json
 
-class LegendFileLoader():
+class LegendFileLoader:
 
     def __init__(self):
         self.spark = SparkSession.getActiveSession()
@@ -28,7 +28,7 @@ class LegendFileLoader():
         return Legend(legend)
 
 
-class LegendClasspathLoader():
+class LegendClasspathLoader:
 
     def __init__(self):
         self.spark = SparkSession.getActiveSession()
@@ -38,7 +38,7 @@ class LegendClasspathLoader():
         return Legend(legend)
 
 
-class Legend():
+class Legend:
 
     def __init__(self, legend):
         self.spark = SparkSession.getActiveSession()

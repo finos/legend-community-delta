@@ -100,6 +100,14 @@ object LegendCodegen {
 
   final val LOGGER = LoggerFactory.getLogger(this.getClass)
 
+  /**
+   * Given a database, we retrieve all delta tables, get their spark schema and generate their corresponding legend
+   * PURE data model. We create entities, relational store and mappings so that delta tables can be queries straight
+   * away from the legend studio or query interface
+   * @param namespace the legend namespace, in the form of [a-z]+::[a-z]+::.*
+   * @param databaseName the name of the delta database to read metadata from
+   * @return a validated PURE model that can be copied / pasted in legend studio
+   */
   def generatePureFromDatabase(namespace: String, databaseName: String): String = {
     generatePure(namespace, databaseName)
   }
@@ -128,6 +136,15 @@ object LegendCodegen {
     generatePureFromSchemas(namespace, databaseName, schemas)
   }
 
+  /**
+   * Given a database and a delta table, we retrieve its spark schema and generate its corresponding legend
+   * PURE data model. We create entities, relational store and mappings so that delta tables can be queries straight
+   * away from the legend studio or query interface
+   * @param namespace the legend namespace, in the form of [a-z]+::[a-z]+::.*
+   * @param databaseName the name of the delta database to read metadata from
+   * @param tableName the name of the delta table to read metadata from
+   * @return a validated PURE model that can be copied / pasted in legend studio
+   */
   def generatePureFromTable(namespace: String, databaseName: String, tableName: String): String = {
     generatePure(namespace, databaseName, tableName)
   }
@@ -152,13 +169,17 @@ object LegendCodegen {
     val pureClasses = schemas.map({ case (tableName, schema) =>
       new LegendCodegen(namespace, tableName, schema).generate
     }).reduce(_++_)
-    PureModel(databaseName, pureClasses).toPure(namespace)
+    val model = PureModel(databaseName, pureClasses).toPure(namespace)
+    require(model.isValidPureModel, "Could not compile generated model \n" + model)
+    model
   }
 
   private[pure] def generatePureFromSchema(namespace: String, databaseName: String, tableName: String, schema: StructType): String = {
     require(namespace.isValidNamespace, "namespace should be in the form of group::artifact::.*")
     val pureClasses = new LegendCodegen(namespace, tableName, schema).generate
-    PureModel(databaseName, pureClasses).toPure(namespace)
+    val model = PureModel(databaseName, pureClasses).toPure(namespace)
+    require(model.isValidPureModel, "Could not compile generated model \n" + model)
+    model
   }
 
 }
