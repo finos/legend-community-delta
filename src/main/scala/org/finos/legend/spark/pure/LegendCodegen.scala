@@ -29,7 +29,7 @@ class LegendCodegen(namespace: String, tableName: String, schema: StructType) {
   var store = new ListBuffer[PureClass]()
 
   def generate: List[PureClass] = {
-    val entityName = tableName.camelCase
+    val entityName = tableName.camelCaseEntity
     processEntity(entityName, schema)
     store.toList
   }
@@ -43,12 +43,12 @@ class LegendCodegen(namespace: String, tableName: String, schema: StructType) {
     fields.map(f => {
       f.dataType match {
         case s: StructType =>
-          processEntity(s"$entityName${f.name.camelCase}", s, isNested = true)
+          processEntity(s"$entityName${f.name.camelCaseEntity}", s, isNested = true)
           PureField(f.name, f.cardinality, f.toPureType(entityName), f.description, isComplex = true)
         case a: ArrayType =>
           a.elementType match {
             case structType: StructType =>
-              processEntity(s"$entityName${f.name.camelCase}", structType, isNested = true)
+              processEntity(s"$entityName${f.name.camelCaseEntity}", structType, isNested = true)
               PureField(f.name, f.cardinality, f.toPureType(entityName), f.description, isComplex = true)
             case _ => PureField(f.name, f.cardinality, f.toPureType(entityName), f.description)
           }
@@ -77,8 +77,14 @@ class LegendCodegen(namespace: String, tableName: String, schema: StructType) {
         case _: BinaryType => PureDatatype("Binary", s"BINARY(${Int.MaxValue})")
         case _: DateType => PureDatatype("Date", "DATE")
         case _: TimestampType => PureDatatype("DateTime", "TIMESTAMP")
-        case _: StructType => PureDatatype(s"$namespace::$NAMESPACE_classes::$entityName${f.name.camelCase}", s"VARCHAR(${Int.MaxValue})") // Nested elements handled as String on legend SQL
-        case _: ArrayType => f.copy(dataType = f.dataType.asInstanceOf[ArrayType].elementType).toPureType(entityName)
+        case _: StructType =>
+          // Nested elements handled as String on legend SQL
+          val nestedEntityReference = s"$namespace::$NAMESPACE_classes::$entityName${f.name.camelCaseEntity}"
+          PureDatatype(nestedEntityReference, s"VARCHAR(${Int.MaxValue})")
+        case _: ArrayType =>
+          // Array elements go through recursion
+          val elementType = f.dataType.asInstanceOf[ArrayType].elementType
+          f.copy(dataType = elementType).toPureType(entityName)
         case _ =>
           throw new IllegalArgumentException(s"Unsupported field type [${f.dataType}] for field [${f.name}]")
       }
@@ -101,10 +107,10 @@ object LegendCodegen {
       .rdd
       .collect()
       .map(r => r.getAs[String]("tableName")).map(tableName => {
-        val table = s"$databaseName.$tableName"
-        LOGGER.info(s"Accessing spark schema for [$table]")
-        (tableName, DeltaTable.forName(table).toDF.schema)
-      }).toMap
+      val table = s"$databaseName.$tableName"
+      LOGGER.info(s"Accessing spark schema for [$table]")
+      (tableName, DeltaTable.forName(table).toDF.schema)
+    }).toMap
     parseSchemas(databaseName, tables)
   }
 

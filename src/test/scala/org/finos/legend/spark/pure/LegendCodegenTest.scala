@@ -25,32 +25,27 @@ class LegendCodegenTest extends AnyFlatSpec {
   "A spark schema" should "be converted as PURE" in {
 
     val testSchema1 = StructType(List(
-      StructField("string", StringType, nullable = true),
-      StructField("byte", ByteType, nullable = true),
-      StructField("boolean", BooleanType, nullable = true),
-      StructField("short", ShortType, nullable = true),
-      StructField("integer", IntegerType, nullable = true),
-      StructField("long", LongType, nullable = true),
-      StructField("float", FloatType, nullable = true),
-      StructField("double", DoubleType, nullable = true),
-      StructField("date", DateType, nullable = true),
-      StructField("timestamp", TimestampType, nullable = true),
-      StructField("binary", BinaryType, nullable = true)
+      StructField("string_field", StringType, nullable = true),
+      StructField("byte_field", ByteType, nullable = true),
+      StructField("boolean_field", BooleanType, nullable = true),
+      StructField("short_field", ShortType, nullable = true),
+      StructField("integer_field", IntegerType, nullable = true),
+      StructField("long_field", LongType, nullable = true),
+      StructField("float_field", FloatType, nullable = true),
+      StructField("double_field", DoubleType, nullable = true),
+      StructField("date_field", DateType, nullable = true),
+      StructField("timestamp_field", TimestampType, nullable = true),
+      StructField("binary_field", BinaryType, nullable = true)
     ))
 
     val testSchema2 = StructType(List(
-      StructField("integer", IntegerType, nullable = true),
-      StructField("string", ArrayType(StringType), nullable = true)
+      StructField("integer_field", IntegerType, nullable = true),
+      StructField("string_field", ArrayType(StringType), nullable = true)
     ))
 
     val testSchema3 = StructType(List(
-      StructField("integer", IntegerType, nullable = true),
-      StructField("grandChild", testSchema2, nullable = true)
-    ))
-
-    val testSchema4 = StructType(List(
-      StructField("integer", IntegerType, nullable = true),
-      StructField("child", testSchema3, nullable = true)
+      StructField("integer_field", IntegerType, nullable = true),
+      StructField("struct_field", testSchema2, nullable = true)
     ))
 
     val observed = LegendCodegen.parseSchemas(
@@ -58,8 +53,7 @@ class LegendCodegenTest extends AnyFlatSpec {
       Map(
         "legend_primitive" -> testSchema1,
         "legend_arrays" -> testSchema2,
-        "legend_nested" -> testSchema2,
-        "legend_nested2" -> testSchema4,
+        "legend_nested" -> testSchema3
       )
     )
     print(observed)

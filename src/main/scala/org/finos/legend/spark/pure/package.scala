@@ -25,8 +25,12 @@ package object pure {
   val NAMESPACE_connect: String = "connect"
 
   implicit class StringImpl(string: String) {
-    def camelCase: String = string.split("_").map(_.capitalize).mkString("")
-    def nestedField: String = s"__${string}__"
+    def camelCaseEntity: String = string.split("_").map(_.capitalize).mkString("")
+    def camelCaseField: String = {
+      val capitalized = string.camelCaseEntity
+      val xs = capitalized.toCharArray.map(_.toString)
+      xs.tail.foldLeft(xs.head.toLowerCase)((x1, x2) => s"$x1$x2")
+    }
   }
 
   case class PureDatatype(
@@ -42,41 +46,44 @@ package object pure {
                         isComplex: Boolean = false
                       ) {
 
-    def toClass: String = {
+    val fieldName: String = name.camelCaseField
+
+    def toClassField: String = {
       if (description.isDefined) {
-        s"{meta::pure::profiles::doc.doc = '$description'} $name: ${pureType.pureType}$cardinality;"
-      } else s"$name: ${pureType.pureType}$cardinality;"
+        s"{meta::pure::profiles::doc.doc = '$description'} $fieldName: ${pureType.pureType}$cardinality;"
+      } else s"$fieldName: ${pureType.pureType}$cardinality;"
     }
 
-    def toPureComplex: String = {
-      require(isComplex, s"Wrapper for nested properties only, [$name] is not a nested object")
-      s"{meta::pure::profiles::doc.doc = 'JSON wrapper for nested property [$name]'} " +
-        s"${name.nestedField}: String$cardinality;"
+    def toClassComplexField: String = {
+      require(isComplex, s"Wrapper for nested properties only, [$fieldName] is not a nested object")
+      val metadata = s"'JSON wrapper for nested property [$fieldName]'"
+      s"{meta::pure::profiles::doc.doc = $metadata} $fieldName: String$cardinality;"
     }
 
-    def toRelational: String = s"$name ${pureType.pureRelationalType}"
+    def toRelationalField: String = {
+      s"$name ${pureType.pureRelationalType}"
+    }
 
-    def toPrimaryKey(namespace: String, databaseName: String, tableName: String):String = {
+    def toPrimaryKeyField(namespace: String, databaseName: String, tableName: String): String = {
       s"[$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
     }
 
-    def toService: String = {
-      if (isComplex) "x|$x." + name.nestedField else "x|$x." + name
+    def toServiceField: String = {
+      "x|$x." + fieldName
     }
 
-    def toServiceName: String = s"'$name'"
-
-    def toMapping(namespace: String, databaseName: String, tableName: String): String = {
-      if (isComplex) {
-        s"${name.nestedField}: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
-      } else {
-        s"$name: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
-      }
+    def toServiceFieldName: String = {
+      s"'$fieldName'"
     }
+
+    def toMappingField(namespace: String, databaseName: String, tableName: String): String = {
+      s"$fieldName: [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName.$name"
+    }
+
   }
 
   case class PureClass(
-                        tableName: String,
+                        entityName: String,
                         entityFQN: String,
                         fields: Array[PureField],
                         isNested: Boolean = false
@@ -84,44 +91,60 @@ package object pure {
 
     val hasNested: Boolean = fields.exists(_.isComplex)
 
-    def toService(namespace: String): String = {
+    def toClass: String = {
+      if (hasNested) {
+        val baseFields = fields.filter(!_.isComplex)
+        val nestedFields = fields.filter(_.isComplex)
+        s"""Class ${entityFQN}Base
+           |{
+           |  ${baseFields.map(_.toClassField).mkString("\n  ")}
+           |}
+           |
+           |Class $entityFQN extends ${entityFQN}Base
+           |{
+           |  ${nestedFields.map(_.toClassField).mkString("\n  ")}
+           |}
+           |
+           |Class ${entityFQN}Serializable extends ${entityFQN}Base
+           |{
+           |  ${nestedFields.map(_.toClassComplexField).mkString("\n  ")}
+           |}
+           |""".stripMargin
+      } else {
+        val baseFields = fields.filter(!_.isComplex)
+        s"""Class $entityFQN
+           |{
+           |  ${baseFields.map(_.toClassField).mkString("\n  ")}
+           |}
+           |""".stripMargin
+      }
+    }
+
+    def toService(namespace: String, databaseName: String): String = {
       require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
-      val entityName = entityFQN.split("::").last
-      val projection = s"[${fields.map(_.toService).mkString(",")}], [${fields.map(_.toServiceName).mkString(",")}]"
-      s"""Service $namespace::$NAMESPACE_connect::$entityName
+      val entityFQNReference = if (hasNested) s"${entityFQN}Serializable" else entityFQN
+      val entityNameReference = entityName.camelCaseEntity
+      val projection = s"[${fields.map(_.toServiceField).mkString(",")}], [${fields.map(_.toServiceFieldName).mkString(",")}]"
+      s"""Service $namespace::$NAMESPACE_connect::services::$entityNameReference
          |{
-         |  pattern: '/$entityName';
-         |  documentation: 'Simple REST Api to query [$entityFQN] entities';
+         |  pattern: '/${entityName.camelCaseField}';
+         |  documentation: 'Simple REST Api to query [$databaseName.$entityName] entities';
          |  autoActivateUpdates: true;
          |  execution: Single
          |  {
-         |    query: |$namespace::$NAMESPACE_classes::$entityName.all()->project($projection);
-         |    mapping: $namespace::$NAMESPACE_mapping::$entityName;
+         |    query: |$entityFQNReference.all()->project($projection);
+         |    mapping: $namespace::$NAMESPACE_mapping::$entityNameReference;
          |    runtime: $namespace::$NAMESPACE_connect::DatabricksRuntime;
          |  }
          |}""".stripMargin
     }
 
-    def toClass: String = {
-      val pureFields = fields.map(_.toClass) ++ fields.filter(_.isComplex).map(_.toPureComplex)
-      s"""Class $entityFQN
-         |{
-         |  ${pureFields.mkString("\n  ")}
-         |}
-         |""".stripMargin
-    }
-
-    def toRelational: String = {
+    def toRelationalTable: String = {
       require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
-      s"""    Table $tableName
+      s"""    Table $entityName
          |    (
-         |      ${fields.map(_.toRelational).mkString(",\n      ")}
+         |      ${fields.map(_.toRelationalField).mkString(",\n      ")}
          |    )""".stripMargin
-    }
-
-    def getMappingName(namespace: String): String = {
-      require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
-      s"$namespace::$NAMESPACE_mapping::${entityFQN.split("::").last}"
     }
 
     def toMapping(namespace: String, databaseName: String): String = {
@@ -133,21 +156,27 @@ package object pure {
       A primary key must be defined in the table definition in PURE to use this feature"
       */
       require(!isNested, "Nested entities cannot be mapped to relational objects on legend")
+      val entityFQNReference = if (hasNested) s"${entityFQN}Serializable" else entityFQN
       val mappingName = getMappingName(namespace)
       s"""Mapping $mappingName
          |(
-         |  *$entityFQN: Relational
+         |  *$entityFQNReference: Relational
          |  {
          |    ~primaryKey
          |    (
-         |      ${fields.map(_.toPrimaryKey(namespace, databaseName, tableName)).mkString(",\n      ")}
+         |      ${fields.map(_.toPrimaryKeyField(namespace, databaseName, entityName)).mkString(",\n      ")}
          |    )
-         |    ~mainTable [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$tableName
-         |    ${fields.map(_.toMapping(namespace, databaseName, tableName)).mkString(",\n    ")}
+         |    ~mainTable [$namespace::$NAMESPACE_connect::DatabricksSchema]$databaseName.$entityName
+         |    ${fields.map(_.toMappingField(namespace, databaseName, entityName)).mkString(",\n    ")}
          |  }
          |)
          |""".stripMargin
     }
+
+    def getMappingName(namespace: String): String = {
+      s"$namespace::$NAMESPACE_mapping::${entityName.camelCaseEntity}"
+    }
+
   }
 
   case class PureModel(databaseName: String, pureTables: Array[PureClass]) {
@@ -159,7 +188,7 @@ package object pure {
          |(
          |  Schema $databaseName
          |  (
-         |${pureTables.filter(!_.isNested).map(_.toRelational).mkString("\n")}
+         |${pureTables.filter(!_.isNested).map(_.toRelationalTable).mkString("\n")}
          |  )
          |)
          |
@@ -200,7 +229,7 @@ package object pure {
          |}
          |
          |###Service
-         |${pureTables.filter(!_.isNested).map(_.toService(namespace)).mkString("\n\n")}
+         |${pureTables.filter(!_.isNested).map(_.toService(namespace, databaseName)).mkString("\n\n")}
          |""".stripMargin
     }
   }
