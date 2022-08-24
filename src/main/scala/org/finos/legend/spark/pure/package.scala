@@ -53,7 +53,7 @@ package object pure {
 
     def toClassField: String = {
       if (description.isDefined) {
-        s"{meta::pure::profiles::doc.doc = '$description'} $fieldName: ${pureType.pureType}$cardinality;"
+        s"{meta::pure::profiles::doc.doc = '${description.get}'} $fieldName: ${pureType.pureType}$cardinality;"
       } else s"$fieldName: ${pureType.pureType}$cardinality;"
     }
 
