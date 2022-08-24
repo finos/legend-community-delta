@@ -39,33 +39,53 @@ class LegendCodegenTest extends AnyFlatSpec {
     assert("helloworld".camelCaseField == "helloworld")
   }
 
-  "A spark schema" should "be converted as PURE" in {
+  "A nested spark schema" should "be converted as PURE" in {
 
     val child = StructType(List(
-      StructField("string_field", StringType, nullable = true),
-      StructField("byte_field", ByteType, nullable = true),
-      StructField("boolean_field", BooleanType, nullable = true),
-      StructField("short_field", ShortType, nullable = true),
-      StructField("integer_field", IntegerType, nullable = true),
-      StructField("long_field", LongType, nullable = true),
-      StructField("float_field", FloatType, nullable = true),
-      StructField("double_field", DoubleType, nullable = true),
-      StructField("date_field", DateType, nullable = true),
-      StructField("timestamp_field", TimestampType, nullable = true),
-      StructField("binary_field", BinaryType, nullable = true)
+      StructField("nickname", StringType, nullable = true),
+      StructField("age", IntegerType, nullable = true)
     ))
 
     val parent = StructType(List(
-      StructField("integer_field", IntegerType, nullable = true),
-      StructField("struct_field", child, nullable = true)
+      StructField("first_name", StringType, nullable = true),
+      StructField("last_name", StringType, nullable = true),
+      StructField("age", IntegerType, nullable = true),
+      StructField("children", ArrayType(child), nullable = true)
     ))
 
     val observed = LegendCodegen.generatePureFromSchema(
       "org::finos::legend::delta",
-      "database",
-      "table",
+      "family",
+      "parent",
       parent
     )
+
+    print(observed)
+  }
+
+  "Generated PURE model" should "be correctly interpreted" in {
+
+    val schema = StructType(List(
+      StructField("name", StringType, nullable = true),
+      StructField("id", ByteType, nullable = true),
+      StructField("has_star", BooleanType, nullable = true),
+      StructField("forks", ShortType, nullable = true),
+      StructField("likes", IntegerType, nullable = true),
+      StructField("lines_code", LongType, nullable = true),
+      StructField("avg_review", FloatType, nullable = true),
+      StructField("avg_lines", DoubleType, nullable = true),
+      StructField("created_on", DateType, nullable = true),
+      StructField("last_commit", TimestampType, nullable = true),
+      StructField("thumbnail", BinaryType, nullable = true)
+    ))
+
+    val observed = LegendCodegen.generatePureFromSchema(
+      "org::finos::legend::delta",
+      "github",
+      "project",
+      schema
+    )
+
     print(observed)
   }
 
