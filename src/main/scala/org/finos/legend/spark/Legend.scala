@@ -275,7 +275,12 @@ class Legend(entities: Map[String, Entity]) {
     val entitySchema = getEntitySchema(entityName)
     val transformations = getTransformations(mappingName)
     LOGGER.info(s"Altering entity schema for mapping [$mappingName]")
-    StructType(entitySchema.fields.map(s => s.copy(name = transformations(s.name))))
+    StructType(entitySchema.fields.flatMap(field => {
+      // Some properties of an entity may not be mapped to a table
+      transformations.get(field.name).map(newName => {
+        field.copy(name = newName)
+      })
+    }))
   }
 
   /**
