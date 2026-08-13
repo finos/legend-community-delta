@@ -4,9 +4,9 @@ This file lists the maintainers of this repository.
 
 ## Current maintainers
 
-| GitHub Username | Name | Organization | Email |
-|----------------|------|--------------|-------|
-| @aamend | Antoine Amend | @databricks  | *please add email* |
+| GitHub Username | Name | Organization | Email (optional) |
+|----------------|------|--------------|------------------|
+| @aamend | Antoine Amend | @databricks  |  |
 
 For information about maintainer responsibilities and resources, see the [FINOS Maintainers Cheatsheet](https://community.finos.org/docs/finos-maintainers-cheatsheet).
 
